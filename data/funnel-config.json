@@ -1,0 +1,125 @@
+{
+  "campaign": {
+    "bandName": "ChuggaBoom",
+    "headline": "Claim Your Free CD",
+    "subheadline": "Grab the free ChuggaBoom CD and customise your bundle with optional add-ons before checkout.",
+    "heroNote": "Just cover shipping. Add extras if you want.",
+    "shippingLabel": "Shipping from",
+    "shippingPrice": "£4.99",
+    "startButtonLabel": "Claim your free CD",
+    "shopifyStoreHost": "chuggaboom.wtf"
+  },
+  "products": [
+    {
+      "id": "b29eaa5c-fc40-4794-b43d-e2c79bb8517d",
+      "handle": "free-cd",
+      "name": "ChuggaBoom: The Essentials",
+      "description": "Claim your free \"ChuggaBoom: The Essentials\" CD!",
+      "variantId": "56747125866876:1",
+      "priceLabel": "Free",
+      "type": "core",
+      "isDefault": true,
+      "sortOrder": 0,
+      "autoDiscountCodes": [
+        "FREECD"
+      ]
+    },
+    {
+      "id": "2ece3c66-f73d-448a-b882-c2f2fc6172fe",
+      "handle": "Vinyl-DP",
+      "name": "Vinyl - Death Pledge",
+      "description": "Limited Edition Magenta Vinyl",
+      "variantId": "40400584048723:1",
+      "priceLabel": "14.99",
+      "type": "upsell",
+      "isDefault": false,
+      "sortOrder": 10,
+      "autoDiscountCodes": [
+        "Vinyl15"
+      ],
+      "imageSrc": "/uploads/magenta-vinyl-mockup-d0315218-a314-4abd-997c-4fc0bd3a56d9.png",
+      "upsellHeadline": "Want even more music while you're here?",
+      "upsellSubheadline": "Grab yourself a copy of our sophomore full album \"Death Pledge.\"",
+      "upsellBody": "This is a limited edition \"Magenta\" press of the vinyl that will never be re-printed.\r\n\r\nWe'll even let you have it for 25% off, seeing as you're already here...\r\n\"Death Pledge\" 140g Heavyweight Vinyl",
+      "variants": [],
+      "compareAtPriceLabel": "19.99",
+      "upsellYesLabel": "Yes please! I love vinyl",
+      "upsellNoLabel": "Not now thanks, just the free CD for me!"
+    },
+    {
+      "id": "4c6d2f6a-25c2-42f4-8625-6b4b83c37b8d",
+      "handle": "CbaTee",
+      "name": "CBA Tee",
+      "description": "cba tee",
+      "variantId": "56504862310780:1",
+      "priceLabel": "29.99",
+      "compareAtPriceLabel": "24.99",
+      "type": "upsell",
+      "isDefault": false,
+      "sortOrder": 10,
+      "autoDiscountCodes": [],
+      "upsellHeadline": "What about a t-shirt?",
+      "upsellSubheadline": "The free CD is in your cart, but while you're here...",
+      "upsellBody": "This incredibly soft T-Shirt, printed on the front and back would look really at home in your wardrobe.",
+      "upsellYesLabel": "HELL YEAH, CLOTHES ARE DOPE AF",
+      "upsellNoLabel": "No thank you pal :)",
+      "variants": [
+        {
+          "id": "b3fb3a46-5b8b-45f0-8fcc-5257b3229bb0",
+          "handle": "tee-m",
+          "name": "Medium",
+          "variantId": "56504862310780:1",
+          "priceLabel": "24.99",
+          "compareAtPriceLabel": "29.99"
+        },
+        {
+          "id": "9e95fc1a-4a2f-497f-bf57-879f8930c9b4",
+          "handle": "tee-L",
+          "name": "Large",
+          "variantId": "56504862343548:1",
+          "priceLabel": "24.99",
+          "compareAtPriceLabel": "29.99"
+        },
+        {
+          "id": "ea255bd8-8e09-4fe7-b461-f62a1bdf7a38",
+          "handle": "tee-XL",
+          "name": "X-Large",
+          "variantId": "56504862343548:1",
+          "priceLabel": "24.99",
+          "compareAtPriceLabel": "29.99"
+        },
+        {
+          "id": "d2879d3b-d670-49cd-ac83-48bd21be1890",
+          "handle": "tee-XXL",
+          "name": "XX-Large",
+          "variantId": "56504862409084:1",
+          "priceLabel": "24.99",
+          "compareAtPriceLabel": "29.99"
+        },
+        {
+          "id": "aaf9e16a-5c15-45c6-b146-faed6148af7d",
+          "handle": "tee-XXXL",
+          "name": "XXX-Large",
+          "variantId": "56504862441852:1",
+          "priceLabel": "24.99",
+          "compareAtPriceLabel": "29.99"
+        }
+      ],
+      "imageSrc": "/uploads/cba-shirt-back-and-front-da1dffd2-0b4a-474e-b207-ee5d3d255e14.png"
+    }
+  ],
+  "discounts": [
+    {
+      "id": "free-cd-shipping",
+      "name": "FREE CD",
+      "code": "FREECD",
+      "priority": 10
+    },
+    {
+      "id": "97e7476e-64b4-4775-a189-0a22ffb7f407",
+      "name": "Vinyl15",
+      "code": "Vinyl15",
+      "priority": 10
+    }
+  ]
+}
