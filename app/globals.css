@@ -141,7 +141,7 @@ textarea {
 
 .bk-photo-badge {
   position: absolute;
-  left: 24px;
+  right: 24px;
   bottom: 24px;
   display: grid;
   gap: 4px;
@@ -272,7 +272,25 @@ textarea {
 }
 
 .bk-bottom-copy {
-  text-align: left;
+  display: grid;
+  align-content: center;
+  gap: 18px;
+  text-align: center;
+}
+
+.bk-bottom-copy .bk-body {
+  margin-bottom: 0;
+}
+
+.bk-bottom-cta {
+  margin-top: 0;
+}
+
+.bk-bottom-cta .button {
+  width: 100%;
+  min-height: 72px;
+  padding: 0 34px;
+  font-size: 1.08rem;
 }
 
 .upsell-page {

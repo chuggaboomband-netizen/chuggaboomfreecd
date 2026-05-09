@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ChuggaBoom Free CD Funnel",
+  title: "Claim Your Free ChuggaBoom CD!",
   description: "Free CD landing page, upsells, and Shopify checkout mapping."
 };
 

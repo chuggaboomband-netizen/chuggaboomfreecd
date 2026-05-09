@@ -59,11 +59,6 @@ export default async function HomePage() {
             </div>
           </div>
         </section>
-
-        <p className="bk-small-note bk-wide-note">
-          Please note, shipping might vary slightly depending on where you&apos;re ordering from, but the CD will still be excellent though, we promise.
-        </p>
-
         <section className="bk-copy-section">
           <div className="bk-scroll-image">
             <img src="/john-and-levi.png" alt="ChuggaBoom promo" className="bk-promo-wide-image" />
@@ -107,18 +102,15 @@ export default async function HomePage() {
           <p className="bk-body">
             It&apos;s just <strong>{campaign.shippingPrice}</strong> to ship. You can add more if you want, but it&apos;ll literally just be that shipping amount to get the CD sent to you.
           </p>
-          <p className="bk-body">
-            If there&apos;s ever a delay or something goes wrong, we&apos;ll make it right. The whole point of this page is to make saying yes feel easy, not risky.
-          </p>
           <div className="bk-bottom-split">
             <div className="bk-bottom-photo">
               <img src="/chuggaboom-live.jpg" alt="ChuggaBoom live crowd photo" className="bk-bottom-photo-image" />
             </div>
             <div className="bk-bottom-copy">
               <p className="bk-body">
-                And if you get the CD, listen to it, and decide we&apos;re absolutely not for you, you&apos;ll still know exactly what you signed up for. There&apos;s nothing weird or hidden about the offer.
+                And if you get the CD, listen to it, and hate it, get in touch with us within 30 days and we&apos;ll refund your shipping, no questions asked.
               </p>
-              <div className="bk-cta">
+              <div className="bk-cta bk-bottom-cta">
                 <Link href="/upsell" className="button">
                   YOU GOT ME, I&apos;LL TAKE ONE
                 </Link>
