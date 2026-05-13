@@ -57,7 +57,9 @@
       "type": "upsell",
       "isDefault": false,
       "sortOrder": 10,
-      "autoDiscountCodes": [],
+      "autoDiscountCodes": [
+        "5OffTee"
+      ],
       "upsellHeadline": "What about a t-shirt?",
       "upsellSubheadline": "The free CD is in your cart, but while you're here...",
       "upsellBody": "This incredibly soft T-Shirt, printed on the front and back would look really at home in your wardrobe.",
@@ -65,7 +67,7 @@
       "upsellNoLabel": "No thank you pal :)",
       "variants": [
         {
-          "id": "b3fb3a46-5b8b-45f0-8fcc-5257b3229bb0",
+          "id": "100a8842-f691-40f4-ae62-4ba3ff7399c7",
           "handle": "tee-m",
           "name": "Medium",
           "variantId": "56504862310780:1",
@@ -73,7 +75,7 @@
           "compareAtPriceLabel": "29.99"
         },
         {
-          "id": "9e95fc1a-4a2f-497f-bf57-879f8930c9b4",
+          "id": "136e74df-3388-4bb0-bf41-a64387e49119",
           "handle": "tee-L",
           "name": "Large",
           "variantId": "56504862343548:1",
@@ -81,7 +83,7 @@
           "compareAtPriceLabel": "29.99"
         },
         {
-          "id": "ea255bd8-8e09-4fe7-b461-f62a1bdf7a38",
+          "id": "c960d8dd-710e-4855-94ef-01a044523b18",
           "handle": "tee-XL",
           "name": "X-Large",
           "variantId": "56504862343548:1",
@@ -89,7 +91,7 @@
           "compareAtPriceLabel": "29.99"
         },
         {
-          "id": "d2879d3b-d670-49cd-ac83-48bd21be1890",
+          "id": "17bad7b1-c8f1-42b1-82f4-c9ef91646e5a",
           "handle": "tee-XXL",
           "name": "XX-Large",
           "variantId": "56504862409084:1",
@@ -97,7 +99,7 @@
           "compareAtPriceLabel": "29.99"
         },
         {
-          "id": "aaf9e16a-5c15-45c6-b146-faed6148af7d",
+          "id": "a37cdf3a-2fb3-4fb9-943b-95ae21354e3c",
           "handle": "tee-XXXL",
           "name": "XXX-Large",
           "variantId": "56504862441852:1",
