@@ -52,8 +52,8 @@
       "name": "CBA Tee",
       "description": "cba tee",
       "variantId": "56504862310780:1",
-      "priceLabel": "29.99",
-      "compareAtPriceLabel": "24.99",
+      "priceLabel": "24.99",
+      "compareAtPriceLabel": "19.99",
       "type": "upsell",
       "isDefault": false,
       "sortOrder": 10,
@@ -67,7 +67,7 @@
       "upsellNoLabel": "No thank you pal :)",
       "variants": [
         {
-          "id": "100a8842-f691-40f4-ae62-4ba3ff7399c7",
+          "id": "16f60598-c48a-4e93-b1fa-10c7f81430c3",
           "handle": "tee-m",
           "name": "Medium",
           "variantId": "56504862310780:1",
@@ -75,7 +75,7 @@
           "compareAtPriceLabel": "29.99"
         },
         {
-          "id": "136e74df-3388-4bb0-bf41-a64387e49119",
+          "id": "2566fed3-1274-40e5-8a9d-f6e8cdc86812",
           "handle": "tee-L",
           "name": "Large",
           "variantId": "56504862343548:1",
@@ -83,7 +83,7 @@
           "compareAtPriceLabel": "29.99"
         },
         {
-          "id": "c960d8dd-710e-4855-94ef-01a044523b18",
+          "id": "59796eef-21e1-40dc-bfc3-87064b2c76e4",
           "handle": "tee-XL",
           "name": "X-Large",
           "variantId": "56504862343548:1",
@@ -91,7 +91,7 @@
           "compareAtPriceLabel": "29.99"
         },
         {
-          "id": "17bad7b1-c8f1-42b1-82f4-c9ef91646e5a",
+          "id": "db91d088-9a02-4e5d-903e-7f005bfa5c4b",
           "handle": "tee-XXL",
           "name": "XX-Large",
           "variantId": "56504862409084:1",
@@ -99,7 +99,7 @@
           "compareAtPriceLabel": "29.99"
         },
         {
-          "id": "a37cdf3a-2fb3-4fb9-943b-95ae21354e3c",
+          "id": "8fca5c33-0552-4eb3-a05f-4ba996e272ff",
           "handle": "tee-XXXL",
           "name": "XXX-Large",
           "variantId": "56504862441852:1",
