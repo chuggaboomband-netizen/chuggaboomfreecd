@@ -16,7 +16,11 @@ import {
 } from "../actions";
 import { PortalLinkBuilder } from "./portal-link-builder";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ error?: string; saved?: string }>;
+}) {
   if (!(await isAuthenticated())) {
     redirect("/portal");
   }
@@ -24,6 +28,7 @@ export default async function DashboardPage() {
   const config = await readConfig();
   const products = sortProducts(config.products);
   const discounts = [...config.discounts].sort((a, b) => b.priority - a.priority);
+  const params = searchParams ? await searchParams : undefined;
 
   return (
     <main className="section hero">
@@ -39,6 +44,14 @@ export default async function DashboardPage() {
             </button>
           </form>
         </header>
+
+        {params?.saved ? (
+          <div className="banner">Changes saved.</div>
+        ) : null}
+
+        {params?.error ? (
+          <div className="banner warning">{params.error}</div>
+        ) : null}
 
         <section className="admin-card stack">
           <div>

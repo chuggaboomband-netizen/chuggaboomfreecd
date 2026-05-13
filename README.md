@@ -33,10 +33,15 @@ https://{shopifyStoreHost}/cart/{variantId},{variantId}?channel=buy_button&disco
 
 1. Copy `.env.example` to `.env.local`
 2. Set `ADMIN_PASSWORD`
-3. Install dependencies with `npm install`
-4. Run `npm run dev`
+3. Optional: set `GITHUB_STORAGE_TOKEN`, `GITHUB_STORAGE_REPO`, and `GITHUB_STORAGE_BRANCH` if you want local saves to write back to GitHub instead of the local JSON file
+4. Install dependencies with `npm install`
+5. Run `npm run dev`
 
 ## Notes
 
 - This version uses a JSON file as its backend store so changes persist in a stateful Node environment.
-- If you want to deploy this to a serverless platform later, the next step should be moving the config into a real database or hosted storage.
+- In production on Vercel, filesystem writes do not persist. To make the portal work there, set:
+  - `GITHUB_STORAGE_TOKEN`: a GitHub token with contents write access to the repo
+  - `GITHUB_STORAGE_REPO`: for example `chuggaboomband-netizen/chuggaboomfreecd`
+  - `GITHUB_STORAGE_BRANCH`: usually `main`
+- When those env vars are present, product edits, discount edits, config changes, and uploaded product images are written back into the GitHub repo instead of the local filesystem.
