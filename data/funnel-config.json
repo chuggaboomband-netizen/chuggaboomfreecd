@@ -122,6 +122,12 @@
       "name": "Vinyl15",
       "code": "Vinyl15",
       "priority": 10
+    },
+    {
+      "id": "da454ec2-a225-44b4-9044-fd471f5f58f1",
+      "name": "£5 off the T-Shirt",
+      "code": "5OffTee",
+      "priority": 10
     }
   ]
 }
