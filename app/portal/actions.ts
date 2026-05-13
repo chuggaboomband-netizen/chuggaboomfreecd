@@ -64,6 +64,13 @@ function parseVariants(value: string): ProductVariant[] {
     .filter((variant) => variant.handle && variant.name && variant.variantId && variant.priceLabel);
 }
 
+function revalidateFunnelPaths() {
+  revalidatePath("/");
+  revalidatePath("/upsell");
+  revalidatePath("/checkout");
+  revalidatePath("/portal/dashboard");
+}
+
 export async function loginAction(formData: FormData) {
   const password = getString(formData, "password");
 
@@ -95,10 +102,8 @@ export async function saveCampaignAction(formData: FormData) {
   };
 
   await writeConfig(config);
-  revalidatePath("/");
-  revalidatePath("/upsell");
-  revalidatePath("/checkout");
-  revalidatePath("/portal/dashboard");
+  revalidateFunnelPaths();
+  redirect("/portal/dashboard");
 }
 
 export async function addProductAction(formData: FormData) {
@@ -127,9 +132,8 @@ export async function addProductAction(formData: FormData) {
 
   config.products.push(nextProduct);
   await writeConfig(config);
-  revalidatePath("/upsell");
-  revalidatePath("/checkout");
-  revalidatePath("/portal/dashboard");
+  revalidateFunnelPaths();
+  redirect("/portal/dashboard");
 }
 
 export async function updateProductAction(formData: FormData) {
@@ -163,9 +167,8 @@ export async function updateProductAction(formData: FormData) {
   );
 
   await writeConfig(config);
-  revalidatePath("/upsell");
-  revalidatePath("/checkout");
-  revalidatePath("/portal/dashboard");
+  revalidateFunnelPaths();
+  redirect("/portal/dashboard");
 }
 
 export async function deleteProductAction(formData: FormData) {
@@ -174,9 +177,8 @@ export async function deleteProductAction(formData: FormData) {
 
   config.products = config.products.filter((product) => product.id !== id);
   await writeConfig(config);
-  revalidatePath("/upsell");
-  revalidatePath("/checkout");
-  revalidatePath("/portal/dashboard");
+  revalidateFunnelPaths();
+  redirect("/portal/dashboard");
 }
 
 export async function addDiscountAction(formData: FormData) {
@@ -190,8 +192,8 @@ export async function addDiscountAction(formData: FormData) {
 
   config.discounts.push(discount);
   await writeConfig(config);
-  revalidatePath("/checkout");
-  revalidatePath("/portal/dashboard");
+  revalidateFunnelPaths();
+  redirect("/portal/dashboard");
 }
 
 export async function updateDiscountAction(formData: FormData) {
@@ -224,8 +226,8 @@ export async function updateDiscountAction(formData: FormData) {
   }
 
   await writeConfig(config);
-  revalidatePath("/checkout");
-  revalidatePath("/portal/dashboard");
+  revalidateFunnelPaths();
+  redirect("/portal/dashboard");
 }
 
 export async function deleteDiscountAction(formData: FormData) {
@@ -243,6 +245,6 @@ export async function deleteDiscountAction(formData: FormData) {
   }
 
   await writeConfig(config);
-  revalidatePath("/checkout");
-  revalidatePath("/portal/dashboard");
+  revalidateFunnelPaths();
+  redirect("/portal/dashboard");
 }

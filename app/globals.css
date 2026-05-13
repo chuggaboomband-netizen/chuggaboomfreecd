@@ -1058,6 +1058,11 @@ textarea {
   gap: 18px;
 }
 
+.portal-admin-grid {
+  grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.75fr);
+  align-items: start;
+}
+
 .offer-grid {
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 }
@@ -1094,6 +1099,28 @@ textarea {
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
+}
+
+.discounts-panel {
+  align-self: start;
+}
+
+.discount-card {
+  gap: 18px;
+}
+
+.discount-create-form {
+  padding-top: 8px;
+}
+
+.discount-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.discount-actions .button,
+.discount-create-form .button {
+  min-width: 180px;
 }
 
 .summary-layout {
@@ -1234,6 +1261,7 @@ textarea {
   }
 
   .checkout-grid,
+  .portal-admin-grid,
   .bk-bottom-split {
     grid-template-columns: 1fr;
   }

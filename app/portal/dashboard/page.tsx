@@ -96,7 +96,7 @@ export default async function DashboardPage() {
           </form>
         </section>
 
-        <section className="admin-grid" style={{ gridTemplateColumns: "1.1fr 0.9fr" }}>
+        <section className="admin-grid portal-admin-grid">
           <div className="admin-card stack">
             <div>
               <h2>Products</h2>
@@ -317,7 +317,7 @@ export default async function DashboardPage() {
             </form>
           </div>
 
-          <div className="admin-card stack">
+          <div className="admin-card stack discounts-panel">
             <div>
               <h2>Discounts</h2>
               <p className="microcopy">
@@ -327,7 +327,7 @@ export default async function DashboardPage() {
 
             <div className="stack">
               {discounts.map((discount) => (
-                <div key={discount.id} className="summary-card stack">
+                <div key={discount.id} className="summary-card stack discount-card">
                   <form action={updateDiscountAction} className="stack">
                     <input type="hidden" name="id" value={discount.id} />
                     <label className="field">
@@ -342,9 +342,11 @@ export default async function DashboardPage() {
                       <span>Priority</span>
                       <input name="priority" type="number" defaultValue={String(discount.priority)} required />
                     </label>
-                    <button type="submit" className="button">
-                      Save discount
-                    </button>
+                    <div className="discount-actions">
+                      <button type="submit" className="button">
+                        Save discount
+                      </button>
+                    </div>
                   </form>
                   <form action={deleteDiscountAction}>
                     <input type="hidden" name="id" value={discount.id} />
@@ -356,7 +358,7 @@ export default async function DashboardPage() {
               ))}
             </div>
 
-            <form action={addDiscountAction} className="stack">
+            <form action={addDiscountAction} className="stack discount-create-form">
               <label className="field">
                 <span>Discount name</span>
                 <input name="name" required />
@@ -369,9 +371,11 @@ export default async function DashboardPage() {
                 <span>Priority</span>
                 <input name="priority" type="number" defaultValue="10" required />
               </label>
-              <button type="submit" className="button">
-                Add discount
-              </button>
+              <div className="discount-actions">
+                <button type="submit" className="button">
+                  Add discount
+                </button>
+              </div>
             </form>
           </div>
         </section>
