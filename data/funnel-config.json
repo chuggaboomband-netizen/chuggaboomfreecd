@@ -29,7 +29,7 @@
       "handle": "Vinyl-DP",
       "name": "Vinyl - Death Pledge",
       "description": "Limited Edition Vinyl",
-      "variantId": "40400584048723:1",
+      "variantId": "41248619659347:1",
       "priceLabel": "14.99",
       "type": "upsell",
       "isDefault": false,
@@ -41,16 +41,7 @@
       "upsellHeadline": "Want even more music while you're here?",
       "upsellSubheadline": "Grab yourself a copy of our sophomore full album \"Death Pledge.\"",
       "upsellBody": "This is a limited edition \"Marble\" press of the vinyl that will never be re-printed.\r\n\r\nWe'll even let you have it for 25% off, seeing as you're already here...\r\n\"Death Pledge\" 140g Heavyweight Vinyl",
-      "variants": [
-        {
-          "id": "d6a70f30-1b11-4d7c-8336-3635dbe0bfcf",
-          "handle": "vinyl",
-          "name": "vinyl",
-          "variantId": "41248619659347:1",
-          "priceLabel": "14.99",
-          "compareAtPriceLabel": "19.99"
-        }
-      ],
+      "variants": [],
       "compareAtPriceLabel": "19.99",
       "upsellYesLabel": "Yes please! I love vinyl",
       "upsellNoLabel": "Not now thanks, just the free CD for me!"
