@@ -153,6 +153,10 @@ export default async function DashboardPage({
                         <input name="unitCost" defaultValue={product.unitCost || ""} placeholder="£2.50" />
                       </label>
                       <label className="field">
+                        <span>Postage cost</span>
+                        <input name="postageCost" defaultValue={product.postageCost || ""} placeholder="£1.85" />
+                      </label>
+                      <label className="field">
                         <span>Variant ID</span>
                         <input name="variantId" defaultValue={product.variantId} required />
                       </label>
@@ -267,6 +271,10 @@ export default async function DashboardPage({
                 <label className="field">
                   <span>Unit cost</span>
                   <input name="unitCost" placeholder="£2.50" />
+                </label>
+                <label className="field">
+                  <span>Postage cost</span>
+                  <input name="postageCost" placeholder="£1.85" />
                 </label>
                 <label className="field">
                   <span>Variant ID</span>

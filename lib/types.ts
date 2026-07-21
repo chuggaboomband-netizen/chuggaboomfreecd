@@ -46,6 +46,7 @@ export type Product = {
   sortOrder: number;
   autoDiscountCodes: string[];
   unitCost?: string;
+  postageCost?: string;
   imageSrc?: string;
   upsellHeadline?: string;
   upsellSubheadline?: string;

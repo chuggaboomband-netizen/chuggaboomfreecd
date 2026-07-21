@@ -65,6 +65,11 @@ function productUnitCost(product?: Product | null) {
   return toCurrencyValue(product?.unitCost);
 }
 
+function productPostageCost(product?: Product | null, defaultPostageCost = 0) {
+  const productPostage = toCurrencyValue(product?.postageCost);
+  return productPostage > 0 ? productPostage : defaultPostageCost;
+}
+
 function normalizeVariantId(variantId?: string | null) {
   if (!variantId) {
     return "";
@@ -115,13 +120,17 @@ function placeholderItems(config: FunnelConfig): ReportOrderItem[] {
 }
 
 export function buildPlaceholderOrders(config: FunnelConfig): ReportOrder[] {
-  const postageCost = toCurrencyValue(config.reporting?.defaultPostageCost);
+  const defaultPostageCost = toCurrencyValue(config.reporting?.defaultPostageCost);
   const adSpendEntries = config.reporting?.weeklyAdSpend || [];
 
   return adSpendEntries.slice(0, 4).map((entry, index) => {
     const items = placeholderItems(config);
     const revenue = items.reduce((sum, item) => sum + item.revenue * item.quantity, 0);
     const unitCostTotal = items.reduce((sum, item) => sum + item.unitCost * item.quantity, 0);
+    const postageCost = selectedPlaceholderProducts(config).reduce(
+      (sum, product) => sum + productPostageCost(product, defaultPostageCost),
+      0,
+    );
     const adSpendAllocated = toCurrencyValue(entry.amount);
     const purchasedAt = entry.weekStart;
 
@@ -140,6 +149,12 @@ export function buildPlaceholderOrders(config: FunnelConfig): ReportOrder[] {
       source: "placeholder",
     };
   });
+}
+
+function selectedPlaceholderProducts(config: FunnelConfig) {
+  const defaults = config.products.filter((product) => product.isDefault);
+  const upsells = config.products.filter((product) => !product.isDefault).slice(0, 2);
+  return [...defaults, ...upsells];
 }
 
 function shopifyEnv() {
@@ -225,7 +240,7 @@ export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOr
   }
 
   const orders = payload.data?.orders?.edges.map((edge) => edge.node) || [];
-  const postageCost = toCurrencyValue(config.reporting?.defaultPostageCost);
+  const defaultPostageCost = toCurrencyValue(config.reporting?.defaultPostageCost);
 
   const reportOrders = orders.map((order) => {
     const items: ReportOrderItem[] = order.lineItems.edges.map(({ node }) => {
@@ -242,6 +257,10 @@ export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOr
     const purchasedAt = order.createdAt.slice(0, 10);
     const weekStart = weekStartFromDate(purchasedAt);
     const unitCostTotal = items.reduce((sum, item) => sum + item.unitCost * item.quantity, 0);
+    const postageCost = order.lineItems.edges.reduce((sum, { node }) => {
+      const product = productByVariantId(config, node.variant?.id || null);
+      return sum + productPostageCost(product, defaultPostageCost) * node.quantity;
+    }, 0);
     const revenue = moneyToNumber(order.currentTotalPriceSet?.shopMoney);
     const adSpendAllocated = adSpendForWeek(config, weekStart);
 
@@ -265,9 +284,13 @@ export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOr
 }
 
 export async function getReportOrders(config: FunnelConfig) {
-  const liveOrders = await fetchShopifyOrders(config);
-  if (liveOrders.length > 0) {
-    return liveOrders;
+  try {
+    const liveOrders = await fetchShopifyOrders(config);
+    if (liveOrders.length > 0) {
+      return liveOrders;
+    }
+  } catch (error) {
+    console.error("Shopify reporting fetch failed. Falling back to placeholder report data.", error);
   }
 
   return buildPlaceholderOrders(config);

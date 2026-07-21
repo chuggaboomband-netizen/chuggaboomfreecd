@@ -87,20 +87,28 @@ async function upsertGitHubFile(repoPath: string, content: string | Buffer, mess
   }
 }
 
+async function readLocalConfig(): Promise<FunnelConfig> {
+  const raw = await fs.readFile(configPath, "utf8");
+  return JSON.parse(raw) as FunnelConfig;
+}
+
 export async function readConfig(): Promise<FunnelConfig> {
   const remote = getRemoteStorageConfig();
   if (remote) {
-    const file = await fetchGitHubFile("data/funnel-config.json");
-    if (!file?.content) {
-      throw new Error("Remote funnel config was not found in GitHub storage.");
-    }
+    try {
+      const file = await fetchGitHubFile("data/funnel-config.json");
+      if (!file?.content) {
+        throw new Error("Remote funnel config was not found in GitHub storage.");
+      }
 
-    const raw = Buffer.from(file.content, "base64").toString("utf8");
-    return JSON.parse(raw) as FunnelConfig;
+      const raw = Buffer.from(file.content, "base64").toString("utf8");
+      return JSON.parse(raw) as FunnelConfig;
+    } catch (error) {
+      console.error("Falling back to local funnel config after GitHub storage read failed.", error);
+    }
   }
 
-  const raw = await fs.readFile(configPath, "utf8");
-  return JSON.parse(raw) as FunnelConfig;
+  return readLocalConfig();
 }
 
 export async function writeConfig(config: FunnelConfig): Promise<void> {
