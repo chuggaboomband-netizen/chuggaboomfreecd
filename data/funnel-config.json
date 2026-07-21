@@ -61,7 +61,9 @@
       "type": "upsell",
       "isDefault": false,
       "sortOrder": 2,
-      "autoDiscountCodes": [],
+      "autoDiscountCodes": [
+        "ZACD"
+      ],
       "unitCost": "2.42",
       "postageCost": "0.91",
       "imageSrc": "/uploads/zadigipack_mockup_1-c51ab26a-f2f1-4332-9a94-0c87cee0d1f1.jpg",
