@@ -112,6 +112,27 @@
         }
       ],
       "imageSrc": "/uploads/cba-shirt-back-and-front-da1dffd2-0b4a-474e-b207-ee5d3d255e14.png"
+    },
+    {
+      "id": "39548648-254d-49fa-86df-bf639199fcbe",
+      "handle": "ZA-CD",
+      "name": "Zodiac Re-Arrest CD",
+      "description": "11 track CD album housed in a Digipack with 12-page full colour booklet.\r\n\r\nTRACKLISTING:\r\n\r\nRaise The Roofie (2021)\r\nUnfriendly Operations Up On The Roof (2021)\r\nMad Skills Brah! (2021)\r\n14 Year Olds Have More Sex Than Me (2021)\r\nA BBQ In Antarctica (2021)\r\nSmoke Rings Of Saturn (2021)\r\nFat Guy In A Little Coat (2021)\r\n#TBT That Time When I Made Out With Your Sister (2021)\r\nHumorously Elongating The Title Of This Song (2021)\r\nOhana Means Family (2021)\r\nM4d $K1llz Bruh (Bonus Track)",
+      "variantId": "39321359614035:1",
+      "priceLabel": "11.99",
+      "compareAtPriceLabel": "14.99",
+      "type": "upsell",
+      "isDefault": false,
+      "sortOrder": 2,
+      "autoDiscountCodes": [],
+      "unitCost": "2.42",
+      "postageCost": "0.91",
+      "imageSrc": "/uploads/zadigipack_mockup_1-c51ab26a-f2f1-4332-9a94-0c87cee0d1f1.jpg",
+      "upsellHeadline": "Could we perhaps tempt you with a CD version of our album 'Zodiac Re-Arrest'?",
+      "upsellSubheadline": "It's pretty flipping good! It's the re-recording of our debut album, and is so many Chuggalo's favourite albums ever!",
+      "upsellYesLabel": "Yeah, why not!",
+      "upsellNoLabel": "Not right now, ta",
+      "variants": []
     }
   ],
   "discounts": [
