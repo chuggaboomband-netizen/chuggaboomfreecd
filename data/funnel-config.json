@@ -24,7 +24,8 @@
         "FREECD"
       ],
       "compareAtPriceLabel": "9.99",
-      "variants": []
+      "variants": [],
+      "unitCost": "1.41"
     },
     {
       "id": "2ece3c66-f73d-448a-b882-c2f2fc6172fe",
