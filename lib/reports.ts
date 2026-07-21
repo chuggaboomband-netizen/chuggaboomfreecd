@@ -1,6 +1,20 @@
 import { FunnelConfig, Product, ReportOrder, ReportOrderItem } from "@/lib/types";
 import { parsePriceLabel, weekStartFromDate } from "@/lib/funnel";
 
+export type ShopifyConnectionState =
+  | {
+      status: "missing-config";
+      message: string;
+    }
+  | {
+      status: "connected";
+      message: string;
+    }
+  | {
+      status: "error";
+      message: string;
+    };
+
 type ShopifyMoney = {
   amount: string;
   currencyCode: string;
@@ -281,6 +295,30 @@ export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOr
   });
 
   return reportOrders;
+}
+
+export async function getShopifyConnectionState(config: FunnelConfig): Promise<ShopifyConnectionState> {
+  const env = shopifyEnv();
+  if (!env) {
+    return {
+      status: "missing-config",
+      message:
+        "Add SHOPIFY_STORE_DOMAIN and SHOPIFY_ADMIN_ACCESS_TOKEN in Vercel or your local environment to enable live reporting.",
+    };
+  }
+
+  try {
+    await fetchShopifyOrders(config);
+    return {
+      status: "connected",
+      message: `Shopify API is responding for ${env.domain}. Orders are being filtered by the ${config.reporting?.reportDiscountCode || "FREECD"} discount code.`,
+    };
+  } catch (error) {
+    return {
+      status: "error",
+      message: error instanceof Error ? error.message : "Shopify reporting fetch failed.",
+    };
+  }
 }
 
 export async function getReportOrders(config: FunnelConfig) {

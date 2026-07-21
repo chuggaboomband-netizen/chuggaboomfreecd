@@ -16,9 +16,9 @@ export default async function PortalPage({
   const params = await searchParams;
 
   return (
-    <main className="section hero">
+    <main className="section hero portal-surface">
       <div className="shell" style={{ maxWidth: 560 }}>
-        <section className="summary-card stack">
+        <section className="summary-card stack portal-login-card">
           <div>
             <span className="eyebrow">Private access</span>
             <h1 className="section-heading">Secret Portal</h1>

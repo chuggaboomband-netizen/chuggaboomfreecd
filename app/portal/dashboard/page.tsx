@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { readConfig } from "@/lib/config-store";
 import { formatWeeklyAdSpend, sortProducts } from "@/lib/funnel";
+import { getShopifyConnectionState } from "@/lib/reports";
 
 import {
   addDiscountAction,
@@ -27,12 +28,13 @@ export default async function DashboardPage({
   }
 
   const config = await readConfig();
+  const shopifyState = await getShopifyConnectionState(config);
   const products = sortProducts(config.products);
   const discounts = [...config.discounts].sort((a, b) => b.priority - a.priority);
   const params = searchParams ? await searchParams : undefined;
 
   return (
-    <main className="section hero">
+    <main className="section hero portal-surface">
       <div className="shell stack">
         <header className="site-header">
           <div>
@@ -416,6 +418,25 @@ export default async function DashboardPage({
             <p className="microcopy">
               These values feed the reports page so you can track postage, advertising spend, and profitability once Shopify order sync is connected.
             </p>
+          </div>
+
+          <div
+            className={`reports-status-box ${
+              shopifyState.status === "connected"
+                ? "is-success"
+                : shopifyState.status === "error"
+                  ? "is-error"
+                  : "is-waiting"
+            }`}
+          >
+            <strong>
+              {shopifyState.status === "connected"
+                ? "Shopify reporting is connected"
+                : shopifyState.status === "error"
+                  ? "Shopify credentials exist, but the API call failed"
+                  : "Shopify credentials are not available to this deployment yet"}
+            </strong>
+            <p className="microcopy">{shopifyState.message}</p>
           </div>
 
           <form action={saveReportingAction} className="stack">

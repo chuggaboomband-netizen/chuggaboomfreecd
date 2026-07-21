@@ -6,7 +6,7 @@ import { readConfig } from "@/lib/config-store";
 import { formatPriceLabel } from "@/lib/funnel";
 import {
   getReportOrders,
-  hasShopifyReportingConfig,
+  getShopifyConnectionState,
   summarizeProductSales,
   summarizeWeeklyProfitLoss,
   totalProfitLoss,
@@ -18,14 +18,16 @@ export default async function ReportsPage() {
   }
 
   const config = await readConfig();
+  const shopifyState = await getShopifyConnectionState(config);
   const orders = await getReportOrders(config);
   const productSales = summarizeProductSales(orders);
   const weeklyProfitLoss = summarizeWeeklyProfitLoss(orders);
   const totalPnL = totalProfitLoss(orders);
-  const isLive = hasShopifyReportingConfig() && orders.some((order) => order.source === "shopify");
+  const isLive = shopifyState.status === "connected" && orders.some((order) => order.source === "shopify");
+  const hasLiveConnection = shopifyState.status === "connected";
 
   return (
-    <main className="section hero">
+    <main className="section hero portal-surface">
       <div className="shell stack">
         <header className="site-header">
           <div>
@@ -34,7 +36,9 @@ export default async function ReportsPage() {
             <p className="microcopy">
               {isLive
                 ? "Live Shopify funnel orders are now being pulled into this report using your configured discount code."
-                : "This page is ready for Shopify sync. Until the API credentials are added, it shows placeholder rows using your configured product, postage, and ad spend inputs."}
+                : hasLiveConnection
+                  ? "Shopify is connected. If the tables are still sparse, that usually means there are no matching orders yet for the tracked discount code."
+                  : "This page can fall back to placeholder rows until Shopify reporting is fully connected."}
             </p>
           </div>
           <Link href="/portal/dashboard" className="button secondary">
@@ -101,12 +105,24 @@ export default async function ReportsPage() {
 
           <article className="admin-card stack">
             <h2>Shopify connection status</h2>
-            <div className="reports-status-box">
-              <strong>{isLive ? "Shopify connected" : "Waiting for Shopify Admin API credentials"}</strong>
+            <div
+              className={`reports-status-box ${
+                shopifyState.status === "connected"
+                  ? "is-success"
+                  : shopifyState.status === "error"
+                    ? "is-error"
+                    : "is-waiting"
+              }`}
+            >
+              <strong>
+                {shopifyState.status === "connected"
+                  ? "Shopify connected"
+                  : shopifyState.status === "error"
+                    ? "Shopify configured, but the API call failed"
+                    : "Waiting for Shopify Admin API credentials"}
+              </strong>
               <p className="microcopy">
-                {isLive
-                  ? "Orders matching the report discount code are being fetched live from Shopify."
-                  : "Once you add the Shopify store domain and access token, this page will switch from placeholders to live funnel order data filtered by the report discount code."}
+                {shopifyState.message}
               </p>
             </div>
           </article>
