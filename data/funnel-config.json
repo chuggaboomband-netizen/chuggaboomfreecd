@@ -51,69 +51,6 @@
       "upsellNoLabel": "Not now thanks, just the free CD for me!"
     },
     {
-      "id": "4c6d2f6a-25c2-42f4-8625-6b4b83c37b8d",
-      "handle": "CbaTee",
-      "name": "CBA Tee",
-      "description": "cba tee",
-      "variantId": "56504862310780:1",
-      "priceLabel": "24.99",
-      "compareAtPriceLabel": "19.99",
-      "type": "upsell",
-      "isDefault": false,
-      "sortOrder": 10,
-      "autoDiscountCodes": [
-        "5OffTee"
-      ],
-      "upsellHeadline": "What about a t-shirt?",
-      "upsellSubheadline": "The free CD is in your cart, but while you're here...",
-      "upsellBody": "This incredibly soft T-Shirt, printed on the front and back would look really at home in your wardrobe.",
-      "upsellYesLabel": "HELL YEAH, CLOTHES ARE DOPE AF",
-      "upsellNoLabel": "No thank you pal :)",
-      "variants": [
-        {
-          "id": "16f60598-c48a-4e93-b1fa-10c7f81430c3",
-          "handle": "tee-m",
-          "name": "Medium",
-          "variantId": "56504862310780:1",
-          "priceLabel": "24.99",
-          "compareAtPriceLabel": "29.99"
-        },
-        {
-          "id": "2566fed3-1274-40e5-8a9d-f6e8cdc86812",
-          "handle": "tee-L",
-          "name": "Large",
-          "variantId": "56504862343548:1",
-          "priceLabel": "24.99",
-          "compareAtPriceLabel": "29.99"
-        },
-        {
-          "id": "59796eef-21e1-40dc-bfc3-87064b2c76e4",
-          "handle": "tee-XL",
-          "name": "X-Large",
-          "variantId": "56504862343548:1",
-          "priceLabel": "24.99",
-          "compareAtPriceLabel": "29.99"
-        },
-        {
-          "id": "db91d088-9a02-4e5d-903e-7f005bfa5c4b",
-          "handle": "tee-XXL",
-          "name": "XX-Large",
-          "variantId": "56504862409084:1",
-          "priceLabel": "24.99",
-          "compareAtPriceLabel": "29.99"
-        },
-        {
-          "id": "8fca5c33-0552-4eb3-a05f-4ba996e272ff",
-          "handle": "tee-XXXL",
-          "name": "XXX-Large",
-          "variantId": "56504862441852:1",
-          "priceLabel": "24.99",
-          "compareAtPriceLabel": "29.99"
-        }
-      ],
-      "imageSrc": "/uploads/cba-shirt-back-and-front-da1dffd2-0b4a-474e-b207-ee5d3d255e14.png"
-    },
-    {
       "id": "39548648-254d-49fa-86df-bf639199fcbe",
       "handle": "ZA-CD",
       "name": "Zodiac Re-Arrest CD",
