@@ -187,10 +187,11 @@ function selectedPlaceholderProducts(config: FunnelConfig) {
 }
 
 function shopifyEnv(): ShopifyEnv | null {
-  const domain = process.env.SHOPIFY_STORE_DOMAIN?.trim();
+  const rawDomain = process.env.SHOPIFY_STORE_DOMAIN?.trim();
   const token = process.env.SHOPIFY_ADMIN_ACCESS_TOKEN?.trim();
   const clientId = process.env.SHOPIFY_CLIENT_ID?.trim();
   const clientSecret = process.env.SHOPIFY_CLIENT_SECRET?.trim();
+  const domain = rawDomain?.replace(/^https?:\/\//, "").replace(/\/+$/, "");
 
   if (!domain) {
     return null;
