@@ -1,4 +1,11 @@
-import { Discount, FunnelConfig, Product, ProductVariant, SelectedItem } from "@/lib/types";
+import {
+  Discount,
+  FunnelConfig,
+  Product,
+  ProductVariant,
+  SelectedItem,
+  WeeklyAdSpend,
+} from "@/lib/types";
 
 export function sortProducts(products: Product[]): Product[] {
   return [...products].sort((a, b) => a.sortOrder - b.sortOrder);
@@ -142,6 +149,42 @@ export function parseHandleList(value: string): string[] {
     .split("|")
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+export function parseWeeklyAdSpend(value: string): WeeklyAdSpend[] {
+  return value
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line, index) => {
+      const [weekStart, amount, notes] = line.split("|").map((item) => item.trim());
+
+      return {
+        id: `${weekStart || "week"}-${index}`,
+        weekStart,
+        amount,
+        notes: notes || undefined,
+      };
+    })
+    .filter((entry) => entry.weekStart && entry.amount);
+}
+
+export function formatWeeklyAdSpend(entries: WeeklyAdSpend[]): string {
+  return entries
+    .map((entry) => [entry.weekStart, entry.amount, entry.notes || ""].join("|"))
+    .join("\n");
+}
+
+export function weekStartFromDate(value: string): string {
+  const date = new Date(`${value}T00:00:00Z`);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  const day = date.getUTCDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  date.setUTCDate(date.getUTCDate() + diff);
+  return date.toISOString().slice(0, 10);
 }
 
 export function csvToRows(csv: string): string[][] {

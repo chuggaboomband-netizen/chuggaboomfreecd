@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 
 import { isAuthenticated } from "@/lib/auth";
 import { readConfig } from "@/lib/config-store";
-import { sortProducts } from "@/lib/funnel";
+import { formatWeeklyAdSpend, sortProducts } from "@/lib/funnel";
 
 import {
   addDiscountAction,
@@ -11,6 +11,7 @@ import {
   deleteProductAction,
   logoutAction,
   saveCampaignAction,
+  saveReportingAction,
   updateDiscountAction,
   updateProductAction,
 } from "../actions";
@@ -148,6 +149,10 @@ export default async function DashboardPage({
                         <input name="compareAtPriceLabel" defaultValue={product.compareAtPriceLabel || ""} />
                       </label>
                       <label className="field">
+                        <span>Unit cost</span>
+                        <input name="unitCost" defaultValue={product.unitCost || ""} placeholder="£2.50" />
+                      </label>
+                      <label className="field">
                         <span>Variant ID</span>
                         <input name="variantId" defaultValue={product.variantId} required />
                       </label>
@@ -258,6 +263,10 @@ export default async function DashboardPage({
                 <label className="field">
                   <span>Value price</span>
                   <input name="compareAtPriceLabel" placeholder="£19.99" />
+                </label>
+                <label className="field">
+                  <span>Unit cost</span>
+                  <input name="unitCost" placeholder="£2.50" />
                 </label>
                 <label className="field">
                   <span>Variant ID</span>
@@ -390,6 +399,68 @@ export default async function DashboardPage({
                 </button>
               </div>
             </form>
+          </div>
+        </section>
+
+        <section className="admin-card stack">
+          <div>
+            <h2>Reporting settings</h2>
+            <p className="microcopy">
+              These values feed the reports page so you can track postage, advertising spend, and profitability once Shopify order sync is connected.
+            </p>
+          </div>
+
+          <form action={saveReportingAction} className="stack">
+            <div className="field-grid">
+              <label className="field">
+                <span>Report discount code</span>
+                <input
+                  name="reportDiscountCode"
+                  defaultValue={config.reporting?.reportDiscountCode || "FREECD"}
+                  placeholder="FREECD"
+                  required
+                />
+              </label>
+              <label className="field">
+                <span>Default postage cost</span>
+                <input
+                  name="defaultPostageCost"
+                  defaultValue={config.reporting?.defaultPostageCost || ""}
+                  placeholder="£4.99"
+                />
+              </label>
+            </div>
+
+            <label className="field">
+              <span>Weekly ad spend</span>
+              <textarea
+                name="weeklyAdSpend"
+                defaultValue={formatWeeklyAdSpend(config.reporting?.weeklyAdSpend || [])}
+                placeholder={"2026-07-20|£250|Meta ads\n2026-07-13|£185|Scaled back spend"}
+              />
+            </label>
+
+            <p className="microcopy">
+              Weekly ad spend format: <code>week-start|amount|notes</code>. Use Monday dates like <code>2026-07-20</code>.
+            </p>
+
+            <button type="submit" className="button">
+              Save reporting settings
+            </button>
+          </form>
+        </section>
+
+        <section className="admin-card stack">
+          <div className="report-header-row">
+            <div>
+              <h2>Reports</h2>
+              <p className="microcopy">
+                The reporting dashboard is ready. Once Shopify credentials are added, this will pull live funnel orders and calculate sales, stock, and profitability.
+              </p>
+            </div>
+            <a href="/portal/reports" className="button">
+              Open reports
+            </a>
           </div>
         </section>
 

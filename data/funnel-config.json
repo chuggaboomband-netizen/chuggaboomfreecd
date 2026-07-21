@@ -5,7 +5,7 @@
     "subheadline": "Grab the free ChuggaBoom CD and customise your bundle with optional add-ons before checkout.",
     "heroNote": "Just cover shipping. Add extras if you want.",
     "shippingLabel": "Shipping from",
-    "shippingPrice": "£4.99",
+    "shippingPrice": "\u00a34.99",
     "startButtonLabel": "Claim your free CD",
     "shopifyStoreHost": "chuggaboom.wtf"
   },
@@ -127,9 +127,15 @@
     },
     {
       "id": "da454ec2-a225-44b4-9044-fd471f5f58f1",
-      "name": "£5 off the T-Shirt",
+      "name": "\u00a35 off the T-Shirt",
       "code": "5OffTee",
       "priority": 10
     }
-  ]
+  ],
+  "reporting": {
+    "reportDiscountCode": "FREECD",
+    "defaultPostageCost": "\u00a34.99",
+    "weeklyAdSpend": [],
+    "cachedOrders": []
+  }
 }

@@ -1123,6 +1123,106 @@ textarea {
   min-width: 180px;
 }
 
+.report-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.reports-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.reports-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.reports-metric {
+  margin-top: 10px;
+  font-family: var(--display);
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.reports-metric-code {
+  margin-top: 10px;
+  display: inline-flex;
+  width: fit-content;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(24, 41, 101, 0.08);
+  color: var(--brand-navy);
+  font-weight: 800;
+}
+
+.reports-list {
+  display: grid;
+  gap: 12px;
+}
+
+.reports-list-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.reports-status-box {
+  padding: 18px;
+  border-radius: 16px;
+  background: rgba(255, 248, 231, 0.92);
+  border: 1px solid rgba(244, 163, 35, 0.2);
+}
+
+.reports-table-wrap {
+  overflow-x: auto;
+}
+
+.reports-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.reports-table th,
+.reports-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid rgba(20, 26, 58, 0.1);
+  text-align: left;
+  vertical-align: top;
+}
+
+.reports-table th {
+  font-size: 0.84rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.reports-item-stack {
+  display: grid;
+  gap: 8px;
+}
+
+.reports-item-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.reports-empty {
+  color: var(--muted);
+  text-align: center;
+}
+
 .summary-layout {
   display: grid;
   grid-template-columns: 1fr 360px;
@@ -1261,9 +1361,19 @@ textarea {
   }
 
   .checkout-grid,
+  .reports-grid,
   .portal-admin-grid,
   .bk-bottom-split {
     grid-template-columns: 1fr;
+  }
+
+  .reports-summary-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .report-header-row {
+    display: grid;
+    align-items: start;
   }
 
   .bk-bottom-copy {

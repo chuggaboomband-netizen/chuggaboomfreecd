@@ -9,6 +9,19 @@ export type CampaignSettings = {
   shopifyStoreHost: string;
 };
 
+export type WeeklyAdSpend = {
+  id: string;
+  weekStart: string;
+  amount: string;
+  notes?: string;
+};
+
+export type ReportingSettings = {
+  reportDiscountCode: string;
+  defaultPostageCost: string;
+  weeklyAdSpend: WeeklyAdSpend[];
+};
+
 export type ProductType = "core" | "upsell";
 
 export type ProductVariant = {
@@ -32,6 +45,7 @@ export type Product = {
   isDefault: boolean;
   sortOrder: number;
   autoDiscountCodes: string[];
+  unitCost?: string;
   imageSrc?: string;
   upsellHeadline?: string;
   upsellSubheadline?: string;
@@ -64,4 +78,28 @@ export type FunnelConfig = {
   campaign: CampaignSettings;
   products: Product[];
   discounts: Discount[];
+  reporting: ReportingSettings;
+};
+
+export type ReportOrderItem = {
+  productName: string;
+  quantity: number;
+  revenue: number;
+  unitCost: number;
+  stockOnHand?: number | null;
+};
+
+export type ReportOrder = {
+  id: string;
+  orderNumber: string;
+  purchasedAt: string;
+  weekStart: string;
+  discountCodes: string[];
+  postageCost: number;
+  adSpendAllocated: number;
+  revenue: number;
+  unitCostTotal: number;
+  profitLoss: number;
+  items: ReportOrderItem[];
+  source: "shopify" | "placeholder";
 };

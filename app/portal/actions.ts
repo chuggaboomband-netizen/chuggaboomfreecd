@@ -8,7 +8,7 @@ import { revalidatePath } from "next/cache";
 
 import { createSession, clearSession, passwordMatches } from "@/lib/auth";
 import { readConfig, savePublicUpload, writeConfig } from "@/lib/config-store";
-import { parseHandleList } from "@/lib/funnel";
+import { parseHandleList, parseWeeklyAdSpend } from "@/lib/funnel";
 import type { Discount, Product, ProductVariant } from "@/lib/types";
 
 function getString(formData: FormData, key: string): string {
@@ -117,6 +117,20 @@ export async function saveCampaignAction(formData: FormData) {
   });
 }
 
+export async function saveReportingAction(formData: FormData) {
+  await finalizePortalMutation(async () => {
+    const config = await readConfig();
+
+    config.reporting = {
+      reportDiscountCode: getString(formData, "reportDiscountCode"),
+      defaultPostageCost: getString(formData, "defaultPostageCost"),
+      weeklyAdSpend: parseWeeklyAdSpend(getString(formData, "weeklyAdSpend")),
+    };
+
+    await writeConfig(config);
+  });
+}
+
 export async function addProductAction(formData: FormData) {
   await finalizePortalMutation(async () => {
     const config = await readConfig();
@@ -133,6 +147,7 @@ export async function addProductAction(formData: FormData) {
       isDefault: formData.get("isDefault") === "on",
       sortOrder: Number(getString(formData, "sortOrder") || "0"),
       autoDiscountCodes: parseHandleList(getString(formData, "autoDiscountCodes")),
+      unitCost: getString(formData, "unitCost") || undefined,
       imageSrc: uploadedImageSrc || getString(formData, "imageSrc") || undefined,
       upsellHeadline: getString(formData, "upsellHeadline") || undefined,
       upsellSubheadline: getString(formData, "upsellSubheadline") || undefined,
@@ -167,6 +182,7 @@ export async function updateProductAction(formData: FormData) {
             isDefault: formData.get("isDefault") === "on",
             sortOrder: Number(getString(formData, "sortOrder") || "0"),
             autoDiscountCodes: parseHandleList(getString(formData, "autoDiscountCodes")),
+            unitCost: getString(formData, "unitCost") || undefined,
             imageSrc: uploadedImageSrc || getString(formData, "imageSrc") || undefined,
             upsellHeadline: getString(formData, "upsellHeadline") || undefined,
             upsellSubheadline: getString(formData, "upsellSubheadline") || undefined,
