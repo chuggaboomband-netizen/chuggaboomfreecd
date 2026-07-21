@@ -15,6 +15,13 @@ export type ShopifyConnectionState =
       message: string;
     };
 
+type ShopifyEnv = {
+  domain: string;
+  token?: string;
+  clientId?: string;
+  clientSecret?: string;
+};
+
 type ShopifyMoney = {
   amount: string;
   currencyCode: string;
@@ -179,7 +186,7 @@ function selectedPlaceholderProducts(config: FunnelConfig) {
   return [...defaults, ...upsells];
 }
 
-function shopifyEnv() {
+function shopifyEnv(): ShopifyEnv | null {
   const domain = process.env.SHOPIFY_STORE_DOMAIN?.trim();
   const token = process.env.SHOPIFY_ADMIN_ACCESS_TOKEN?.trim();
   const clientId = process.env.SHOPIFY_CLIENT_ID?.trim();
@@ -192,11 +199,33 @@ function shopifyEnv() {
   return { domain, token, clientId, clientSecret };
 }
 
-async function getShopifyAccessToken() {
-  const env = shopifyEnv();
-  if (!env) {
-    return null;
+function shopifyAuthMode(env: ShopifyEnv) {
+  if (env.token) {
+    return "static admin token";
   }
+
+  if (env.clientId && env.clientSecret) {
+    return "client credentials";
+  }
+
+  return "incomplete credentials";
+}
+
+function describeError(error: unknown) {
+  if (error instanceof Error) {
+    const causeMessage =
+      error.cause instanceof Error
+        ? error.cause.message
+        : typeof error.cause === "string"
+          ? error.cause
+          : "";
+    return causeMessage ? `${error.message} (${causeMessage})` : error.message;
+  }
+
+  return String(error);
+}
+
+async function getShopifyAccessToken(env: ShopifyEnv) {
 
   if (env.token) {
     return env.token;
@@ -248,7 +277,14 @@ export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOr
   if (!env) {
     return [];
   }
-  const accessToken = await getShopifyAccessToken();
+  let accessToken: string | null = null;
+  try {
+    accessToken = await getShopifyAccessToken(env);
+  } catch (error) {
+    throw new Error(
+      `Token fetch failed for ${env.domain} using ${shopifyAuthMode(env)}: ${describeError(error)}`,
+    );
+  }
   if (!accessToken) {
     return [];
   }
@@ -294,23 +330,32 @@ export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOr
     }
   `;
 
-  const response = await fetch(`https://${env.domain}/admin/api/2026-07/graphql.json`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Shopify-Access-Token": accessToken,
-    },
-    body: JSON.stringify({
-      query,
-      variables: {
-        query: `discount_code:${discountCode} status:any`,
+  let response: Response;
+  try {
+    response = await fetch(`https://${env.domain}/admin/api/2026-07/graphql.json`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Access-Token": accessToken,
       },
-    }),
-    cache: "no-store",
-  });
+      body: JSON.stringify({
+        query,
+        variables: {
+          query: `discount_code:${discountCode} status:any`,
+        },
+      }),
+      cache: "no-store",
+    });
+  } catch (error) {
+    throw new Error(
+      `Orders query fetch failed for ${env.domain} using ${shopifyAuthMode(env)}: ${describeError(error)}`,
+    );
+  }
 
   if (!response.ok) {
-    throw new Error(`Shopify order fetch failed: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `Shopify order fetch failed for ${env.domain} using ${shopifyAuthMode(env)}: ${response.status} ${response.statusText}`,
+    );
   }
 
   const payload = (await response.json()) as ShopifyOrdersResponse;
@@ -376,7 +421,7 @@ export async function getShopifyConnectionState(config: FunnelConfig): Promise<S
     await fetchShopifyOrders(config);
     return {
       status: "connected",
-      message: `Shopify API is responding for ${env.domain}. Orders are being filtered by the ${config.reporting?.reportDiscountCode || "FREECD"} discount code.`,
+      message: `Shopify API is responding for ${env.domain} using ${shopifyAuthMode(env)}. Orders are being filtered by the ${config.reporting?.reportDiscountCode || "FREECD"} discount code.`,
     };
   } catch (error) {
     return {
