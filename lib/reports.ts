@@ -211,15 +211,24 @@ async function getShopifyAccessToken() {
   const response = await fetch(`https://${env.domain}/admin/oauth/access_token`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
+      Accept: "application/json",
     },
-    body: JSON.stringify({
+    body: new URLSearchParams({
       client_id: env.clientId,
       client_secret: env.clientSecret,
       grant_type: "client_credentials",
-    }),
+    }).toString(),
     cache: "no-store",
   });
+
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.includes("application/json")) {
+    const body = await response.text();
+    throw new Error(
+      `Shopify token request returned ${response.status} ${response.statusText} instead of JSON. ${body.slice(0, 160)}`,
+    );
+  }
 
   const payload = (await response.json()) as ShopifyAccessTokenResponse;
 
