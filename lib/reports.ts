@@ -59,6 +59,14 @@ type ShopifyOrdersResponse = {
   }>;
 };
 
+type ShopifyAccessTokenResponse = {
+  access_token?: string;
+  expires_in?: number;
+  scope?: string;
+  error?: string;
+  error_description?: string;
+};
+
 function toCurrencyValue(value?: string) {
   if (!value) {
     return 0;
@@ -174,17 +182,65 @@ function selectedPlaceholderProducts(config: FunnelConfig) {
 function shopifyEnv() {
   const domain = process.env.SHOPIFY_STORE_DOMAIN?.trim();
   const token = process.env.SHOPIFY_ADMIN_ACCESS_TOKEN?.trim();
+  const clientId = process.env.SHOPIFY_CLIENT_ID?.trim();
+  const clientSecret = process.env.SHOPIFY_CLIENT_SECRET?.trim();
 
-  if (!domain || !token) {
+  if (!domain) {
     return null;
   }
 
-  return { domain, token };
+  return { domain, token, clientId, clientSecret };
+}
+
+async function getShopifyAccessToken() {
+  const env = shopifyEnv();
+  if (!env) {
+    return null;
+  }
+
+  if (env.token) {
+    return env.token;
+  }
+
+  if (!env.clientId || !env.clientSecret) {
+    throw new Error(
+      "Missing Shopify credentials. Add SHOPIFY_ADMIN_ACCESS_TOKEN or both SHOPIFY_CLIENT_ID and SHOPIFY_CLIENT_SECRET.",
+    );
+  }
+
+  const response = await fetch(`https://${env.domain}/admin/oauth/access_token`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      client_id: env.clientId,
+      client_secret: env.clientSecret,
+      grant_type: "client_credentials",
+    }),
+    cache: "no-store",
+  });
+
+  const payload = (await response.json()) as ShopifyAccessTokenResponse;
+
+  if (!response.ok || !payload.access_token) {
+    throw new Error(
+      payload.error_description ||
+        payload.error ||
+        `Shopify token request failed: ${response.status} ${response.statusText}`,
+    );
+  }
+
+  return payload.access_token;
 }
 
 export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOrder[]> {
   const env = shopifyEnv();
   if (!env) {
+    return [];
+  }
+  const accessToken = await getShopifyAccessToken();
+  if (!accessToken) {
     return [];
   }
 
@@ -233,7 +289,7 @@ export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOr
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-Shopify-Access-Token": env.token,
+      "X-Shopify-Access-Token": accessToken,
     },
     body: JSON.stringify({
       query,
@@ -303,7 +359,7 @@ export async function getShopifyConnectionState(config: FunnelConfig): Promise<S
     return {
       status: "missing-config",
       message:
-        "Add SHOPIFY_STORE_DOMAIN and SHOPIFY_ADMIN_ACCESS_TOKEN in Vercel or your local environment to enable live reporting.",
+        "Add SHOPIFY_STORE_DOMAIN plus either SHOPIFY_ADMIN_ACCESS_TOKEN or SHOPIFY_CLIENT_ID and SHOPIFY_CLIENT_SECRET to enable live reporting.",
     };
   }
 

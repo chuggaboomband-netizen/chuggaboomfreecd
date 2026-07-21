@@ -39,7 +39,7 @@ https://{shopifyStoreHost}/cart/{variantId},{variantId}?channel=buy_button&disco
 1. Copy `.env.example` to `.env.local`
 2. Set `ADMIN_PASSWORD`
 3. Optional: set `GITHUB_STORAGE_TOKEN`, `GITHUB_STORAGE_REPO`, and `GITHUB_STORAGE_BRANCH` if you want local saves to write back to GitHub instead of the local JSON file
-4. Optional: set `SHOPIFY_STORE_DOMAIN` and `SHOPIFY_ADMIN_ACCESS_TOKEN` to enable live reports from Shopify
+4. Optional: set `SHOPIFY_STORE_DOMAIN` and either `SHOPIFY_ADMIN_ACCESS_TOKEN` or both `SHOPIFY_CLIENT_ID` and `SHOPIFY_CLIENT_SECRET` to enable live reports from Shopify
 4. Install dependencies with `npm install`
 5. Run `npm run dev`
 
@@ -51,4 +51,4 @@ https://{shopifyStoreHost}/cart/{variantId},{variantId}?channel=buy_button&disco
   - `GITHUB_STORAGE_REPO`: for example `chuggaboomband-netizen/chuggaboomfreecd`
   - `GITHUB_STORAGE_BRANCH`: usually `main`
 - When those env vars are present, product edits, discount edits, config changes, and uploaded product images are written back into the GitHub repo instead of the local filesystem.
-- When `SHOPIFY_STORE_DOMAIN` and `SHOPIFY_ADMIN_ACCESS_TOKEN` are present, `/portal/reports` pulls live Shopify orders filtered by the configured report discount code.
+- When `SHOPIFY_STORE_DOMAIN` is present and either a static `SHOPIFY_ADMIN_ACCESS_TOKEN` or client credentials (`SHOPIFY_CLIENT_ID` and `SHOPIFY_CLIENT_SECRET`) are configured, `/portal/reports` pulls live Shopify orders filtered by the configured report discount code.
