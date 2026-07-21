@@ -37,7 +37,7 @@
       "priceLabel": "14.99",
       "type": "upsell",
       "isDefault": false,
-      "sortOrder": 10,
+      "sortOrder": 2,
       "autoDiscountCodes": [
         "Vinyl15"
       ],
