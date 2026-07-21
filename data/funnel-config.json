@@ -25,7 +25,8 @@
       ],
       "compareAtPriceLabel": "9.99",
       "variants": [],
-      "unitCost": "1.41"
+      "unitCost": "1.41",
+      "postageCost": "0.91"
     },
     {
       "id": "2ece3c66-f73d-448a-b882-c2f2fc6172fe",
