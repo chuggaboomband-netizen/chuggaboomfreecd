@@ -22,7 +22,9 @@
       "sortOrder": 0,
       "autoDiscountCodes": [
         "FREECD"
-      ]
+      ],
+      "compareAtPriceLabel": "9.99",
+      "variants": []
     },
     {
       "id": "2ece3c66-f73d-448a-b882-c2f2fc6172fe",
