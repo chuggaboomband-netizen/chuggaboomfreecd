@@ -92,6 +92,12 @@
       "name": "\u00a35 off the T-Shirt",
       "code": "5OffTee",
       "priority": 10
+    },
+    {
+      "id": "d5f0f731-c18d-4fb4-8de5-92aba55ad557",
+      "name": "Zodiac Re-Arrest CD",
+      "code": "ZACD",
+      "priority": 10
     }
   ],
   "reporting": {
