@@ -1,9 +1,15 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { isAuthenticated } from "@/lib/auth";
 import { readConfig } from "@/lib/config-store";
-import { formatWeeklyAdSpend, sortProducts } from "@/lib/funnel";
-import { getShopifyConnectionState } from "@/lib/reports";
+import { formatPriceLabel, formatWeeklyAdSpend, sortProducts } from "@/lib/funnel";
+import {
+  getReportOrders,
+  getShopifyConnectionState,
+  summarizeProductSales,
+  totalProfitLoss,
+} from "@/lib/reports";
 
 import {
   addDiscountAction,
@@ -29,6 +35,10 @@ export default async function DashboardPage({
 
   const config = await readConfig();
   const shopifyState = await getShopifyConnectionState(config);
+  const orders = await getReportOrders(config);
+  const productSales = summarizeProductSales(orders);
+  const totalPnL = totalProfitLoss(orders);
+  const topProduct = productSales[0];
   const products = sortProducts(config.products);
   const discounts = [...config.discounts].sort((a, b) => b.priority - a.priority);
   const params = searchParams ? await searchParams : undefined;
@@ -41,11 +51,19 @@ export default async function DashboardPage({
             <span className="eyebrow">Admin</span>
             <h1 className="section-heading">Campaign Control Room</h1>
           </div>
-          <form action={logoutAction}>
-            <button type="submit" className="button secondary">
-              Log out
-            </button>
-          </form>
+          <div className="portal-header-actions">
+            <Link href="/portal/reports" className="button">
+              View reports
+            </Link>
+            <a href="/portal/reports/export" className="button secondary">
+              Export CSV
+            </a>
+            <form action={logoutAction}>
+              <button type="submit" className="button secondary">
+                Log out
+              </button>
+            </form>
+          </div>
         </header>
 
         {params?.saved ? (
@@ -55,6 +73,37 @@ export default async function DashboardPage({
         {params?.error ? (
           <div className="banner warning">{params.error}</div>
         ) : null}
+
+        <section className="portal-quick-grid">
+          <article className="summary-card portal-quick-card">
+            <span className="portal-quick-label">Shopify status</span>
+            <strong className="portal-quick-value">
+              {shopifyState.status === "connected" ? "Connected" : "Attention needed"}
+            </strong>
+            <p className="microcopy">
+              {shopifyState.status === "connected"
+                ? "Reports are pulling from Shopify."
+                : shopifyState.message}
+            </p>
+          </article>
+          <article className="summary-card portal-quick-card">
+            <span className="portal-quick-label">Tracked orders</span>
+            <strong className="portal-quick-value">{orders.length}</strong>
+            <p className="microcopy">Orders matched to {config.reporting?.reportDiscountCode || "FREECD"}.</p>
+          </article>
+          <article className="summary-card portal-quick-card">
+            <span className="portal-quick-label">Total profit/loss</span>
+            <strong className="portal-quick-value">{formatPriceLabel(totalPnL)}</strong>
+            <p className="microcopy">Calculated from products, postage, and ad spend.</p>
+          </article>
+          <article className="summary-card portal-quick-card">
+            <span className="portal-quick-label">Top seller</span>
+            <strong className="portal-quick-value">
+              {topProduct ? `${topProduct.productName} (${topProduct.quantity})` : "No sales yet"}
+            </strong>
+            <p className="microcopy">Compact snapshot before you dive into the full report.</p>
+          </article>
+        </section>
 
         <section className="admin-card stack">
           <div>
@@ -416,7 +465,7 @@ export default async function DashboardPage({
           <div>
             <h2>Reporting settings</h2>
             <p className="microcopy">
-              These values feed the reports page so you can track postage, advertising spend, and profitability once Shopify order sync is connected.
+              These values feed the reports page so you can track advertising spend and profitability once Shopify order sync is connected. Live order postage is pulled from each product&apos;s own postage cost.
             </p>
           </div>
 
@@ -451,7 +500,7 @@ export default async function DashboardPage({
                 />
               </label>
               <label className="field">
-                <span>Default postage cost</span>
+                <span>Fallback postage cost</span>
                 <input
                   name="defaultPostageCost"
                   defaultValue={config.reporting?.defaultPostageCost || ""}
@@ -470,7 +519,7 @@ export default async function DashboardPage({
             </label>
 
             <p className="microcopy">
-              Weekly ad spend format: <code>week-start|amount|notes</code>. Use Monday dates like <code>2026-07-20</code>.
+              Weekly ad spend format: <code>week-start|amount|notes</code>. Use Monday dates like <code>2026-07-20</code>. Fallback postage is only used when a product does not have its own postage cost set.
             </p>
 
             <button type="submit" className="button">

@@ -1063,6 +1063,32 @@ textarea {
   align-items: start;
 }
 
+.portal-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.portal-quick-card {
+  gap: 10px;
+  min-height: 150px;
+}
+
+.portal-quick-label {
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 225, 123, 0.86);
+}
+
+.portal-quick-value {
+  font-family: var(--display);
+  font-size: clamp(1.25rem, 2.2vw, 1.9rem);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
 .portal-surface {
   position: relative;
   min-height: 100vh;
@@ -1421,6 +1447,13 @@ textarea {
   padding: 20px 0;
 }
 
+.portal-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
 .brand {
   font-family: var(--display);
   letter-spacing: 0.04em;
@@ -1505,6 +1538,7 @@ textarea {
 
   .checkout-grid,
   .reports-grid,
+  .portal-quick-grid,
   .portal-admin-grid,
   .bk-bottom-split {
     grid-template-columns: 1fr;
@@ -1517,6 +1551,10 @@ textarea {
   .report-header-row {
     display: grid;
     align-items: start;
+  }
+
+  .portal-header-actions {
+    justify-content: flex-start;
   }
 
   .bk-bottom-copy {

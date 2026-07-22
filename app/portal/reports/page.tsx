@@ -38,12 +38,17 @@ export default async function ReportsPage() {
                 ? "Live Shopify funnel orders are now being pulled into this report using your configured discount code."
                 : hasLiveConnection
                   ? "Shopify is connected. If the tables are still sparse, that usually means there are no matching orders yet for the tracked discount code."
-                  : "This page can fall back to placeholder rows until Shopify reporting is fully connected."}
+                : "This page can fall back to placeholder rows until Shopify reporting is fully connected."}
             </p>
           </div>
-          <Link href="/portal/dashboard" className="button secondary">
-            Back to portal
-          </Link>
+          <div className="portal-header-actions">
+            <a href="/portal/reports/export" className="button">
+              Export CSV
+            </a>
+            <Link href="/portal/dashboard" className="button secondary">
+              Back to portal
+            </Link>
+          </div>
         </header>
 
         <section className="reports-grid">
@@ -61,7 +66,7 @@ export default async function ReportsPage() {
                 </div>
               </div>
               <div className="summary-card">
-                <strong>Default postage cost</strong>
+                <strong>Fallback postage cost</strong>
                 <div className="reports-metric">
                   {formatPriceLabel(Number(config.reporting?.defaultPostageCost?.replace(/[^0-9.]/g, "") || 0))}
                 </div>

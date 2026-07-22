@@ -90,11 +90,25 @@ export type ReportOrderItem = {
   stockOnHand?: number | null;
 };
 
+export type ReportShippingAddress = {
+  name?: string;
+  company?: string;
+  address1?: string;
+  address2?: string;
+  city?: string;
+  province?: string;
+  zip?: string;
+  country?: string;
+  phone?: string;
+};
+
 export type ReportOrder = {
   id: string;
   orderNumber: string;
   purchasedAt: string;
   weekStart: string;
+  email?: string | null;
+  shippingAddress?: ReportShippingAddress | null;
   discountCodes: string[];
   postageCost: number;
   adSpendAllocated: number;

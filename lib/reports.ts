@@ -1,4 +1,10 @@
-import { FunnelConfig, Product, ReportOrder, ReportOrderItem } from "@/lib/types";
+import {
+  FunnelConfig,
+  Product,
+  ReportOrder,
+  ReportOrderItem,
+  ReportShippingAddress,
+} from "@/lib/types";
 import { parsePriceLabel, weekStartFromDate } from "@/lib/funnel";
 
 export type ShopifyConnectionState =
@@ -31,7 +37,19 @@ type ShopifyOrderNode = {
   id: string;
   name: string;
   createdAt: string;
+  email: string | null;
   discountCodes: string[];
+  shippingAddress: null | {
+    name: string | null;
+    company: string | null;
+    address1: string | null;
+    address2: string | null;
+    city: string | null;
+    province: string | null;
+    zip: string | null;
+    country: string | null;
+    phone: string | null;
+  };
   currentTotalPriceSet: {
     shopMoney: ShopifyMoney;
   };
@@ -94,9 +112,9 @@ function productUnitCost(product?: Product | null) {
   return toCurrencyValue(product?.unitCost);
 }
 
-function productPostageCost(product?: Product | null, defaultPostageCost = 0) {
+function productPostageCost(product?: Product | null, fallbackPostageCost = 0) {
   const productPostage = toCurrencyValue(product?.postageCost);
-  return productPostage > 0 ? productPostage : defaultPostageCost;
+  return productPostage > 0 ? productPostage : fallbackPostageCost;
 }
 
 function normalizeVariantId(variantId?: string | null) {
@@ -148,8 +166,89 @@ function placeholderItems(config: FunnelConfig): ReportOrderItem[] {
   }));
 }
 
+function normalizeShippingAddress(
+  address?: ShopifyOrderNode["shippingAddress"],
+): ReportShippingAddress | null {
+  if (!address) {
+    return null;
+  }
+
+  return {
+    name: address.name || undefined,
+    company: address.company || undefined,
+    address1: address.address1 || undefined,
+    address2: address.address2 || undefined,
+    city: address.city || undefined,
+    province: address.province || undefined,
+    zip: address.zip || undefined,
+    country: address.country || undefined,
+    phone: address.phone || undefined,
+  };
+}
+
+function escapeCsvCell(value: string | number | null | undefined) {
+  const text = value == null ? "" : String(value);
+  if (/[",\n]/.test(text)) {
+    return `"${text.replace(/"/g, "\"\"")}"`;
+  }
+  return text;
+}
+
+export function buildOrdersCsv(orders: ReportOrder[]) {
+  const headers = [
+    "order_number",
+    "order_date",
+    "email",
+    "shipping_name",
+    "shipping_company",
+    "address_1",
+    "address_2",
+    "city",
+    "province",
+    "postcode",
+    "country",
+    "phone",
+    "items",
+    "revenue",
+    "unit_cost",
+    "postage_cost",
+    "weekly_ad_spend",
+    "profit_loss",
+  ];
+
+  const rows = orders.map((order) => {
+    const shipping = order.shippingAddress;
+    const items = order.items.map((item) => `${item.productName} x${item.quantity}`).join(" | ");
+
+    return [
+      order.orderNumber,
+      order.purchasedAt,
+      order.email || "",
+      shipping?.name || "",
+      shipping?.company || "",
+      shipping?.address1 || "",
+      shipping?.address2 || "",
+      shipping?.city || "",
+      shipping?.province || "",
+      shipping?.zip || "",
+      shipping?.country || "",
+      shipping?.phone || "",
+      items,
+      order.revenue.toFixed(2),
+      order.unitCostTotal.toFixed(2),
+      order.postageCost.toFixed(2),
+      order.adSpendAllocated.toFixed(2),
+      order.profitLoss.toFixed(2),
+    ]
+      .map(escapeCsvCell)
+      .join(",");
+  });
+
+  return [headers.join(","), ...rows].join("\n");
+}
+
 export function buildPlaceholderOrders(config: FunnelConfig): ReportOrder[] {
-  const defaultPostageCost = toCurrencyValue(config.reporting?.defaultPostageCost);
+  const fallbackPostageCost = toCurrencyValue(config.reporting?.defaultPostageCost);
   const adSpendEntries = config.reporting?.weeklyAdSpend || [];
 
   return adSpendEntries.slice(0, 4).map((entry, index) => {
@@ -157,7 +256,7 @@ export function buildPlaceholderOrders(config: FunnelConfig): ReportOrder[] {
     const revenue = items.reduce((sum, item) => sum + item.revenue * item.quantity, 0);
     const unitCostTotal = items.reduce((sum, item) => sum + item.unitCost * item.quantity, 0);
     const postageCost = selectedPlaceholderProducts(config).reduce(
-      (sum, product) => sum + productPostageCost(product, defaultPostageCost),
+      (sum, product) => sum + productPostageCost(product, fallbackPostageCost),
       0,
     );
     const adSpendAllocated = toCurrencyValue(entry.amount);
@@ -168,6 +267,8 @@ export function buildPlaceholderOrders(config: FunnelConfig): ReportOrder[] {
       orderNumber: `PLACEHOLDER-${index + 1}`,
       purchasedAt,
       weekStart: weekStartFromDate(purchasedAt),
+      email: null,
+      shippingAddress: null,
       discountCodes: [config.reporting?.reportDiscountCode || "FREECD"],
       postageCost,
       adSpendAllocated,
@@ -299,7 +400,19 @@ export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOr
             id
             name
             createdAt
+            email
             discountCodes
+            shippingAddress {
+              name
+              company
+              address1
+              address2
+              city
+              province
+              zip
+              country
+              phone
+            }
             currentTotalPriceSet {
               shopMoney {
                 amount
@@ -365,7 +478,7 @@ export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOr
   }
 
   const orders = payload.data?.orders?.edges.map((edge) => edge.node) || [];
-  const defaultPostageCost = toCurrencyValue(config.reporting?.defaultPostageCost);
+  const fallbackPostageCost = toCurrencyValue(config.reporting?.defaultPostageCost);
 
   const reportOrders = orders.map((order) => {
     const items: ReportOrderItem[] = order.lineItems.edges.map(({ node }) => {
@@ -384,7 +497,7 @@ export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOr
     const unitCostTotal = items.reduce((sum, item) => sum + item.unitCost * item.quantity, 0);
     const postageCost = order.lineItems.edges.reduce((sum, { node }) => {
       const product = productByVariantId(config, node.variant?.id || null);
-      return sum + productPostageCost(product, defaultPostageCost) * node.quantity;
+      return sum + productPostageCost(product, 0) * node.quantity;
     }, 0);
     const revenue = moneyToNumber(order.currentTotalPriceSet?.shopMoney);
     const adSpendAllocated = adSpendForWeek(config, weekStart);
@@ -394,6 +507,8 @@ export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOr
       orderNumber: order.name,
       purchasedAt,
       weekStart,
+      email: order.email,
+      shippingAddress: normalizeShippingAddress(order.shippingAddress),
       discountCodes: order.discountCodes,
       postageCost,
       adSpendAllocated,
