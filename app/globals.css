@@ -1070,11 +1070,16 @@ textarea {
 }
 
 .portal-quick-card {
+  display: grid;
+  align-content: start;
   gap: 10px;
   min-height: 150px;
 }
 
 .portal-quick-label {
+  display: block;
+  max-width: 12ch;
+  line-height: 1.15;
   font-size: 0.8rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -1083,10 +1088,15 @@ textarea {
 }
 
 .portal-quick-value {
+  display: block;
+  max-width: 100%;
+  margin-top: 2px;
   font-family: var(--display);
   font-size: clamp(1.25rem, 2.2vw, 1.9rem);
   line-height: 1.05;
   letter-spacing: -0.04em;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
 }
 
 .portal-surface {
