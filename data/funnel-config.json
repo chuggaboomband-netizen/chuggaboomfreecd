@@ -39,7 +39,7 @@
       "isDefault": false,
       "sortOrder": 2,
       "autoDiscountCodes": [
-        "Vinyl15"
+        "Vinyl-20"
       ],
       "imageSrc": "/uploads/vinyl_marble-675ce1df-ab6c-4729-be49-d43dcec40667.png",
       "upsellHeadline": "Want even more music while you're here?",
@@ -85,8 +85,8 @@
     },
     {
       "id": "97e7476e-64b4-4775-a189-0a22ffb7f407",
-      "name": "Vinyl15",
-      "code": "Vinyl15",
+      "name": "Vinyl-20",
+      "code": "Vinyl-20",
       "priority": 10
     },
     {
