@@ -104,7 +104,7 @@
     {
       "id": "6eb9ca7e-fd72-49ad-8686-94ee6349bf7f",
       "name": "Zodiac CD Shipping Discount",
-      "code": "ZACD|ZA-SHIPPING",
+      "code": "ZA-SHIPPING",
       "priority": 10
     }
   ],
