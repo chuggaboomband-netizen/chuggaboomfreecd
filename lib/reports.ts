@@ -451,44 +451,13 @@ function getConfiguredVariantIds(config: FunnelConfig) {
   return [...ids];
 }
 
-function getTrackedDiscountCodes(config: FunnelConfig) {
-  const codes = new Set<string>();
-
-  const reportCode = config.reporting?.reportDiscountCode?.trim();
-  if (reportCode) {
-    codes.add(reportCode);
-  }
-
-  for (const discount of config.discounts || []) {
-    const code = discount.code?.trim();
-    if (code) {
-      codes.add(code);
-    }
-  }
-
-  for (const product of config.products || []) {
-    for (const code of product.autoDiscountCodes || []) {
-      const trimmed = code.trim();
-      if (trimmed) {
-        codes.add(trimmed);
-      }
-    }
-  }
-
-  return [...codes];
-}
-
 function orderMatchesFunnel(
-  config: FunnelConfig,
   order: ShopifyOrderNode,
-  trackedDiscountCodes: Set<string>,
+  trackedDiscountCode: string,
 ) {
-  const orderDiscountMatch = order.discountCodes.some((code) => trackedDiscountCodes.has(code.trim()));
-  if (orderDiscountMatch) {
-    return true;
-  }
-
-  return order.lineItems.edges.some(({ node }) => Boolean(productByVariantId(config, node.variant?.id || null)));
+  return order.discountCodes.some(
+    (code) => code.trim().toLowerCase() === trackedDiscountCode.trim().toLowerCase(),
+  );
 }
 
 export async function getShopifyInventorySnapshot(
@@ -599,7 +568,7 @@ export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOr
     return [];
   }
 
-  const trackedDiscountCodes = getTrackedDiscountCodes(config);
+  const trackedDiscountCode = config.reporting?.reportDiscountCode || "FREECD";
   const query = `
     query FunnelOrders {
       orders(first: 100, sortKey: CREATED_AT, reverse: true, query: "status:any") {
@@ -685,7 +654,7 @@ export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOr
   const orders =
     payload.data?.orders?.edges
       .map((edge) => edge.node)
-      .filter((order) => orderMatchesFunnel(config, order, new Set(trackedDiscountCodes))) || [];
+      .filter((order) => orderMatchesFunnel(order, trackedDiscountCode)) || [];
   const fallbackPostageCost = toCurrencyValue(config.reporting?.defaultPostageCost);
 
   const reportOrders = orders.map((order) => {
