@@ -1,5 +1,5 @@
 import { readConfig } from "@/lib/config-store";
-import { sortProducts } from "@/lib/funnel";
+import { isProductActiveInFunnel, sortProducts } from "@/lib/funnel";
 
 import { UpsellSelector } from "./upsell-selector";
 
@@ -10,7 +10,7 @@ export default async function UpsellPage({
 }) {
   const params = await searchParams;
   const config = await readConfig();
-  const products = sortProducts(config.products);
+  const products = sortProducts(config.products).filter(isProductActiveInFunnel);
   const selectedHandles = (params.offers || "")
     .split(",")
     .map((value) => value.trim())

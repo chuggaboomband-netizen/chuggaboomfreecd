@@ -43,6 +43,7 @@ export type Product = {
   compareAtPriceLabel?: string;
   type: ProductType;
   isDefault: boolean;
+  activeInFunnel?: boolean;
   sortOrder: number;
   autoDiscountCodes: string[];
   unitCost?: string;

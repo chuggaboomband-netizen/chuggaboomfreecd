@@ -13,14 +13,11 @@ import {
 
 import {
   addDiscountAction,
-  addProductAction,
   deleteDiscountAction,
-  deleteProductAction,
   logoutAction,
   saveCampaignAction,
   saveReportingAction,
   updateDiscountAction,
-  updateProductAction,
 } from "../actions";
 import { PortalLinkBuilder } from "./portal-link-builder";
 
@@ -52,6 +49,9 @@ export default async function DashboardPage({
             <h1 className="section-heading">Campaign Control Room</h1>
           </div>
           <div className="portal-header-actions">
+            <Link href="/portal/upsells" className="button">
+              Manage upsells
+            </Link>
             <Link href="/portal/reports" className="button">
               View reports
             </Link>
@@ -163,241 +163,31 @@ export default async function DashboardPage({
 
         <section className="admin-grid portal-admin-grid">
           <div className="admin-card stack">
-            <div>
-              <h2>Products</h2>
-              <p className="microcopy">
-                This replaces the spreadsheet product directory. Handles power the funnel, variant IDs power the generated Shopify permalinks, and the price fields let you show both what an item is worth and what the customer will actually pay.
-              </p>
+            <div className="report-header-row">
+              <div>
+                <h2>Products and upsells</h2>
+                <p className="microcopy">
+                  Product editing, images, upsell copy, and live funnel selection now live on their own page so the portal stays easier to navigate.
+                </p>
+              </div>
+              <Link href="/portal/upsells" className="button">
+                Open upsell manager
+              </Link>
             </div>
-
-            <div className="stack">
+            <div className="portal-live-list">
               {products.map((product) => (
-                <div key={product.id} className="summary-card">
-                  <form action={updateProductAction} className="stack">
-                    <input type="hidden" name="id" value={product.id} />
-                    {product.imageSrc ? (
-                      <img
-                        src={product.imageSrc}
-                        alt={product.name}
-                        className="portal-product-preview"
-                      />
-                    ) : null}
-                    <div className="field-grid">
-                      <label className="field">
-                        <span>Name</span>
-                        <input name="name" defaultValue={product.name} required />
-                      </label>
-                      <label className="field">
-                        <span>Handle</span>
-                        <input name="handle" defaultValue={product.handle} required />
-                      </label>
-                      <label className="field">
-                        <span>Discounted price</span>
-                        <input name="priceLabel" defaultValue={product.priceLabel} required />
-                      </label>
-                      <label className="field">
-                        <span>Value price</span>
-                        <input name="compareAtPriceLabel" defaultValue={product.compareAtPriceLabel || ""} />
-                      </label>
-                      <label className="field">
-                        <span>Unit cost</span>
-                        <input name="unitCost" defaultValue={product.unitCost || ""} placeholder="£2.50" />
-                      </label>
-                      <label className="field">
-                        <span>Postage cost</span>
-                        <input name="postageCost" defaultValue={product.postageCost || ""} placeholder="£1.85" />
-                      </label>
-                      <label className="field">
-                        <span>Variant ID</span>
-                        <input name="variantId" defaultValue={product.variantId} required />
-                      </label>
-                      <label className="field">
-                        <span>Sort order</span>
-                        <input name="sortOrder" type="number" defaultValue={String(product.sortOrder)} required />
-                      </label>
-                      <label className="field">
-                        <span>Type</span>
-                        <input name="type" defaultValue={product.type} required />
-                      </label>
-                      <label className="field">
-                        <span>Default?</span>
-                        <input name="isDefault" type="checkbox" defaultChecked={product.isDefault} />
-                      </label>
-                    </div>
-                    <label className="field">
-                      <span>Description</span>
-                      <textarea name="description" defaultValue={product.description} required />
-                    </label>
-                    <label className="field">
-                      <span>Image src</span>
-                      <input name="imageSrc" defaultValue={product.imageSrc || ""} placeholder="/vinyl-offer.png" />
-                    </label>
-                    <label className="field">
-                      <span>Upload image</span>
-                      <input name="imageFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" />
-                    </label>
-                    <label className="field">
-                      <span>Upsell headline</span>
-                      <input name="upsellHeadline" defaultValue={product.upsellHeadline || ""} />
-                    </label>
-                    <label className="field">
-                      <span>Upsell subheadline</span>
-                      <textarea name="upsellSubheadline" defaultValue={product.upsellSubheadline || ""} />
-                    </label>
-                    <label className="field">
-                      <span>Upsell body</span>
-                      <textarea name="upsellBody" defaultValue={product.upsellBody || ""} />
-                    </label>
-                    <label className="field">
-                      <span>Auto discount codes</span>
-                      <input
-                        name="autoDiscountCodes"
-                        defaultValue={product.autoDiscountCodes.join("|")}
-                        placeholder="FREECD|VIP20"
-                      />
-                    </label>
-                    <label className="field">
-                      <span>Yes button label</span>
-                      <input name="upsellYesLabel" defaultValue={product.upsellYesLabel || ""} />
-                    </label>
-                    <label className="field">
-                      <span>No button label</span>
-                      <input name="upsellNoLabel" defaultValue={product.upsellNoLabel || ""} />
-                    </label>
-                    <label className="field">
-                      <span>Variants</span>
-                      <textarea
-                        name="variantsText"
-                        defaultValue={(product.variants || [])
-                          .map((variant) =>
-                            [
-                              variant.handle,
-                              variant.name,
-                              variant.variantId,
-                              variant.priceLabel,
-                              variant.compareAtPriceLabel || "",
-                            ].join("|"),
-                          )
-                          .join("\n")}
-                        placeholder={"tee-s|Small|55749148705148:1|£15|£20\ntee-m|Medium|55749148737916:1|£15|£20"}
-                      />
-                    </label>
-                    <p className="microcopy">
-                      Variants format: <code>handle|label|variantId|discounted price|value price</code>
-                    </p>
-                    <div className="cta-row">
-                      <button type="submit" className="button">
-                        Save product
-                      </button>
-                    </div>
-                  </form>
-                  <form action={deleteProductAction}>
-                    <input type="hidden" name="id" value={product.id} />
-                    <button type="submit" className="button secondary">
-                      Remove product
-                    </button>
-                  </form>
+                <div key={product.id} className="reports-list-row">
+                  <span>
+                    {product.name}{" "}
+                    <span className="microcopy">
+                      ({product.type === "core" ? "Core" : "Upsell"})
+                    </span>
+                  </span>
+                  <strong>{product.activeInFunnel === false ? "Stored only" : "Live in funnel"}</strong>
                 </div>
               ))}
             </div>
-
-            <form action={addProductAction} className="stack">
-              <div className="field-grid">
-                <label className="field">
-                  <span>Name</span>
-                  <input name="name" required />
-                </label>
-                <label className="field">
-                  <span>Handle</span>
-                  <input name="handle" placeholder="signed-cd" required />
-                </label>
-                <label className="field">
-                  <span>Discounted price</span>
-                  <input name="priceLabel" placeholder="£14.99" required />
-                </label>
-                <label className="field">
-                  <span>Value price</span>
-                  <input name="compareAtPriceLabel" placeholder="£19.99" />
-                </label>
-                <label className="field">
-                  <span>Unit cost</span>
-                  <input name="unitCost" placeholder="£2.50" />
-                </label>
-                <label className="field">
-                  <span>Postage cost</span>
-                  <input name="postageCost" placeholder="£1.85" />
-                </label>
-                <label className="field">
-                  <span>Variant ID</span>
-                  <input name="variantId" placeholder="55749148705148:1" required />
-                </label>
-                <label className="field">
-                  <span>Sort order</span>
-                  <input name="sortOrder" type="number" defaultValue="10" required />
-                </label>
-                <label className="field">
-                  <span>Type</span>
-                  <input name="type" defaultValue="upsell" required />
-                </label>
-                <label className="field">
-                  <span>Default?</span>
-                  <input name="isDefault" type="checkbox" />
-                </label>
-              </div>
-
-              <label className="field">
-                <span>Description</span>
-                <textarea name="description" required />
-              </label>
-              <label className="field">
-                <span>Image src</span>
-                <input name="imageSrc" placeholder="/vinyl-offer.png" />
-              </label>
-              <label className="field">
-                <span>Upload image</span>
-                <input name="imageFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" />
-              </label>
-              <label className="field">
-                <span>Upsell headline</span>
-                <input name="upsellHeadline" placeholder="Want even more music while you're here?" />
-              </label>
-              <label className="field">
-                <span>Upsell subheadline</span>
-                <textarea name="upsellSubheadline" />
-              </label>
-              <label className="field">
-                <span>Upsell body</span>
-                <textarea name="upsellBody" />
-              </label>
-              <label className="field">
-                <span>Auto discount codes</span>
-                <input name="autoDiscountCodes" placeholder="FREECD100|VIP20" />
-              </label>
-              <label className="field">
-                <span>Yes button label</span>
-                <input name="upsellYesLabel" placeholder="HELL YEAH, I'LL TAKE BOTH" />
-              </label>
-              <label className="field">
-                <span>No button label</span>
-                <input name="upsellNoLabel" placeholder="JUST THE MIXTAPE, THANKS" />
-              </label>
-              <label className="field">
-                <span>Variants</span>
-                <textarea
-                  name="variantsText"
-                  placeholder={"tee-s|Small|55749148705148:1|£15|£20\ntee-m|Medium|55749148737916:1|£15|£20"}
-                />
-              </label>
-              <p className="microcopy">
-                Variants format: <code>handle|label|variantId|discounted price|value price</code>
-              </p>
-
-              <button type="submit" className="button">
-                Add product
-              </button>
-            </form>
           </div>
-
           <div className="admin-card stack discounts-panel">
             <div>
               <h2>Discounts</h2>

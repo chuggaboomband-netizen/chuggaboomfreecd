@@ -1076,6 +1076,11 @@ textarea {
   min-height: 150px;
 }
 
+.portal-live-list {
+  display: grid;
+  gap: 12px;
+}
+
 .portal-quick-label {
   display: block;
   max-width: 12ch;
@@ -1464,6 +1469,55 @@ textarea {
   justify-content: flex-end;
 }
 
+.portal-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(7, 9, 17, 0.72);
+  backdrop-filter: blur(10px);
+}
+
+.portal-modal-card {
+  width: min(920px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  padding: 24px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(19, 23, 38, 0.98) 0%, rgba(13, 16, 29, 0.99) 100%);
+  border: 1px solid rgba(255, 213, 79, 0.16);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.42);
+}
+
+.portal-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.portal-toggle-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 213, 79, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+}
+
+.portal-toggle-card input {
+  margin-top: 3px;
+}
+
+.portal-toggle-card strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
 .brand {
   font-family: var(--display);
   letter-spacing: 0.04em;
@@ -1565,6 +1619,10 @@ textarea {
 
   .portal-header-actions {
     justify-content: flex-start;
+  }
+
+  .portal-modal-grid {
+    grid-template-columns: 1fr;
   }
 
   .bk-bottom-copy {

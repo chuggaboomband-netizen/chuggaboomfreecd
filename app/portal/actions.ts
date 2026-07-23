@@ -61,6 +61,8 @@ function revalidateFunnelPaths() {
   revalidatePath("/upsell");
   revalidatePath("/checkout");
   revalidatePath("/portal/dashboard");
+  revalidatePath("/portal/upsells");
+  revalidatePath("/portal/upsells", "page");
 }
 
 function getErrorMessage(error: unknown) {
@@ -71,15 +73,18 @@ function getErrorMessage(error: unknown) {
   return "Unable to save changes.";
 }
 
-async function finalizePortalMutation(work: () => Promise<void>) {
+async function finalizePortalMutation(
+  work: () => Promise<void>,
+  redirectPath = "/portal/dashboard",
+) {
   try {
     await work();
   } catch (error) {
-    redirect(`/portal/dashboard?error=${encodeURIComponent(getErrorMessage(error))}`);
+    redirect(`${redirectPath}?error=${encodeURIComponent(getErrorMessage(error))}` as never);
   }
 
   revalidateFunnelPaths();
-  redirect("/portal/dashboard?saved=1");
+  redirect(`${redirectPath}?saved=1` as never);
 }
 
 export async function loginAction(formData: FormData) {
@@ -132,6 +137,8 @@ export async function saveReportingAction(formData: FormData) {
 }
 
 export async function addProductAction(formData: FormData) {
+  const redirectPath = getString(formData, "returnTo") || "/portal/dashboard";
+
   await finalizePortalMutation(async () => {
     const config = await readConfig();
     const uploadedImageSrc = await saveUploadedImage(formData.get("imageFile") as File);
@@ -145,6 +152,7 @@ export async function addProductAction(formData: FormData) {
       compareAtPriceLabel: getString(formData, "compareAtPriceLabel") || undefined,
       type: getString(formData, "type") === "core" ? "core" : "upsell",
       isDefault: formData.get("isDefault") === "on",
+      activeInFunnel: formData.get("activeInFunnel") === "on",
       sortOrder: Number(getString(formData, "sortOrder") || "0"),
       autoDiscountCodes: parseHandleList(getString(formData, "autoDiscountCodes")),
       unitCost: getString(formData, "unitCost") || undefined,
@@ -160,10 +168,12 @@ export async function addProductAction(formData: FormData) {
 
     config.products.push(nextProduct);
     await writeConfig(config);
-  });
+  }, redirectPath);
 }
 
 export async function updateProductAction(formData: FormData) {
+  const redirectPath = getString(formData, "returnTo") || "/portal/dashboard";
+
   await finalizePortalMutation(async () => {
     const config = await readConfig();
     const id = getString(formData, "id");
@@ -181,6 +191,7 @@ export async function updateProductAction(formData: FormData) {
             compareAtPriceLabel: getString(formData, "compareAtPriceLabel") || undefined,
             type: getString(formData, "type") === "core" ? "core" : "upsell",
             isDefault: formData.get("isDefault") === "on",
+            activeInFunnel: formData.get("activeInFunnel") === "on",
             sortOrder: Number(getString(formData, "sortOrder") || "0"),
             autoDiscountCodes: parseHandleList(getString(formData, "autoDiscountCodes")),
             unitCost: getString(formData, "unitCost") || undefined,
@@ -197,17 +208,33 @@ export async function updateProductAction(formData: FormData) {
     );
 
     await writeConfig(config);
-  });
+  }, redirectPath);
 }
 
 export async function deleteProductAction(formData: FormData) {
+  const redirectPath = getString(formData, "returnTo") || "/portal/dashboard";
+
   await finalizePortalMutation(async () => {
     const config = await readConfig();
     const id = getString(formData, "id");
 
     config.products = config.products.filter((product) => product.id !== id);
     await writeConfig(config);
-  });
+  }, redirectPath);
+}
+
+export async function saveFunnelSelectionAction(formData: FormData) {
+  await finalizePortalMutation(async () => {
+    const config = await readConfig();
+    const activeIds = new Set(formData.getAll("activeProductIds").map((value) => String(value)));
+
+    config.products = config.products.map((product) => ({
+      ...product,
+      activeInFunnel: product.isDefault ? true : activeIds.has(product.id),
+    }));
+
+    await writeConfig(config);
+  }, "/portal/upsells");
 }
 
 export async function addDiscountAction(formData: FormData) {

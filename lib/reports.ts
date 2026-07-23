@@ -5,7 +5,7 @@ import {
   ReportOrderItem,
   ReportShippingAddress,
 } from "@/lib/types";
-import { parsePriceLabel, weekStartFromDate } from "@/lib/funnel";
+import { isProductActiveInFunnel, parsePriceLabel, weekStartFromDate } from "@/lib/funnel";
 
 export type ShopifyConnectionState =
   | {
@@ -153,8 +153,12 @@ function adSpendForWeek(config: FunnelConfig, weekStart: string) {
 }
 
 function placeholderItems(config: FunnelConfig): ReportOrderItem[] {
-  const defaults = config.products.filter((product) => product.isDefault);
-  const upsells = config.products.filter((product) => !product.isDefault).slice(0, 2);
+  const defaults = config.products.filter(
+    (product) => product.isDefault && isProductActiveInFunnel(product),
+  );
+  const upsells = config.products
+    .filter((product) => !product.isDefault && isProductActiveInFunnel(product))
+    .slice(0, 2);
   const selected = [...defaults, ...upsells];
 
   return selected.map((product) => ({
@@ -282,8 +286,12 @@ export function buildPlaceholderOrders(config: FunnelConfig): ReportOrder[] {
 }
 
 function selectedPlaceholderProducts(config: FunnelConfig) {
-  const defaults = config.products.filter((product) => product.isDefault);
-  const upsells = config.products.filter((product) => !product.isDefault).slice(0, 2);
+  const defaults = config.products.filter(
+    (product) => product.isDefault && isProductActiveInFunnel(product),
+  );
+  const upsells = config.products
+    .filter((product) => !product.isDefault && isProductActiveInFunnel(product))
+    .slice(0, 2);
   return [...defaults, ...upsells];
 }
 

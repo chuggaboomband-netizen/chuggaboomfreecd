@@ -11,9 +11,13 @@ export function sortProducts(products: Product[]): Product[] {
   return [...products].sort((a, b) => a.sortOrder - b.sortOrder);
 }
 
+export function isProductActiveInFunnel(product: Product): boolean {
+  return product.activeInFunnel !== false;
+}
+
 export function ensureCoreSelection(config: FunnelConfig, selectedHandles: string[]): string[] {
   const requiredHandles = config.products
-    .filter((product) => product.isDefault)
+    .filter((product) => product.isDefault && isProductActiveInFunnel(product))
     .map((product) => product.handle);
   return Array.from(new Set([...requiredHandles, ...selectedHandles]));
 }
@@ -23,7 +27,9 @@ export function selectedProducts(
   selectedHandles: string[],
 ): Product[] {
   const selection = new Set(ensureCoreSelection(config, selectedHandles));
-  return sortProducts(config.products).filter((product) => selection.has(product.handle));
+  return sortProducts(config.products).filter(
+    (product) => isProductActiveInFunnel(product) && selection.has(product.handle),
+  );
 }
 
 function findSelectedItem(product: Product, handle: string): SelectedItem | null {
@@ -67,7 +73,7 @@ export function selectedItems(
   const items: SelectedItem[] = [];
 
   for (const handle of selection) {
-    for (const product of sortProducts(config.products)) {
+    for (const product of sortProducts(config.products).filter(isProductActiveInFunnel)) {
       const item = findSelectedItem(product, handle);
       if (item) {
         items.push(item);
