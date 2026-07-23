@@ -84,6 +84,22 @@ type ShopifyOrdersResponse = {
   }>;
 };
 
+type ShopifyVariantInventoryResponse = {
+  data?: {
+    nodes?: Array<
+      | {
+          __typename?: "ProductVariant";
+          id: string;
+          inventoryQuantity: number | null;
+        }
+      | null
+    >;
+  };
+  errors?: Array<{
+    message: string;
+  }>;
+};
+
 type ShopifyAccessTokenResponse = {
   access_token?: string;
   expires_in?: number;
@@ -125,19 +141,54 @@ function normalizeVariantId(variantId?: string | null) {
   return variantId.trim();
 }
 
+function extractVariantNumericId(variantId?: string | null) {
+  const normalized = normalizeVariantId(variantId);
+  if (!normalized) {
+    return "";
+  }
+
+  if (normalized.startsWith("gid://")) {
+    return normalized.split("/").pop()?.trim() || "";
+  }
+
+  return normalized.split(":")[0]?.trim() || normalized;
+}
+
+function toVariantGid(variantId?: string | null) {
+  const normalized = normalizeVariantId(variantId);
+  if (!normalized) {
+    return "";
+  }
+
+  if (normalized.startsWith("gid://")) {
+    return normalized;
+  }
+
+  const numericId = extractVariantNumericId(normalized);
+  return numericId ? `gid://shopify/ProductVariant/${numericId}` : "";
+}
+
 function productByVariantId(config: FunnelConfig, variantId?: string | null) {
   const normalized = normalizeVariantId(variantId);
+  const numericId = extractVariantNumericId(variantId);
   if (!normalized) {
     return null;
   }
 
   for (const product of config.products) {
-    if (normalizeVariantId(product.variantId) === normalized) {
+    const productVariantId = normalizeVariantId(product.variantId);
+    if (
+      productVariantId === normalized ||
+      extractVariantNumericId(productVariantId) === numericId
+    ) {
       return product;
     }
 
     const variant = product.variants?.find(
-      (item) => normalizeVariantId(item.variantId) === normalized,
+      (item) => {
+        const itemVariantId = normalizeVariantId(item.variantId);
+        return itemVariantId === normalized || extractVariantNumericId(itemVariantId) === numericId;
+      },
     );
     if (variant) {
       return product;
@@ -336,7 +387,6 @@ function describeError(error: unknown) {
 }
 
 async function getShopifyAccessToken(env: ShopifyEnv) {
-
   if (env.token) {
     return env.token;
   }
@@ -380,6 +430,113 @@ async function getShopifyAccessToken(env: ShopifyEnv) {
   }
 
   return payload.access_token;
+}
+
+function getConfiguredVariantIds(config: FunnelConfig) {
+  const ids = new Set<string>();
+
+  for (const product of config.products) {
+    if (product.variantId) {
+      ids.add(product.variantId);
+    }
+
+    for (const variant of product.variants || []) {
+      if (variant.variantId) {
+        ids.add(variant.variantId);
+      }
+    }
+  }
+
+  return [...ids];
+}
+
+export async function getShopifyInventorySnapshot(config: FunnelConfig) {
+  const env = shopifyEnv();
+  if (!env) {
+    return {} as Record<string, number | null>;
+  }
+
+  let accessToken: string;
+  try {
+    accessToken = await getShopifyAccessToken(env);
+  } catch (error) {
+    throw new Error(
+      `Token fetch failed for ${env.domain} using ${shopifyAuthMode(env)}: ${describeError(error)}`,
+    );
+  }
+
+  const configuredVariantIds = getConfiguredVariantIds(config);
+  const variantGids = [...new Set(configuredVariantIds.map((id) => toVariantGid(id)).filter(Boolean))];
+
+  if (variantGids.length === 0) {
+    return {} as Record<string, number | null>;
+  }
+
+  let response: Response;
+  try {
+    response = await fetch(`https://${env.domain}/admin/api/2026-07/graphql.json`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Access-Token": accessToken,
+      },
+      body: JSON.stringify({
+        query: `
+          query VariantInventorySnapshot($ids: [ID!]!) {
+            nodes(ids: $ids) {
+              __typename
+              ... on ProductVariant {
+                id
+                inventoryQuantity
+              }
+            }
+          }
+        `,
+        variables: {
+          ids: variantGids,
+        },
+      }),
+      cache: "no-store",
+    });
+  } catch (error) {
+    throw new Error(
+      `Inventory fetch failed for ${env.domain} using ${shopifyAuthMode(env)}: ${describeError(error)}`,
+    );
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      `Shopify inventory fetch failed for ${env.domain} using ${shopifyAuthMode(env)}: ${response.status} ${response.statusText}`,
+    );
+  }
+
+  const payload = (await response.json()) as ShopifyVariantInventoryResponse;
+  if (payload.errors?.length) {
+    throw new Error(payload.errors.map((item) => item.message).join(", "));
+  }
+
+  const byNumericId = new Map<string, number | null>();
+
+  for (const node of payload.data?.nodes || []) {
+    if (!node || node.__typename !== "ProductVariant") {
+      continue;
+    }
+
+    const numericId = extractVariantNumericId(node.id);
+    if (!numericId) {
+      continue;
+    }
+
+    byNumericId.set(numericId, node.inventoryQuantity ?? null);
+  }
+
+  const snapshot: Record<string, number | null> = {};
+  for (const configuredId of configuredVariantIds) {
+    const numericId = extractVariantNumericId(configuredId);
+    snapshot[configuredId] = numericId && byNumericId.has(numericId) ? byNumericId.get(numericId)! : null;
+  }
+
+  return snapshot;
 }
 
 export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOrder[]> {

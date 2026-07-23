@@ -1295,6 +1295,11 @@ textarea {
   background: rgba(255, 255, 255, 0.04);
 }
 
+.portal-list-item-stack {
+  display: grid;
+  gap: 4px;
+}
+
 .reports-status-box {
   padding: 18px;
   border-radius: 16px;
@@ -1518,6 +1523,65 @@ textarea {
   margin-bottom: 6px;
 }
 
+.portal-product-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.portal-stock-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.portal-stock-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 213, 79, 0.16);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff1b3;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-align: center;
+}
+
+.portal-stock-pill.is-good {
+  border-color: rgba(69, 181, 112, 0.28);
+  background: rgba(69, 181, 112, 0.14);
+  color: #d4ffe1;
+}
+
+.portal-stock-pill.is-low {
+  border-color: rgba(255, 213, 79, 0.28);
+  background: rgba(255, 213, 79, 0.12);
+  color: #fff0ad;
+}
+
+.portal-stock-pill.is-out {
+  border-color: rgba(209, 72, 54, 0.3);
+  background: rgba(209, 72, 54, 0.14);
+  color: #ffd2ca;
+}
+
+.portal-stock-pill.is-neutral {
+  border-color: rgba(255, 213, 79, 0.16);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(235, 239, 255, 0.86);
+}
+
+.portal-variant-stock-list {
+  display: grid;
+  gap: 12px;
+}
+
 .brand {
   font-family: var(--display);
   letter-spacing: 0.04em;
@@ -1623,6 +1687,14 @@ textarea {
 
   .portal-modal-grid {
     grid-template-columns: 1fr;
+  }
+
+  .portal-product-card-header {
+    display: grid;
+  }
+
+  .portal-stock-badges {
+    justify-content: flex-start;
   }
 
   .bk-bottom-copy {

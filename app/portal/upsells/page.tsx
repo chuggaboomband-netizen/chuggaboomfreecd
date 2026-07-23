@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { readConfig } from "@/lib/config-store";
 import { isProductActiveInFunnel, sortProducts } from "@/lib/funnel";
-import { getShopifyConnectionState } from "@/lib/reports";
+import { getShopifyConnectionState, getShopifyInventorySnapshot } from "@/lib/reports";
 
 import {
   addProductAction,
@@ -25,6 +25,12 @@ export default async function UpsellsPage({
 
   const config = await readConfig();
   const shopifyState = await getShopifyConnectionState(config);
+  let inventorySnapshot: Record<string, number | null> = {};
+  try {
+    inventorySnapshot = await getShopifyInventorySnapshot(config);
+  } catch (error) {
+    console.error("Shopify inventory snapshot failed for upsell portal.", error);
+  }
   const products = sortProducts(config.products);
   const activeProducts = products.filter(isProductActiveInFunnel);
   const coreProducts = products.filter((product) => product.type === "core");
@@ -102,13 +108,13 @@ export default async function UpsellsPage({
             {activeProducts.length > 0 ? (
               activeProducts.map((product) => (
                 <div key={product.id} className="reports-list-row">
-                  <span>
-                    {product.name}{" "}
+                  <span className="portal-list-item-stack">
+                    <strong>{product.name}</strong>
                     <span className="microcopy">
-                      ({product.type === "core" ? "Core" : "Upsell"})
+                      {product.handle} · {product.type === "core" ? "Core" : "Upsell"}
                     </span>
                   </span>
-                  <strong>{product.handle}</strong>
+                  <strong>{formatStockLabel(getProductStock(inventorySnapshot, product.variantId))}</strong>
                 </div>
               ))
             ) : (
@@ -126,7 +132,12 @@ export default async function UpsellsPage({
           </div>
           <div className="stack">
             {coreProducts.map((product) => (
-              <ProductEditor key={product.id} product={product} returnTo="/portal/upsells" />
+              <ProductEditor
+                key={product.id}
+                product={product}
+                returnTo="/portal/upsells"
+                inventorySnapshot={inventorySnapshot}
+              />
             ))}
           </div>
         </section>
@@ -140,7 +151,12 @@ export default async function UpsellsPage({
           </div>
           <div className="stack">
             {upsellProducts.map((product) => (
-              <ProductEditor key={product.id} product={product} returnTo="/portal/upsells" />
+              <ProductEditor
+                key={product.id}
+                product={product}
+                returnTo="/portal/upsells"
+                inventorySnapshot={inventorySnapshot}
+              />
             ))}
           </div>
         </section>
@@ -283,7 +299,7 @@ export default async function UpsellsPage({
                       <div>
                         <strong>{product.name}</strong>
                         <p className="microcopy">
-                          {product.handle} · {product.priceLabel}
+                          {product.handle} · {product.priceLabel} · {formatStockLabel(getProductStock(inventorySnapshot, product.variantId))}
                         </p>
                       </div>
                     </label>
@@ -309,12 +325,32 @@ export default async function UpsellsPage({
 function ProductEditor({
   product,
   returnTo,
+  inventorySnapshot,
 }: {
   product: Awaited<ReturnType<typeof readConfig>>["products"][number];
   returnTo: string;
+  inventorySnapshot: Record<string, number | null>;
 }) {
+  const mainVariantStock = getProductStock(inventorySnapshot, product.variantId);
+
   return (
     <div className="summary-card">
+      <div className="portal-product-card-header">
+        <div>
+          <h3>{product.name}</h3>
+          <p className="microcopy">
+            {product.handle} · {product.type === "core" ? "Core product" : "Upsell product"}
+          </p>
+        </div>
+        <div className="portal-stock-badges">
+          <span className={`portal-stock-pill ${stockTone(mainVariantStock)}`}>
+            Shopify stock: {formatStockLabel(mainVariantStock)}
+          </span>
+          {product.variants?.length ? (
+            <span className="portal-stock-pill is-neutral">{product.variants.length} variants saved</span>
+          ) : null}
+        </div>
+      </div>
       <form action={updateProductAction} className="stack">
         <input type="hidden" name="id" value={product.id} />
         <input type="hidden" name="returnTo" value={returnTo} />
@@ -432,6 +468,25 @@ function ProductEditor({
         <p className="microcopy">
           Variants format: <code>handle|label|variantId|discounted price|value price</code>
         </p>
+        {product.variants?.length ? (
+          <div className="portal-variant-stock-list">
+            {product.variants.map((variant) => {
+              const variantStock = getProductStock(inventorySnapshot, variant.variantId);
+
+              return (
+                <div key={variant.id} className="reports-list-row">
+                  <span className="portal-list-item-stack">
+                    <strong>{variant.name}</strong>
+                    <span className="microcopy">
+                      {variant.handle} · {variant.priceLabel}
+                    </span>
+                  </span>
+                  <strong>{formatStockLabel(variantStock)}</strong>
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
         <div className="cta-row">
           <button type="submit" className="button">
             Save product
@@ -447,4 +502,40 @@ function ProductEditor({
       </form>
     </div>
   );
+}
+
+function getProductStock(snapshot: Record<string, number | null>, variantId?: string) {
+  if (!variantId) {
+    return null;
+  }
+
+  return snapshot[variantId] ?? null;
+}
+
+function formatStockLabel(stock: number | null) {
+  if (stock == null) {
+    return "Stock unavailable";
+  }
+
+  if (stock <= 0) {
+    return "Out of stock";
+  }
+
+  return `${stock} in stock`;
+}
+
+function stockTone(stock: number | null) {
+  if (stock == null) {
+    return "is-neutral";
+  }
+
+  if (stock <= 0) {
+    return "is-out";
+  }
+
+  if (stock <= 5) {
+    return "is-low";
+  }
+
+  return "is-good";
 }
