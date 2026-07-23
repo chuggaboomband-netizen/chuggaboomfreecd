@@ -466,7 +466,14 @@ function getConfiguredVariantIds(config: FunnelConfig) {
 function orderMatchesFunnel(
   order: ShopifyOrderNode,
   trackedDiscountCode: string,
+  trackedProductSku?: string,
 ) {
+  const normalizedTrackedSku = trackedProductSku?.trim().toLowerCase();
+
+  if (normalizedTrackedSku) {
+    return order.lineItems.edges.some(({ node }) => node.variant?.sku?.trim().toLowerCase() === normalizedTrackedSku);
+  }
+
   const normalizedTrackedCode = trackedDiscountCode.trim().toLowerCase();
 
   const directDiscountCodeMatch = order.discountCodes.some(
@@ -595,6 +602,7 @@ export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOr
   }
 
   const trackedDiscountCode = config.reporting?.reportDiscountCode || "FREECD";
+  const trackedProductSku = config.reporting?.trackedProductSku?.trim();
   const query = `
     query FunnelOrders {
       orders(first: 100, sortKey: CREATED_AT, reverse: true, query: "status:any") {
@@ -690,7 +698,7 @@ export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOr
   const orders =
     payload.data?.orders?.edges
       .map((edge) => edge.node)
-      .filter((order) => orderMatchesFunnel(order, trackedDiscountCode)) || [];
+      .filter((order) => orderMatchesFunnel(order, trackedDiscountCode, trackedProductSku)) || [];
   const fallbackPostageCost = toCurrencyValue(config.reporting?.defaultPostageCost);
 
   const reportOrders = orders.map((order) => {
@@ -750,7 +758,9 @@ export async function getShopifyConnectionState(config: FunnelConfig): Promise<S
     await fetchShopifyOrders(config);
     return {
       status: "connected",
-      message: `Shopify API is responding for ${env.domain} using ${shopifyAuthMode(env)}. Orders are being filtered by the ${config.reporting?.reportDiscountCode || "FREECD"} discount code.`,
+      message: config.reporting?.trackedProductSku
+        ? `Shopify API is responding for ${env.domain} using ${shopifyAuthMode(env)}. Orders are being filtered by SKU ${config.reporting.trackedProductSku}.`
+        : `Shopify API is responding for ${env.domain} using ${shopifyAuthMode(env)}. Orders are being filtered by the ${config.reporting?.reportDiscountCode || "FREECD"} discount code.`,
     };
   } catch (error) {
     return {

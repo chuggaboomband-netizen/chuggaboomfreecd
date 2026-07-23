@@ -89,7 +89,11 @@ export default async function DashboardPage({
           <article className="summary-card portal-quick-card">
             <span className="portal-quick-label">Tracked orders</span>
             <strong className="portal-quick-value">{orders.length}</strong>
-            <p className="microcopy">Orders matched to {config.reporting?.reportDiscountCode || "FREECD"}.</p>
+            <p className="microcopy">
+              {config.reporting?.trackedProductSku
+                ? `Orders containing SKU ${config.reporting.trackedProductSku}.`
+                : `Orders matched to ${config.reporting?.reportDiscountCode || "FREECD"}.`}
+            </p>
           </article>
           <article className="summary-card portal-quick-card">
             <span className="portal-quick-label">Total profit/loss</span>
@@ -290,6 +294,14 @@ export default async function DashboardPage({
                 />
               </label>
               <label className="field">
+                <span>Tracked product SKU</span>
+                <input
+                  name="trackedProductSku"
+                  defaultValue={config.reporting?.trackedProductSku || ""}
+                  placeholder="FREE-CD-ESSENTIALS"
+                />
+              </label>
+              <label className="field">
                 <span>Fallback postage cost</span>
                 <input
                   name="defaultPostageCost"
@@ -309,7 +321,7 @@ export default async function DashboardPage({
             </label>
 
             <p className="microcopy">
-              Weekly ad spend format: <code>week-start|amount|notes</code>. Use Monday dates like <code>2026-07-20</code>. Fallback postage is only used when a product does not have its own postage cost set.
+              Weekly ad spend format: <code>week-start|amount|notes</code>. Use Monday dates like <code>2026-07-20</code>. Fallback postage is only used when a product does not have its own postage cost set. If a tracked SKU is filled in here, reports will use that instead of relying on the discount code field.
             </p>
 
             <button type="submit" className="button">

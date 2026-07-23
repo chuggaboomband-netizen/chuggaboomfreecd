@@ -60,9 +60,9 @@ export default async function ReportsPage() {
                 <div className="reports-metric">{formatPriceLabel(totalPnL)}</div>
               </div>
               <div className="summary-card">
-                <strong>Tracked discount code</strong>
+                <strong>{config.reporting?.trackedProductSku ? "Tracked SKU" : "Tracked discount code"}</strong>
                 <div className="reports-metric-code">
-                  {config.reporting?.reportDiscountCode || "FREECD"}
+                  {config.reporting?.trackedProductSku || config.reporting?.reportDiscountCode || "FREECD"}
                 </div>
               </div>
               <div className="summary-card">
