@@ -40,6 +40,18 @@ type ShopifyOrderNode = {
   createdAt: string;
   email: string | null;
   discountCodes: string[];
+  discountApplications: {
+    edges: Array<{
+      node:
+        | {
+            __typename?: "DiscountCodeApplication";
+            code: string;
+          }
+        | {
+            __typename?: string;
+          };
+    }>;
+  };
   shippingAddress: null | {
     name: string | null;
     company: string | null;
@@ -455,9 +467,23 @@ function orderMatchesFunnel(
   order: ShopifyOrderNode,
   trackedDiscountCode: string,
 ) {
-  return order.discountCodes.some(
-    (code) => code.trim().toLowerCase() === trackedDiscountCode.trim().toLowerCase(),
+  const normalizedTrackedCode = trackedDiscountCode.trim().toLowerCase();
+
+  const directDiscountCodeMatch = order.discountCodes.some(
+    (code) => code.trim().toLowerCase() === normalizedTrackedCode,
   );
+
+  if (directDiscountCodeMatch) {
+    return true;
+  }
+
+  return order.discountApplications.edges.some(({ node }) => {
+    if (node.__typename !== "DiscountCodeApplication" || !("code" in node)) {
+      return false;
+    }
+
+    return node.code.trim().toLowerCase() === normalizedTrackedCode;
+  });
 }
 
 export async function getShopifyInventorySnapshot(
@@ -579,6 +605,16 @@ export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOr
             createdAt
             email
             discountCodes
+            discountApplications(first: 20) {
+              edges {
+                node {
+                  __typename
+                  ... on DiscountCodeApplication {
+                    code
+                  }
+                }
+              }
+            }
             shippingAddress {
               name
               company
