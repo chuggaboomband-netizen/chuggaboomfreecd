@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { PublicMetaPixel } from "./public-meta-pixel";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -14,7 +15,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <PublicMetaPixel />
+        {children}
+      </body>
     </html>
   );
 }
