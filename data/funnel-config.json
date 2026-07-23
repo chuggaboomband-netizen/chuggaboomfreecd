@@ -110,6 +110,7 @@
   ],
   "reporting": {
     "reportDiscountCode": "FREECD",
+    "trackedProductSku": "free-cd-campaign",
     "defaultPostageCost": "\u00a34.99",
     "weeklyAdSpend": [],
     "cachedOrders": []
