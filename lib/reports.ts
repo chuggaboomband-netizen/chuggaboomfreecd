@@ -451,6 +451,46 @@ function getConfiguredVariantIds(config: FunnelConfig) {
   return [...ids];
 }
 
+function getTrackedDiscountCodes(config: FunnelConfig) {
+  const codes = new Set<string>();
+
+  const reportCode = config.reporting?.reportDiscountCode?.trim();
+  if (reportCode) {
+    codes.add(reportCode);
+  }
+
+  for (const discount of config.discounts || []) {
+    const code = discount.code?.trim();
+    if (code) {
+      codes.add(code);
+    }
+  }
+
+  for (const product of config.products || []) {
+    for (const code of product.autoDiscountCodes || []) {
+      const trimmed = code.trim();
+      if (trimmed) {
+        codes.add(trimmed);
+      }
+    }
+  }
+
+  return [...codes];
+}
+
+function orderMatchesFunnel(
+  config: FunnelConfig,
+  order: ShopifyOrderNode,
+  trackedDiscountCodes: Set<string>,
+) {
+  const orderDiscountMatch = order.discountCodes.some((code) => trackedDiscountCodes.has(code.trim()));
+  if (orderDiscountMatch) {
+    return true;
+  }
+
+  return order.lineItems.edges.some(({ node }) => Boolean(productByVariantId(config, node.variant?.id || null)));
+}
+
 export async function getShopifyInventorySnapshot(
   config: FunnelConfig,
 ): Promise<InventorySnapshot> {
@@ -559,10 +599,10 @@ export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOr
     return [];
   }
 
-  const discountCode = config.reporting?.reportDiscountCode || "FREECD";
+  const trackedDiscountCodes = getTrackedDiscountCodes(config);
   const query = `
-    query FunnelOrders($query: String!) {
-      orders(first: 100, sortKey: CREATED_AT, reverse: true, query: $query) {
+    query FunnelOrders {
+      orders(first: 100, sortKey: CREATED_AT, reverse: true, query: "status:any") {
         edges {
           node {
             id
@@ -622,9 +662,6 @@ export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOr
       },
       body: JSON.stringify({
         query,
-        variables: {
-          query: `discount_code:${discountCode} status:any`,
-        },
       }),
       cache: "no-store",
     });
@@ -645,7 +682,10 @@ export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOr
     throw new Error(payload.errors.map((item) => item.message).join(", "));
   }
 
-  const orders = payload.data?.orders?.edges.map((edge) => edge.node) || [];
+  const orders =
+    payload.data?.orders?.edges
+      .map((edge) => edge.node)
+      .filter((order) => orderMatchesFunnel(config, order, new Set(trackedDiscountCodes))) || [];
   const fallbackPostageCost = toCurrencyValue(config.reporting?.defaultPostageCost);
 
   const reportOrders = orders.map((order) => {
