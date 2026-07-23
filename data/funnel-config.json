@@ -34,7 +34,7 @@
       "name": "Vinyl - Death Pledge",
       "description": "Limited Edition 'Transparent Marble' Vinyl",
       "variantId": "41248619659347:1",
-      "priceLabel": "15",
+      "priceLabel": "19.99",
       "type": "upsell",
       "isDefault": false,
       "sortOrder": 2,
@@ -46,9 +46,10 @@
       "upsellSubheadline": "Grab yourself a copy of our sophomore full album \"Death Pledge.\"",
       "upsellBody": "This is a limited edition \"Marble\" press of the vinyl that will never be re-printed.\r\n\r\nWe'll even let you have it for 25% off, seeing as you're already here...\r\n\"Death Pledge\" 140g Heavyweight Vinyl",
       "variants": [],
-      "compareAtPriceLabel": "19.99",
+      "compareAtPriceLabel": "24.99",
       "upsellYesLabel": "Yes please! I love vinyl",
-      "upsellNoLabel": "Not now thanks, just the free CD for me!"
+      "upsellNoLabel": "Not now thanks, just the free CD for me!",
+      "activeInFunnel": true
     },
     {
       "id": "39548648-254d-49fa-86df-bf639199fcbe",
