@@ -1,6 +1,7 @@
 import {
   Discount,
   FunnelConfig,
+  InventorySnapshot,
   Product,
   ProductVariant,
   SelectedItem,
@@ -15,9 +16,49 @@ export function isProductActiveInFunnel(product: Product): boolean {
   return product.activeInFunnel !== false;
 }
 
-export function ensureCoreSelection(config: FunnelConfig, selectedHandles: string[]): string[] {
+export function variantIsInStock(
+  inventorySnapshot: InventorySnapshot | undefined,
+  variantId?: string,
+): boolean {
+  if (!inventorySnapshot || !variantId) {
+    return true;
+  }
+
+  const stock = inventorySnapshot[variantId];
+  if (stock == null) {
+    return true;
+  }
+
+  return stock > 0;
+}
+
+export function isProductOfferAvailable(
+  product: Product,
+  inventorySnapshot?: InventorySnapshot,
+): boolean {
+  if (product.isDefault) {
+    return true;
+  }
+
+  if (product.variants?.length) {
+    return product.variants.some((variant) => variantIsInStock(inventorySnapshot, variant.variantId));
+  }
+
+  return variantIsInStock(inventorySnapshot, product.variantId);
+}
+
+export function ensureCoreSelection(
+  config: FunnelConfig,
+  selectedHandles: string[],
+  inventorySnapshot?: InventorySnapshot,
+): string[] {
   const requiredHandles = config.products
-    .filter((product) => product.isDefault && isProductActiveInFunnel(product))
+    .filter(
+      (product) =>
+        product.isDefault &&
+        isProductActiveInFunnel(product) &&
+        isProductOfferAvailable(product, inventorySnapshot),
+    )
     .map((product) => product.handle);
   return Array.from(new Set([...requiredHandles, ...selectedHandles]));
 }
@@ -25,15 +66,27 @@ export function ensureCoreSelection(config: FunnelConfig, selectedHandles: strin
 export function selectedProducts(
   config: FunnelConfig,
   selectedHandles: string[],
+  inventorySnapshot?: InventorySnapshot,
 ): Product[] {
-  const selection = new Set(ensureCoreSelection(config, selectedHandles));
+  const selection = new Set(ensureCoreSelection(config, selectedHandles, inventorySnapshot));
   return sortProducts(config.products).filter(
-    (product) => isProductActiveInFunnel(product) && selection.has(product.handle),
+    (product) =>
+      isProductActiveInFunnel(product) &&
+      isProductOfferAvailable(product, inventorySnapshot) &&
+      selection.has(product.handle),
   );
 }
 
-function findSelectedItem(product: Product, handle: string): SelectedItem | null {
+function findSelectedItem(
+  product: Product,
+  handle: string,
+  inventorySnapshot?: InventorySnapshot,
+): SelectedItem | null {
   if (product.handle === handle) {
+    if (!product.isDefault && !variantIsInStock(inventorySnapshot, product.variantId)) {
+      return null;
+    }
+
     return {
       id: product.id,
       productId: product.id,
@@ -49,6 +102,10 @@ function findSelectedItem(product: Product, handle: string): SelectedItem | null
 
   const variant = product.variants?.find((item) => item.handle === handle);
   if (!variant) {
+    return null;
+  }
+
+  if (!variantIsInStock(inventorySnapshot, variant.variantId)) {
     return null;
   }
 
@@ -68,13 +125,17 @@ function findSelectedItem(product: Product, handle: string): SelectedItem | null
 export function selectedItems(
   config: FunnelConfig,
   selectedHandles: string[],
+  inventorySnapshot?: InventorySnapshot,
 ): SelectedItem[] {
-  const selection = ensureCoreSelection(config, selectedHandles);
+  const selection = ensureCoreSelection(config, selectedHandles, inventorySnapshot);
   const items: SelectedItem[] = [];
 
   for (const handle of selection) {
-    for (const product of sortProducts(config.products).filter(isProductActiveInFunnel)) {
-      const item = findSelectedItem(product, handle);
+    for (const product of sortProducts(config.products).filter(
+      (product) =>
+        isProductActiveInFunnel(product) && isProductOfferAvailable(product, inventorySnapshot),
+    )) {
+      const item = findSelectedItem(product, handle, inventorySnapshot);
       if (item) {
         items.push(item);
         break;
@@ -85,8 +146,12 @@ export function selectedItems(
   return items;
 }
 
-export function selectedVariantIds(config: FunnelConfig, selectedHandles: string[]): string[] {
-  return selectedItems(config, selectedHandles)
+export function selectedVariantIds(
+  config: FunnelConfig,
+  selectedHandles: string[],
+  inventorySnapshot?: InventorySnapshot,
+): string[] {
+  return selectedItems(config, selectedHandles, inventorySnapshot)
     .map((item) => item.variantId.trim())
     .filter(Boolean);
 }
@@ -95,8 +160,9 @@ export function collectDiscountCodes(
   config: FunnelConfig,
   selectedHandles: string[],
   manualDiscountCodes: string[] = [],
+  inventorySnapshot?: InventorySnapshot,
 ): string[] {
-  const fromProducts = selectedItems(config, selectedHandles).flatMap(
+  const fromProducts = selectedItems(config, selectedHandles, inventorySnapshot).flatMap(
     (item) => item.autoDiscountCodes,
   );
 

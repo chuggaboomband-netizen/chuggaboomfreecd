@@ -1,5 +1,6 @@
 import {
   FunnelConfig,
+  InventorySnapshot,
   Product,
   ReportOrder,
   ReportOrderItem,
@@ -450,10 +451,12 @@ function getConfiguredVariantIds(config: FunnelConfig) {
   return [...ids];
 }
 
-export async function getShopifyInventorySnapshot(config: FunnelConfig) {
+export async function getShopifyInventorySnapshot(
+  config: FunnelConfig,
+): Promise<InventorySnapshot> {
   const env = shopifyEnv();
   if (!env) {
-    return {} as Record<string, number | null>;
+    return {};
   }
 
   let accessToken: string;
@@ -469,7 +472,7 @@ export async function getShopifyInventorySnapshot(config: FunnelConfig) {
   const variantGids = [...new Set(configuredVariantIds.map((id) => toVariantGid(id)).filter(Boolean))];
 
   if (variantGids.length === 0) {
-    return {} as Record<string, number | null>;
+    return {};
   }
 
   let response: Response;
@@ -530,7 +533,7 @@ export async function getShopifyInventorySnapshot(config: FunnelConfig) {
     byNumericId.set(numericId, node.inventoryQuantity ?? null);
   }
 
-  const snapshot: Record<string, number | null> = {};
+  const snapshot: InventorySnapshot = {};
   for (const configuredId of configuredVariantIds) {
     const numericId = extractVariantNumericId(configuredId);
     snapshot[configuredId] = numericId && byNumericId.has(numericId) ? byNumericId.get(numericId)! : null;

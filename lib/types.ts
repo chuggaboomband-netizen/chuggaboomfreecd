@@ -33,6 +33,8 @@ export type ProductVariant = {
   compareAtPriceLabel?: string;
 };
 
+export type InventorySnapshot = Record<string, number | null>;
+
 export type Product = {
   id: string;
   handle: string;

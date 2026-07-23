@@ -10,6 +10,7 @@ import {
   selectedItems,
   selectedVariantIds,
 } from "@/lib/funnel";
+import { getShopifyInventorySnapshot } from "@/lib/reports";
 
 export default async function CheckoutPage({
   searchParams,
@@ -18,16 +19,22 @@ export default async function CheckoutPage({
 }) {
   const params = await searchParams;
   const config = await readConfig();
+  let inventorySnapshot = {};
+  try {
+    inventorySnapshot = await getShopifyInventorySnapshot(config);
+  } catch (error) {
+    console.error("Shopify inventory snapshot failed for checkout.", error);
+  }
   const selectedHandles = (params.offers || "")
     .split(",")
     .map((value) => value.trim())
     .filter(Boolean);
-  const items = selectedItems(config, selectedHandles);
-  const discountCodes = collectDiscountCodes(config, selectedHandles);
+  const items = selectedItems(config, selectedHandles, inventorySnapshot);
+  const discountCodes = collectDiscountCodes(config, selectedHandles, [], inventorySnapshot);
   const discounts = availableDiscountsForProducts(config.discounts, discountCodes);
   const checkoutUrl = buildPermalink(
     config.campaign.shopifyStoreHost,
-    selectedVariantIds(config, selectedHandles),
+    selectedVariantIds(config, selectedHandles, inventorySnapshot),
     discountCodes,
   );
   const cartTotal = items.reduce((total, item) => total + parsePriceLabel(item.priceLabel), 0);
