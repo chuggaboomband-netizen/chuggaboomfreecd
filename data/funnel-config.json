@@ -49,7 +49,9 @@
       "compareAtPriceLabel": "24.99",
       "upsellYesLabel": "Yes please! I love vinyl",
       "upsellNoLabel": "Not now thanks, just the free CD for me!",
-      "activeInFunnel": true
+      "activeInFunnel": true,
+      "unitCost": "12",
+      "postageCost": "2.50"
     },
     {
       "id": "39548648-254d-49fa-86df-bf639199fcbe",
