@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 
 import { isAuthenticated } from "@/lib/auth";
 import { readConfig } from "@/lib/config-store";
-import { formatPriceLabel, formatWeeklyAdSpend, sortProducts } from "@/lib/funnel";
+import { formatPriceLabel, sortProducts } from "@/lib/funnel";
 import {
   getReportOrders,
   getShopifyConnectionState,
@@ -309,19 +309,19 @@ export default async function DashboardPage({
                   placeholder="£4.99"
                 />
               </label>
+              <label className="field">
+                <span>Total ad spend</span>
+                <input
+                  name="totalAdSpend"
+                  defaultValue={config.reporting?.totalAdSpend || ""}
+                  placeholder="£500"
+                />
+              </label>
             </div>
-
-            <label className="field">
-              <span>Weekly ad spend</span>
-              <textarea
-                name="weeklyAdSpend"
-                defaultValue={formatWeeklyAdSpend(config.reporting?.weeklyAdSpend || [])}
-                placeholder={"2026-07-20|£250|Meta ads\n2026-07-13|£185|Scaled back spend"}
-              />
-            </label>
+            <input type="hidden" name="weeklyAdSpend" value="" />
 
             <p className="microcopy">
-              Weekly ad spend format: <code>week-start|amount|notes</code>. Use Monday dates like <code>2026-07-20</code>. Fallback postage is only used when a product does not have its own postage cost set. If a tracked SKU is filled in here, reports will use that instead of relying on the discount code field.
+              Enter one total ad-spend number for the whole campaign and the reports will divide it across all tracked orders. Fallback postage is only used when a product does not have its own postage cost set. If a tracked SKU is filled in here, reports will use that instead of relying on the discount code field.
             </p>
 
             <button type="submit" className="button">

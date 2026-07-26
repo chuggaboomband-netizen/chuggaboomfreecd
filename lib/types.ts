@@ -20,6 +20,7 @@ export type ReportingSettings = {
   reportDiscountCode: string;
   trackedProductSku?: string;
   defaultPostageCost: string;
+  totalAdSpend?: string;
   weeklyAdSpend: WeeklyAdSpend[];
 };
 

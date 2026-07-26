@@ -216,6 +216,18 @@ function adSpendForWeek(config: FunnelConfig, weekStart: string) {
   return toCurrencyValue(entry?.amount);
 }
 
+function totalAdSpend(config: FunnelConfig) {
+  const directTotal = toCurrencyValue(config.reporting?.totalAdSpend);
+  if (directTotal > 0) {
+    return directTotal;
+  }
+
+  return (config.reporting?.weeklyAdSpend || []).reduce(
+    (sum, entry) => sum + toCurrencyValue(entry.amount),
+    0,
+  );
+}
+
 function withAllocatedWeeklyAdSpend(
   config: FunnelConfig,
   orders: Array<
@@ -225,16 +237,11 @@ function withAllocatedWeeklyAdSpend(
     }
   >,
 ): ReportOrder[] {
-  const orderCountsByWeek = new Map<string, number>();
-
-  for (const order of orders) {
-    orderCountsByWeek.set(order.weekStart, (orderCountsByWeek.get(order.weekStart) || 0) + 1);
-  }
+  const campaignTotalAdSpend = totalAdSpend(config);
+  const orderCount = orders.length || 1;
 
   return orders.map((order) => {
-    const weeklySpend = adSpendForWeek(config, order.weekStart);
-    const weeklyOrderCount = orderCountsByWeek.get(order.weekStart) || 1;
-    const adSpendAllocated = weeklyOrderCount > 0 ? weeklySpend / weeklyOrderCount : weeklySpend;
+    const adSpendAllocated = campaignTotalAdSpend / orderCount;
     const profitLoss = order.revenue - order.unitCostTotal - order.postageCost - adSpendAllocated;
 
     return {
@@ -346,9 +353,9 @@ export function buildOrdersCsv(orders: ReportOrder[]) {
 
 export function buildPlaceholderOrders(config: FunnelConfig): ReportOrder[] {
   const fallbackPostageCost = toCurrencyValue(config.reporting?.defaultPostageCost);
-  const adSpendEntries = config.reporting?.weeklyAdSpend || [];
+  const placeholderOrderCount = totalAdSpend(config) > 0 ? 1 : 0;
 
-  const placeholderOrders = adSpendEntries.slice(0, 4).map((entry, index) => {
+  const placeholderOrders = Array.from({ length: placeholderOrderCount }, (_, index) => {
     const items = placeholderItems(config);
     const revenue = items.reduce((sum, item) => sum + item.revenue * item.quantity, 0);
     const unitCostTotal = items.reduce((sum, item) => sum + item.unitCost * item.quantity, 0);
@@ -356,7 +363,7 @@ export function buildPlaceholderOrders(config: FunnelConfig): ReportOrder[] {
       (sum, product) => sum + productPostageCost(product, fallbackPostageCost),
       0,
     );
-    const purchasedAt = entry.weekStart;
+    const purchasedAt = "2026-07-01";
 
     return {
       id: `placeholder-${index}`,
@@ -375,6 +382,12 @@ export function buildPlaceholderOrders(config: FunnelConfig): ReportOrder[] {
   });
 
   return withAllocatedWeeklyAdSpend(config, placeholderOrders);
+}
+
+const REPORT_START_DATE = "2026-07-01";
+
+function isOnOrAfterReportStart(purchasedAt: string) {
+  return purchasedAt >= REPORT_START_DATE;
 }
 
 function selectedPlaceholderProducts(config: FunnelConfig) {
@@ -726,6 +739,7 @@ export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOr
   const orders =
     payload.data?.orders?.edges
       .map((edge) => edge.node)
+      .filter((order) => isOnOrAfterReportStart(order.createdAt.slice(0, 10)))
       .filter((order) => orderMatchesFunnel(order, trackedDiscountCode, trackedProductSku)) || [];
   const fallbackPostageCost = toCurrencyValue(config.reporting?.defaultPostageCost);
 

@@ -66,9 +66,9 @@ export default async function ReportsPage() {
                 </div>
               </div>
               <div className="summary-card">
-                <strong>Fallback postage cost</strong>
+                <strong>Total ad spend</strong>
                 <div className="reports-metric">
-                  {formatPriceLabel(Number(config.reporting?.defaultPostageCost?.replace(/[^0-9.]/g, "") || 0))}
+                  {formatPriceLabel(Number(config.reporting?.totalAdSpend?.replace(/[^0-9.]/g, "") || 0))}
                 </div>
               </div>
             </div>
@@ -103,7 +103,7 @@ export default async function ReportsPage() {
                   </div>
                 ))
               ) : (
-                <p className="microcopy">Add weekly ad spend in the portal to seed reporting periods.</p>
+                <p className="microcopy">Tracked July 2026 orders will appear here once Shopify pulls them in.</p>
               )}
             </div>
           </article>
@@ -146,7 +146,7 @@ export default async function ReportsPage() {
                   <th>Revenue</th>
                   <th>Unit cost</th>
                   <th>Postage</th>
-                  <th>Weekly ad spend</th>
+                  <th>Allocated ad spend</th>
                   <th>Profit/Loss</th>
                 </tr>
               </thead>

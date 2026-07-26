@@ -130,6 +130,7 @@ export async function saveReportingAction(formData: FormData) {
       reportDiscountCode: getString(formData, "reportDiscountCode"),
       trackedProductSku: getString(formData, "trackedProductSku") || undefined,
       defaultPostageCost: getString(formData, "defaultPostageCost"),
+      totalAdSpend: getString(formData, "totalAdSpend") || undefined,
       weeklyAdSpend: parseWeeklyAdSpend(getString(formData, "weeklyAdSpend")),
     };
 
