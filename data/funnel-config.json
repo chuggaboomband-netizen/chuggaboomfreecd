@@ -124,13 +124,18 @@
         "notes": "Campaign Launch"
       }
     ],
-    "totalAdSpend": "101",
+    "totalAdSpend": "104.77",
     "adSpendEntries": [
       {
         "id": "739b2180-47a8-47a7-b6ec-2df0f2943f12",
         "recordedAt": "2026-07-26T15:06:28.762Z",
         "totalAmount": "101",
         "notes": "First Weekend"
+      },
+      {
+        "id": "8a4c2ae4-d270-4b0f-abf7-2aa0dd41ba85",
+        "recordedAt": "2026-07-26T19:34:12.629Z",
+        "totalAmount": "104.77"
       }
     ],
     "cachedOrders": []
