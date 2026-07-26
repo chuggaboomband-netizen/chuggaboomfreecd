@@ -16,11 +16,19 @@ export type WeeklyAdSpend = {
   notes?: string;
 };
 
+export type AdSpendEntry = {
+  id: string;
+  recordedAt: string;
+  totalAmount: string;
+  notes?: string;
+};
+
 export type ReportingSettings = {
   reportDiscountCode: string;
   trackedProductSku?: string;
   defaultPostageCost: string;
   totalAdSpend?: string;
+  adSpendEntries?: AdSpendEntry[];
   weeklyAdSpend: WeeklyAdSpend[];
 };
 
@@ -111,6 +119,7 @@ export type ReportOrder = {
   id: string;
   orderNumber: string;
   purchasedAt: string;
+  purchasedAtTimestamp?: string;
   weekStart: string;
   email?: string | null;
   shippingAddress?: ReportShippingAddress | null;
@@ -122,4 +131,13 @@ export type ReportOrder = {
   profitLoss: number;
   items: ReportOrderItem[];
   source: "shopify" | "placeholder";
+};
+
+export type ProfitTimelinePoint = {
+  timestamp: string;
+  label: string;
+  netProfit: number;
+  cumulativeGrossProfit: number;
+  cumulativeAdSpend: number;
+  kind: "order" | "ad-spend";
 };

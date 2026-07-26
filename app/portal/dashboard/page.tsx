@@ -12,7 +12,9 @@ import {
 } from "@/lib/reports";
 
 import {
+  addAdSpendEntryAction,
   addDiscountAction,
+  deleteAdSpendEntryAction,
   deleteDiscountAction,
   logoutAction,
   saveCampaignAction,
@@ -38,6 +40,9 @@ export default async function DashboardPage({
   const topProduct = productSales[0];
   const products = sortProducts(config.products);
   const discounts = [...config.discounts].sort((a, b) => b.priority - a.priority);
+  const adSpendEntries = [...(config.reporting?.adSpendEntries || [])].sort((a, b) =>
+    b.recordedAt.localeCompare(a.recordedAt),
+  );
   const params = searchParams ? await searchParams : undefined;
 
   return (
@@ -313,21 +318,71 @@ export default async function DashboardPage({
                 <span>Total ad spend</span>
                 <input
                   name="totalAdSpend"
-                  defaultValue={config.reporting?.totalAdSpend || ""}
+                  defaultValue={config.reporting?.adSpendEntries?.[config.reporting.adSpendEntries.length - 1]?.totalAmount || config.reporting?.totalAdSpend || ""}
                   placeholder="£500"
+                  readOnly
                 />
               </label>
             </div>
             <input type="hidden" name="weeklyAdSpend" value="" />
 
             <p className="microcopy">
-              Enter one total ad-spend number for the whole campaign and the reports will divide it across all tracked orders. Fallback postage is only used when a product does not have its own postage cost set. If a tracked SKU is filled in here, reports will use that instead of relying on the discount code field.
+              Fallback postage is only used when a product does not have its own postage cost set. If a tracked SKU is filled in here, reports will use that instead of relying on the discount code field. The total ad spend shown here comes from the latest entry in your ad spend log below.
             </p>
 
             <button type="submit" className="button">
               Save reporting settings
             </button>
           </form>
+
+          <div className="summary-card stack">
+            <div>
+              <h3>Ad spend log</h3>
+              <p className="microcopy">
+                Enter the total amount spent so far. Each save adds a timestamped snapshot, so we can chart profit against ad spend over time.
+              </p>
+            </div>
+
+            <form action={addAdSpendEntryAction} className="stack">
+              <div className="field-grid">
+                <label className="field">
+                  <span>Total spent so far</span>
+                  <input name="totalAmount" placeholder="£500" required />
+                </label>
+                <label className="field">
+                  <span>Notes</span>
+                  <input name="notes" placeholder="Weekend Meta push" />
+                </label>
+              </div>
+              <button type="submit" className="button">
+                Add ad spend snapshot
+              </button>
+            </form>
+
+            <div className="reports-list">
+              {adSpendEntries.length > 0 ? (
+                adSpendEntries.map((entry) => (
+                  <div key={entry.id} className="reports-list-row">
+                    <span className="portal-list-item-stack">
+                      <strong>{formatPortalDateTime(entry.recordedAt)}</strong>
+                      <span className="microcopy">{entry.notes || "No note"}</span>
+                    </span>
+                    <span className="portal-inline-actions">
+                      <strong>{entry.totalAmount}</strong>
+                      <form action={deleteAdSpendEntryAction}>
+                        <input type="hidden" name="id" value={entry.id} />
+                        <button type="submit" className="button secondary button-small">
+                          Remove
+                        </button>
+                      </form>
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <p className="microcopy">No ad spend snapshots yet.</p>
+              )}
+            </div>
+          </div>
         </section>
 
         <section className="admin-card stack">
@@ -352,4 +407,17 @@ export default async function DashboardPage({
       </div>
     </main>
   );
+}
+
+function formatPortalDateTime(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Europe/London",
+  }).format(date);
 }

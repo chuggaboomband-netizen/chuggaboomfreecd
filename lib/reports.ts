@@ -1,6 +1,8 @@
 import {
+  AdSpendEntry,
   FunnelConfig,
   InventorySnapshot,
+  ProfitTimelinePoint,
   Product,
   ReportOrder,
   ReportOrderItem,
@@ -211,21 +213,59 @@ function productByVariantId(config: FunnelConfig, variantId?: string | null) {
   return null;
 }
 
-function adSpendForWeek(config: FunnelConfig, weekStart: string) {
-  const entry = config.reporting?.weeklyAdSpend?.find((item) => item.weekStart === weekStart);
-  return toCurrencyValue(entry?.amount);
+const REPORT_START_DATE = "2026-07-01";
+const REPORT_START_TIMESTAMP = "2026-07-01T00:00:00.000Z";
+
+function isOnOrAfterReportStart(purchasedAt: string) {
+  return purchasedAt >= REPORT_START_DATE;
 }
 
-function totalAdSpend(config: FunnelConfig) {
-  const directTotal = toCurrencyValue(config.reporting?.totalAdSpend);
-  if (directTotal > 0) {
-    return directTotal;
+export function getAdSpendEntries(config: FunnelConfig): AdSpendEntry[] {
+  const recordedEntries = [...(config.reporting?.adSpendEntries || [])]
+    .filter((entry) => entry.recordedAt && entry.totalAmount)
+    .sort((a, b) => a.recordedAt.localeCompare(b.recordedAt));
+
+  if (recordedEntries.length > 0) {
+    return recordedEntries;
   }
 
-  return (config.reporting?.weeklyAdSpend || []).reduce(
-    (sum, entry) => sum + toCurrencyValue(entry.amount),
-    0,
-  );
+  const directTotal = config.reporting?.totalAdSpend?.trim();
+  if (directTotal) {
+    return [
+      {
+        id: "legacy-total-ad-spend",
+        recordedAt: new Date().toISOString(),
+        totalAmount: directTotal,
+        notes: "Migrated from legacy total ad spend",
+      },
+    ];
+  }
+
+  const weeklyEntries = (config.reporting?.weeklyAdSpend || [])
+    .filter((entry) => entry.weekStart && entry.amount)
+    .sort((a, b) => a.weekStart.localeCompare(b.weekStart));
+
+  if (weeklyEntries.length === 0) {
+    return [];
+  }
+
+  let runningTotal = 0;
+  return weeklyEntries.map((entry) => {
+    runningTotal += toCurrencyValue(entry.amount);
+
+    return {
+      id: entry.id,
+      recordedAt: `${entry.weekStart}T00:00:00.000Z`,
+      totalAmount: String(runningTotal),
+      notes: entry.notes,
+    };
+  });
+}
+
+function latestTotalAdSpend(config: FunnelConfig) {
+  const entries = getAdSpendEntries(config);
+  const latestEntry = entries[entries.length - 1];
+  return latestEntry ? toCurrencyValue(latestEntry.totalAmount) : 0;
 }
 
 function withAllocatedWeeklyAdSpend(
@@ -237,7 +277,7 @@ function withAllocatedWeeklyAdSpend(
     }
   >,
 ): ReportOrder[] {
-  const campaignTotalAdSpend = totalAdSpend(config);
+  const campaignTotalAdSpend = latestTotalAdSpend(config);
   const orderCount = orders.length || 1;
 
   return orders.map((order) => {
@@ -353,7 +393,7 @@ export function buildOrdersCsv(orders: ReportOrder[]) {
 
 export function buildPlaceholderOrders(config: FunnelConfig): ReportOrder[] {
   const fallbackPostageCost = toCurrencyValue(config.reporting?.defaultPostageCost);
-  const placeholderOrderCount = totalAdSpend(config) > 0 ? 1 : 0;
+  const placeholderOrderCount = latestTotalAdSpend(config) > 0 ? 1 : 0;
 
   const placeholderOrders = Array.from({ length: placeholderOrderCount }, (_, index) => {
     const items = placeholderItems(config);
@@ -369,6 +409,7 @@ export function buildPlaceholderOrders(config: FunnelConfig): ReportOrder[] {
       id: `placeholder-${index}`,
       orderNumber: `PLACEHOLDER-${index + 1}`,
       purchasedAt,
+      purchasedAtTimestamp: REPORT_START_TIMESTAMP,
       weekStart: weekStartFromDate(purchasedAt),
       email: null,
       shippingAddress: null,
@@ -382,12 +423,6 @@ export function buildPlaceholderOrders(config: FunnelConfig): ReportOrder[] {
   });
 
   return withAllocatedWeeklyAdSpend(config, placeholderOrders);
-}
-
-const REPORT_START_DATE = "2026-07-01";
-
-function isOnOrAfterReportStart(purchasedAt: string) {
-  return purchasedAt >= REPORT_START_DATE;
 }
 
 function selectedPlaceholderProducts(config: FunnelConfig) {
@@ -768,6 +803,7 @@ export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOr
       id: order.id,
       orderNumber: order.name,
       purchasedAt,
+      purchasedAtTimestamp: order.createdAt,
       weekStart,
       email: order.email,
       shippingAddress: normalizeShippingAddress(order.shippingAddress),
@@ -850,6 +886,74 @@ export function summarizeWeeklyProfitLoss(orders: ReportOrder[]) {
 
 export function totalProfitLoss(orders: ReportOrder[]) {
   return orders.reduce((sum, order) => sum + order.profitLoss, 0);
+}
+
+export function buildProfitTimeline(
+  config: FunnelConfig,
+  orders: ReportOrder[],
+): ProfitTimelinePoint[] {
+  const adSpendEntries = getAdSpendEntries(config).filter((entry) => entry.recordedAt >= REPORT_START_TIMESTAMP);
+
+  const events = [
+    ...adSpendEntries.map((entry) => ({
+      kind: "ad-spend" as const,
+      timestamp: entry.recordedAt,
+      totalAmount: toCurrencyValue(entry.totalAmount),
+      label: entry.notes || "Ad spend update",
+    })),
+    ...orders
+      .filter((order) => order.purchasedAtTimestamp)
+      .map((order) => ({
+        kind: "order" as const,
+        timestamp: order.purchasedAtTimestamp || `${order.purchasedAt}T12:00:00.000Z`,
+        grossProfit: order.revenue - order.unitCostTotal - order.postageCost,
+        label: order.orderNumber,
+      })),
+  ].sort((a, b) => {
+    const timeCompare = a.timestamp.localeCompare(b.timestamp);
+    if (timeCompare !== 0) {
+      return timeCompare;
+    }
+
+    if (a.kind === b.kind) {
+      return 0;
+    }
+
+    return a.kind === "ad-spend" ? -1 : 1;
+  });
+
+  let cumulativeGrossProfit = 0;
+  let cumulativeAdSpend = 0;
+
+  const points: ProfitTimelinePoint[] = [
+    {
+      timestamp: REPORT_START_TIMESTAMP,
+      label: "Campaign start",
+      netProfit: 0,
+      cumulativeGrossProfit: 0,
+      cumulativeAdSpend: 0,
+      kind: "ad-spend",
+    },
+  ];
+
+  for (const event of events) {
+    if (event.kind === "ad-spend") {
+      cumulativeAdSpend = event.totalAmount;
+    } else {
+      cumulativeGrossProfit += event.grossProfit;
+    }
+
+    points.push({
+      timestamp: event.timestamp,
+      label: event.label,
+      netProfit: cumulativeGrossProfit - cumulativeAdSpend,
+      cumulativeGrossProfit,
+      cumulativeAdSpend,
+      kind: event.kind,
+    });
+  }
+
+  return points;
 }
 
 export function hasShopifyReportingConfig() {

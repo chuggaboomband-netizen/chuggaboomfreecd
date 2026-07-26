@@ -5,6 +5,8 @@ import { isAuthenticated } from "@/lib/auth";
 import { readConfig } from "@/lib/config-store";
 import { formatPriceLabel } from "@/lib/funnel";
 import {
+  buildProfitTimeline,
+  getAdSpendEntries,
   getReportOrders,
   getShopifyConnectionState,
   summarizeProductSales,
@@ -20,6 +22,8 @@ export default async function ReportsPage() {
   const config = await readConfig();
   const shopifyState = await getShopifyConnectionState(config);
   const orders = await getReportOrders(config);
+  const adSpendEntries = [...getAdSpendEntries(config)].sort((a, b) => b.recordedAt.localeCompare(a.recordedAt));
+  const profitTimeline = buildProfitTimeline(config, orders);
   const productSales = summarizeProductSales(orders);
   const weeklyProfitLoss = summarizeWeeklyProfitLoss(orders);
   const totalPnL = totalProfitLoss(orders);
@@ -35,9 +39,9 @@ export default async function ReportsPage() {
             <h1 className="section-heading">Funnel Reporting</h1>
             <p className="microcopy">
               {isLive
-                ? "Live Shopify funnel orders are now being pulled into this report using your configured discount code."
+                ? "Live Shopify funnel orders are now being pulled into this report using your configured tracking rule."
                 : hasLiveConnection
-                  ? "Shopify is connected. If the tables are still sparse, that usually means there are no matching orders yet for the tracked discount code."
+                  ? "Shopify is connected. If the tables are still sparse, that usually means there are no matching orders yet for the tracked SKU or discount code."
                 : "This page can fall back to placeholder rows until Shopify reporting is fully connected."}
             </p>
           </div>
@@ -86,6 +90,36 @@ export default async function ReportsPage() {
                 ))
               ) : (
                 <p className="microcopy">No orders yet.</p>
+              )}
+            </div>
+          </article>
+        </section>
+
+        <section className="reports-grid">
+          <article className="admin-card stack">
+            <h2>Profit over time</h2>
+            {profitTimeline.length > 1 ? (
+              <ProfitTimelineChart points={profitTimeline} />
+            ) : (
+              <p className="microcopy">Add orders and ad spend snapshots to build the graph.</p>
+            )}
+          </article>
+
+          <article className="admin-card stack">
+            <h2>Ad spend log</h2>
+            <div className="reports-list">
+              {adSpendEntries.length > 0 ? (
+                adSpendEntries.map((entry) => (
+                  <div key={entry.id} className="reports-list-row">
+                    <span className="portal-list-item-stack">
+                      <strong>{formatPortalDateTime(entry.recordedAt)}</strong>
+                      <span className="microcopy">{entry.notes || "No note"}</span>
+                    </span>
+                    <strong>{entry.totalAmount}</strong>
+                  </div>
+                ))
+              ) : (
+                <p className="microcopy">No ad spend snapshots yet.</p>
               )}
             </div>
           </article>
@@ -197,4 +231,94 @@ export default async function ReportsPage() {
       </div>
     </main>
   );
+}
+
+function ProfitTimelineChart({
+  points,
+}: {
+  points: ReturnType<typeof buildProfitTimeline>;
+}) {
+  const width = 760;
+  const height = 260;
+  const padding = 24;
+  const values = points.map((point) => point.netProfit);
+  const minValue = Math.min(...values, 0);
+  const maxValue = Math.max(...values, 0);
+  const valueRange = maxValue - minValue || 1;
+  const denominator = Math.max(points.length - 1, 1);
+
+  const coordinates = points.map((point, index) => {
+    const x = padding + ((width - padding * 2) * index) / denominator;
+    const y =
+      height - padding - ((point.netProfit - minValue) / valueRange) * (height - padding * 2);
+
+    return { x, y, point };
+  });
+
+  const path = coordinates
+    .map((coordinate, index) =>
+      `${index === 0 ? "M" : "L"} ${coordinate.x.toFixed(2)} ${coordinate.y.toFixed(2)}`,
+    )
+    .join(" ");
+
+  const zeroY =
+    height - padding - ((0 - minValue) / valueRange) * (height - padding * 2);
+
+  const latestPoint = points[points.length - 1];
+
+  return (
+    <div className="reports-chart-card">
+      <div className="reports-chart-meta">
+        <strong>Latest net profit: {formatPriceLabel(latestPoint.netProfit)}</strong>
+        <span className="microcopy">
+          Latest tracked ad spend: {formatPriceLabel(latestPoint.cumulativeAdSpend)}
+        </span>
+      </div>
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        className="reports-chart"
+        role="img"
+        aria-label="Profit over time graph"
+      >
+        <line
+          x1={padding}
+          x2={width - padding}
+          y1={zeroY}
+          y2={zeroY}
+          className="reports-chart-zero"
+        />
+        <path d={path} className="reports-chart-line" />
+        {coordinates.map(({ x, y, point }, index) => (
+          <g key={`${point.timestamp}-${index}`}>
+            <circle
+              cx={x}
+              cy={y}
+              r="4"
+              className={point.kind === "ad-spend" ? "reports-chart-dot is-spend" : "reports-chart-dot is-order"}
+            />
+            <title>
+              {`${formatPortalDateTime(point.timestamp)} - ${formatPriceLabel(point.netProfit)}`}
+            </title>
+          </g>
+        ))}
+      </svg>
+      <div className="reports-chart-labels">
+        <span>{formatPortalDateTime(points[0].timestamp)}</span>
+        <span>{formatPortalDateTime(latestPoint.timestamp)}</span>
+      </div>
+    </div>
+  );
+}
+
+function formatPortalDateTime(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Europe/London",
+  }).format(date);
 }

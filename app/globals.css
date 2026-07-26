@@ -1300,6 +1300,20 @@ textarea {
   gap: 4px;
 }
 
+.portal-inline-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.button-small {
+  min-height: auto;
+  padding: 8px 12px;
+  font-size: 0.82rem;
+}
+
 .reports-status-box {
   padding: 18px;
   border-radius: 16px;
@@ -1370,6 +1384,61 @@ textarea {
 .reports-empty {
   color: var(--muted);
   text-align: center;
+}
+
+.reports-chart-card {
+  display: grid;
+  gap: 14px;
+}
+
+.reports-chart-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.reports-chart {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.reports-chart-zero {
+  stroke: rgba(235, 239, 255, 0.18);
+  stroke-width: 1;
+  stroke-dasharray: 6 6;
+}
+
+.reports-chart-line {
+  fill: none;
+  stroke: #ffd54f;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 10px 24px rgba(255, 213, 79, 0.2));
+}
+
+.reports-chart-dot {
+  stroke-width: 2;
+}
+
+.reports-chart-dot.is-order {
+  fill: #45b570;
+  stroke: rgba(69, 181, 112, 0.28);
+}
+
+.reports-chart-dot.is-spend {
+  fill: #ff8c5a;
+  stroke: rgba(255, 140, 90, 0.28);
+}
+
+.reports-chart-labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: rgba(235, 239, 255, 0.72);
+  font-size: 0.85rem;
 }
 
 .summary-layout {

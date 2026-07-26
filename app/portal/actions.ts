@@ -9,7 +9,7 @@ import { revalidatePath } from "next/cache";
 import { createSession, clearSession, passwordMatches } from "@/lib/auth";
 import { readConfig, savePublicUpload, writeConfig } from "@/lib/config-store";
 import { parseHandleList, parseWeeklyAdSpend } from "@/lib/funnel";
-import type { Discount, Product, ProductVariant } from "@/lib/types";
+import type { AdSpendEntry, Discount, Product, ProductVariant } from "@/lib/types";
 
 function getString(formData: FormData, key: string): string {
   return String(formData.get(key) || "").trim();
@@ -130,8 +130,59 @@ export async function saveReportingAction(formData: FormData) {
       reportDiscountCode: getString(formData, "reportDiscountCode"),
       trackedProductSku: getString(formData, "trackedProductSku") || undefined,
       defaultPostageCost: getString(formData, "defaultPostageCost"),
-      totalAdSpend: getString(formData, "totalAdSpend") || undefined,
+      totalAdSpend: config.reporting?.totalAdSpend,
+      adSpendEntries: config.reporting?.adSpendEntries || [],
       weeklyAdSpend: parseWeeklyAdSpend(getString(formData, "weeklyAdSpend")),
+    };
+
+    await writeConfig(config);
+  });
+}
+
+export async function addAdSpendEntryAction(formData: FormData) {
+  await finalizePortalMutation(async () => {
+    const config = await readConfig();
+    const totalAmount = getString(formData, "totalAmount");
+    const notes = getString(formData, "notes") || undefined;
+
+    if (!totalAmount) {
+      throw new Error("Enter the total ad spend amount before saving.");
+    }
+
+    const nextEntry: AdSpendEntry = {
+      id: crypto.randomUUID(),
+      recordedAt: new Date().toISOString(),
+      totalAmount,
+      notes,
+    };
+
+    config.reporting = {
+      ...config.reporting,
+      totalAdSpend: totalAmount,
+      adSpendEntries: [...(config.reporting?.adSpendEntries || []), nextEntry],
+      weeklyAdSpend: config.reporting?.weeklyAdSpend || [],
+      reportDiscountCode: config.reporting?.reportDiscountCode || "FREECD",
+      defaultPostageCost: config.reporting?.defaultPostageCost || "",
+    };
+
+    await writeConfig(config);
+  });
+}
+
+export async function deleteAdSpendEntryAction(formData: FormData) {
+  await finalizePortalMutation(async () => {
+    const config = await readConfig();
+    const id = getString(formData, "id");
+    const nextEntries = (config.reporting?.adSpendEntries || []).filter((entry) => entry.id !== id);
+    const latestEntry = nextEntries[nextEntries.length - 1];
+
+    config.reporting = {
+      ...config.reporting,
+      totalAdSpend: latestEntry?.totalAmount,
+      adSpendEntries: nextEntries,
+      weeklyAdSpend: config.reporting?.weeklyAdSpend || [],
+      reportDiscountCode: config.reporting?.reportDiscountCode || "FREECD",
+      defaultPostageCost: config.reporting?.defaultPostageCost || "",
     };
 
     await writeConfig(config);
