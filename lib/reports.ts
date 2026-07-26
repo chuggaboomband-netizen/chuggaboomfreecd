@@ -40,6 +40,16 @@ type ShopifyOrderNode = {
   id: string;
   name: string;
   createdAt: string;
+  cancelledAt: string | null;
+  displayFinancialStatus:
+    | "AUTHORIZED"
+    | "EXPIRED"
+    | "PAID"
+    | "PARTIALLY_PAID"
+    | "PARTIALLY_REFUNDED"
+    | "PENDING"
+    | "REFUNDED"
+    | "VOIDED";
   email: string | null;
   discountCodes: string[];
   discountApplications: {
@@ -544,6 +554,14 @@ function orderMatchesFunnel(
   trackedDiscountCode: string,
   trackedProductSku?: string,
 ) {
+  if (order.cancelledAt) {
+    return false;
+  }
+
+  if (order.displayFinancialStatus === "REFUNDED" || order.displayFinancialStatus === "VOIDED") {
+    return false;
+  }
+
   const normalizedTrackedSku = trackedProductSku?.trim().toLowerCase();
 
   if (normalizedTrackedSku) {
@@ -687,6 +705,8 @@ export async function fetchShopifyOrders(config: FunnelConfig): Promise<ReportOr
             id
             name
             createdAt
+            cancelledAt
+            displayFinancialStatus
             email
             discountCodes
             discountApplications(first: 20) {
