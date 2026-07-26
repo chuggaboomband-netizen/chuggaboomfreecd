@@ -912,38 +912,17 @@ export function buildProfitTimeline(
   config: FunnelConfig,
   orders: ReportOrder[],
 ): ProfitTimelinePoint[] {
-  const adSpendEntries = getAdSpendEntries(config).filter((entry) => entry.recordedAt >= REPORT_START_TIMESTAMP);
-
-  const events = [
-    ...adSpendEntries.map((entry) => ({
-      kind: "ad-spend" as const,
-      timestamp: entry.recordedAt,
-      totalAmount: toCurrencyValue(entry.totalAmount),
-      label: entry.notes || "Ad spend update",
-    })),
-    ...orders
-      .filter((order) => order.purchasedAtTimestamp)
-      .map((order) => ({
-        kind: "order" as const,
-        timestamp: order.purchasedAtTimestamp || `${order.purchasedAt}T12:00:00.000Z`,
-        grossProfit: order.revenue - order.unitCostTotal - order.postageCost,
-        label: order.orderNumber,
-      })),
-  ].sort((a, b) => {
-    const timeCompare = a.timestamp.localeCompare(b.timestamp);
-    if (timeCompare !== 0) {
-      return timeCompare;
-    }
-
-    if (a.kind === b.kind) {
-      return 0;
-    }
-
-    return a.kind === "ad-spend" ? -1 : 1;
-  });
+  const orderedOrders = [...orders]
+    .filter((order) => order.purchasedAtTimestamp)
+    .sort((a, b) =>
+      (a.purchasedAtTimestamp || `${a.purchasedAt}T12:00:00.000Z`).localeCompare(
+        b.purchasedAtTimestamp || `${b.purchasedAt}T12:00:00.000Z`,
+      ),
+    );
 
   let cumulativeGrossProfit = 0;
   let cumulativeAdSpend = 0;
+  let cumulativeNetProfit = 0;
 
   const points: ProfitTimelinePoint[] = [
     {
@@ -956,20 +935,19 @@ export function buildProfitTimeline(
     },
   ];
 
-  for (const event of events) {
-    if (event.kind === "ad-spend") {
-      cumulativeAdSpend = event.totalAmount;
-    } else {
-      cumulativeGrossProfit += event.grossProfit;
-    }
+  for (const order of orderedOrders) {
+    const grossProfit = order.revenue - order.unitCostTotal - order.postageCost;
+    cumulativeGrossProfit += grossProfit;
+    cumulativeAdSpend += order.adSpendAllocated;
+    cumulativeNetProfit += order.profitLoss;
 
     points.push({
-      timestamp: event.timestamp,
-      label: event.label,
-      netProfit: cumulativeGrossProfit - cumulativeAdSpend,
+      timestamp: order.purchasedAtTimestamp || `${order.purchasedAt}T12:00:00.000Z`,
+      label: order.orderNumber,
+      netProfit: cumulativeNetProfit,
       cumulativeGrossProfit,
       cumulativeAdSpend,
-      kind: event.kind,
+      kind: "order",
     });
   }
 
