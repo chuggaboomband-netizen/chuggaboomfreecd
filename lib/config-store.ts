@@ -58,31 +58,41 @@ async function upsertGitHubFile(repoPath: string, content: string | Buffer, mess
   if (!remote) {
     throw new Error("Remote storage is not configured.");
   }
-
-  const existing = await fetchGitHubFile(repoPath);
   const encodedContent =
     typeof content === "string"
       ? Buffer.from(content, "utf8").toString("base64")
       : content.toString("base64");
 
-  const response = await fetch(`https://api.github.com/repos/${remote.repo}/contents/${repoPath}`, {
-    method: "PUT",
-    headers: {
-      Accept: "application/vnd.github+json",
-      Authorization: `Bearer ${remote.token}`,
-      "Content-Type": "application/json",
-      "User-Agent": "chuggaboom-funnel",
-    },
-    body: JSON.stringify({
-      message,
-      content: encodedContent,
-      branch: remote.branch,
-      sha: existing?.sha,
-    }),
-  });
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const existing = await fetchGitHubFile(repoPath);
+    const response = await fetch(`https://api.github.com/repos/${remote.repo}/contents/${repoPath}`, {
+      method: "PUT",
+      headers: {
+        Accept: "application/vnd.github+json",
+        Authorization: `Bearer ${remote.token}`,
+        "Content-Type": "application/json",
+        "User-Agent": "chuggaboom-funnel",
+      },
+      body: JSON.stringify({
+        message,
+        content: encodedContent,
+        branch: remote.branch,
+        sha: existing?.sha,
+      }),
+    });
 
-  if (!response.ok) {
+    if (response.ok) {
+      return;
+    }
+
     const body = await response.text();
+    const isConflict = response.status === 409;
+    const hasMoreRetries = attempt < 2;
+
+    if (isConflict && hasMoreRetries) {
+      continue;
+    }
+
     throw new Error(`GitHub write failed for ${repoPath}: ${response.status} ${response.statusText} ${body}`);
   }
 }
