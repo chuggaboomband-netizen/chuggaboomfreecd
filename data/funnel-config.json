@@ -5,7 +5,7 @@
     "subheadline": "Grab the free ChuggaBoom CD and customise your bundle with optional add-ons before checkout.",
     "heroNote": "Just cover shipping. Add extras if you want.",
     "shippingLabel": "Shipping from",
-    "shippingPrice": "\u00a34.99",
+    "shippingPrice": "£4.99",
     "startButtonLabel": "Claim your free CD",
     "shopifyStoreHost": "chuggaboom.wtf"
   },
@@ -45,7 +45,7 @@
       "imageSrc": "/uploads/vinyl_marble-675ce1df-ab6c-4729-be49-d43dcec40667.png",
       "upsellHeadline": "Want even more music while you're here?",
       "upsellSubheadline": "Grab yourself a copy of our sophomore full album \"Death Pledge.\" - You're already covering the postage!",
-      "upsellBody": "This is a limited edition \"Transparent Marble\" press of the vinyl that will never be re-printed. We'll even let you have it for \u00a35 off, seeing as you're already here...",
+      "upsellBody": "This is a limited edition \"Transparent Marble\" press of the vinyl that will never be re-printed. We'll even let you have it for £5 off, seeing as you're already here...",
       "variants": [],
       "compareAtPriceLabel": "24.99",
       "upsellYesLabel": "Yes please! I love vinyl",
@@ -95,7 +95,7 @@
     },
     {
       "id": "da454ec2-a225-44b4-9044-fd471f5f58f1",
-      "name": "\u00a35 off the T-Shirt",
+      "name": "£5 off the T-Shirt",
       "code": "5OffTee",
       "priority": 10
     },
@@ -115,16 +115,16 @@
   "reporting": {
     "reportDiscountCode": "FREECD",
     "trackedProductSku": "free-cd-campaign",
-    "defaultPostageCost": "\u00a33.8",
+    "defaultPostageCost": "£3.8",
     "weeklyAdSpend": [
       {
         "id": "2026-07-20-0",
         "weekStart": "2026-07-20",
-        "amount": "\u00a397.95",
+        "amount": "£97.95",
         "notes": "Campaign Launch"
       }
     ],
-    "totalAdSpend": "271.86",
+    "totalAdSpend": "280.05",
     "adSpendEntries": [
       {
         "id": "739b2180-47a8-47a7-b6ec-2df0f2943f12",
@@ -196,6 +196,11 @@
         "id": "0885471a-ccce-4a4e-92e2-4415b035b8b3",
         "recordedAt": "2026-08-01T11:32:50.816Z",
         "totalAmount": "271.86"
+      },
+      {
+        "id": "381ee8fe-4d2a-49e6-951a-290138051774",
+        "recordedAt": "2026-08-01T13:56:31.109Z",
+        "totalAmount": "280.05"
       }
     ],
     "cachedOrders": []
