@@ -84,7 +84,12 @@ export default async function ReportsPage() {
               {productSales.length > 0 ? (
                 productSales.map((item) => (
                   <div key={item.productName} className="reports-list-row">
-                    <span>{item.productName}</span>
+                    <span className="portal-list-item-stack">
+                      <strong>{item.productName}</strong>
+                      <span className="microcopy">
+                        Stock on hand: {item.stockOnHand ?? "—"}
+                      </span>
+                    </span>
                     <strong>{item.quantity}</strong>
                   </div>
                 ))
@@ -107,7 +112,7 @@ export default async function ReportsPage() {
 
           <article className="admin-card stack">
             <h2>Ad spend log</h2>
-            <div className="reports-list">
+            <div className="reports-list reports-list-scroll">
               {adSpendEntries.length > 0 ? (
                 adSpendEntries.map((entry) => (
                   <div key={entry.id} className="reports-list-row">
@@ -169,7 +174,7 @@ export default async function ReportsPage() {
 
         <section className="admin-card stack">
           <h2>Order list</h2>
-          <div className="reports-table-wrap">
+          <div className="reports-table-wrap reports-table-scroll">
             <table className="reports-table">
               <thead>
                 <tr>

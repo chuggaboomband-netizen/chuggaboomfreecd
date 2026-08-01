@@ -1050,16 +1050,27 @@ export async function getReportOrders(config: FunnelConfig, options?: ReportSync
 }
 
 export function summarizeProductSales(orders: ReportOrder[]) {
-  const counts = new Map<string, number>();
+  const counts = new Map<string, { quantity: number; stockOnHand: number | null }>();
 
   for (const order of orders) {
     for (const item of order.items) {
-      counts.set(item.productName, (counts.get(item.productName) || 0) + item.quantity);
+      const existing = counts.get(item.productName);
+      counts.set(item.productName, {
+        quantity: (existing?.quantity || 0) + item.quantity,
+        stockOnHand:
+          item.stockOnHand != null
+            ? item.stockOnHand
+            : (existing?.stockOnHand ?? null),
+      });
     }
   }
 
   return [...counts.entries()]
-    .map(([productName, quantity]) => ({ productName, quantity }))
+    .map(([productName, summary]) => ({
+      productName,
+      quantity: summary.quantity,
+      stockOnHand: summary.stockOnHand,
+    }))
     .sort((a, b) => b.quantity - a.quantity || a.productName.localeCompare(b.productName));
 }
 

@@ -1280,6 +1280,12 @@ textarea {
   gap: 12px;
 }
 
+.reports-list-scroll {
+  max-height: 720px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
 .reports-list-row {
   display: flex;
   justify-content: space-between;
@@ -1342,6 +1348,12 @@ textarea {
 }
 
 .reports-table-wrap {
+  overflow-x: auto;
+}
+
+.reports-table-scroll {
+  max-height: 720px;
+  overflow-y: auto;
   overflow-x: auto;
 }
 
