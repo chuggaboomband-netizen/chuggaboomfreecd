@@ -30,6 +30,8 @@ export type ReportingSettings = {
   totalAdSpend?: string;
   adSpendEntries?: AdSpendEntry[];
   weeklyAdSpend: WeeklyAdSpend[];
+  cachedOrders?: StoredReportOrder[];
+  sync?: ReportingSyncState;
 };
 
 export type ProductType = "core" | "upsell";
@@ -131,6 +133,14 @@ export type ReportOrder = {
   profitLoss: number;
   items: ReportOrderItem[];
   source: "shopify" | "placeholder";
+};
+
+export type StoredReportOrder = Omit<ReportOrder, "adSpendAllocated" | "profitLoss">;
+
+export type ReportingSyncState = {
+  lastSyncedAt?: string;
+  newestOrderCreatedAt?: string;
+  trackingKey?: string;
 };
 
 export type ProfitTimelinePoint = {
