@@ -39,9 +39,9 @@ export default async function ReportsPage() {
             <h1 className="section-heading">Funnel Reporting</h1>
             <p className="microcopy">
               {isLive
-                ? "Live Shopify funnel orders are now being pulled into this report using your configured tracking rule."
+                ? "Live Shopify funnel orders are being pulled into this report using your configured tracking rule. For privacy, customer data is no longer cached in the repo-backed config store."
                 : hasLiveConnection
-                  ? "Shopify is connected. If the tables are still sparse, that usually means there are no matching orders yet for the tracked SKU or discount code."
+                  ? "Shopify is connected. If the tables are still sparse, that usually means there are no matching orders yet for the tracked SKU or discount code, or that older history needs a fresh live pull."
                 : "This page can fall back to placeholder rows until Shopify reporting is fully connected."}
             </p>
           </div>

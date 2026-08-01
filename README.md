@@ -50,6 +50,7 @@ https://{shopifyStoreHost}/cart/{variantId},{variantId}?channel=buy_button&disco
 - This version uses a JSON file as its backend store so changes persist in a stateful Node environment.
 - Portal auth now supports username + password + optional authenticator app code (`ADMIN_TOTP_SECRET`).
 - Login attempts are throttled in-app to slow down password guessing.
+- Customer order cache is no longer persisted into the repo-backed config store. Live reports pull from Shopify directly until a dedicated private data store is added.
 - In production on Vercel, filesystem writes do not persist. To make the portal work there, set:
   - `GITHUB_STORAGE_TOKEN`: a GitHub token with contents write access to the repo
   - `GITHUB_STORAGE_REPO`: for example `chuggaboomband-netizen/chuggaboomfreecd`

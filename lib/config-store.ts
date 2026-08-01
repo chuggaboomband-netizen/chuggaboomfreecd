@@ -11,6 +11,17 @@ type GitHubFileResponse = {
   sha?: string;
 };
 
+function sanitizeConfig(config: FunnelConfig): FunnelConfig {
+  return {
+    ...config,
+    reporting: {
+      ...config.reporting,
+      cachedOrders: [],
+      sync: undefined,
+    },
+  };
+}
+
 function getRemoteStorageConfig() {
   const token = process.env.GITHUB_STORAGE_TOKEN;
   const repo = process.env.GITHUB_STORAGE_REPO;
@@ -99,7 +110,7 @@ async function upsertGitHubFile(repoPath: string, content: string | Buffer, mess
 
 async function readLocalConfig(): Promise<FunnelConfig> {
   const raw = await fs.readFile(configPath, "utf8");
-  return JSON.parse(raw) as FunnelConfig;
+  return sanitizeConfig(JSON.parse(raw) as FunnelConfig);
 }
 
 export async function readConfig(): Promise<FunnelConfig> {
@@ -112,7 +123,7 @@ export async function readConfig(): Promise<FunnelConfig> {
       }
 
       const raw = Buffer.from(file.content, "base64").toString("utf8");
-      return JSON.parse(raw) as FunnelConfig;
+      return sanitizeConfig(JSON.parse(raw) as FunnelConfig);
     } catch (error) {
       console.error("Falling back to local funnel config after GitHub storage read failed.", error);
     }
@@ -122,17 +133,18 @@ export async function readConfig(): Promise<FunnelConfig> {
 }
 
 export async function writeConfig(config: FunnelConfig): Promise<void> {
+  const sanitizedConfig = sanitizeConfig(config);
   const remote = getRemoteStorageConfig();
   if (remote) {
     await upsertGitHubFile(
       "data/funnel-config.json",
-      `${JSON.stringify(config, null, 2)}\n`,
+      `${JSON.stringify(sanitizedConfig, null, 2)}\n`,
       "Update funnel config",
     );
     return;
   }
 
-  await fs.writeFile(configPath, `${JSON.stringify(config, null, 2)}\n`, "utf8");
+  await fs.writeFile(configPath, `${JSON.stringify(sanitizedConfig, null, 2)}\n`, "utf8");
 }
 
 export async function savePublicUpload(file: File, outputName: string): Promise<string> {
