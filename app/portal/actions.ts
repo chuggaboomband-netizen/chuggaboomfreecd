@@ -5,8 +5,19 @@ import path from "node:path";
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 
-import { createSession, clearSession, passwordMatches } from "@/lib/auth";
+import {
+  assertLoginAllowed,
+  clearFailedLogins,
+  createSession,
+  clearSession,
+  isTotpEnabled,
+  otpMatches,
+  passwordMatches,
+  recordFailedLogin,
+  usernameMatches,
+} from "@/lib/auth";
 import { readConfig, savePublicUpload, writeConfig } from "@/lib/config-store";
 import { parseHandleList, parseWeeklyAdSpend } from "@/lib/funnel";
 import type { AdSpendEntry, Discount, Product, ProductVariant } from "@/lib/types";
@@ -88,12 +99,31 @@ async function finalizePortalMutation(
 }
 
 export async function loginAction(formData: FormData) {
+  const username = getString(formData, "username");
   const password = getString(formData, "password");
+  const otp = getString(formData, "otp");
+  const headerStore = await headers();
+  const forwardedFor = headerStore.get("x-forwarded-for");
+  const clientIp = forwardedFor?.split(",")[0]?.trim() || "local";
 
-  if (!passwordMatches(password)) {
-    redirect("/portal?error=1");
+  try {
+    assertLoginAllowed(clientIp);
+  } catch (error) {
+    redirect(`/portal?error=${encodeURIComponent(getErrorMessage(error))}`);
   }
 
+  if (!usernameMatches(username) || !passwordMatches(password) || (isTotpEnabled() && !otpMatches(otp))) {
+    recordFailedLogin(clientIp);
+    redirect(
+      `/portal?error=${encodeURIComponent(
+        isTotpEnabled()
+          ? "Incorrect username, password, or authenticator code."
+          : "Incorrect username or password.",
+      )}`,
+    );
+  }
+
+  clearFailedLogins(clientIp);
   await createSession();
   redirect("/portal/dashboard");
 }

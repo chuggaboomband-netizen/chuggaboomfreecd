@@ -1,19 +1,20 @@
 import { redirect } from "next/navigation";
 
-import { isAuthenticated } from "@/lib/auth";
+import { getPortalSecurityState, isAuthenticated } from "@/lib/auth";
 
 import { loginAction } from "./actions";
 
 export default async function PortalPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; notice?: string }>;
 }) {
   if (await isAuthenticated()) {
     redirect("/portal/dashboard");
   }
 
   const params = await searchParams;
+  const security = getPortalSecurityState();
 
   return (
     <main className="section hero portal-surface">
@@ -23,17 +24,43 @@ export default async function PortalPage({
             <span className="eyebrow">Private access</span>
             <h1 className="section-heading">Secret Portal</h1>
             <p className="microcopy">
-              Log in with the admin password from your environment file to manage products, discounts, and Shopify permalinks without spreadsheets.
+              Log in with your admin credentials to manage products, discounts, Shopify permalinks, and reporting without spreadsheets.
             </p>
           </div>
 
-          {params.error ? <div className="banner warning">Incorrect password.</div> : null}
+          {params.notice ? <div className="banner">{params.notice}</div> : null}
+          {params.error ? <div className="banner warning">{params.error}</div> : null}
+
+          <div className="microcopy">
+            Username: <strong>{security.username}</strong>
+            <br />
+            {security.totpEnabled
+              ? "Authenticator app protection is enabled for this portal."
+              : "Authenticator app protection is not enabled yet. Add ADMIN_TOTP_SECRET to turn on 2FA."}
+          </div>
 
           <form action={loginAction} className="stack">
+            <label className="field">
+              <span>Username</span>
+              <input name="username" defaultValue={security.username} placeholder="Enter admin username" required />
+            </label>
             <label className="field">
               <span>Password</span>
               <input type="password" name="password" placeholder="Enter admin password" required />
             </label>
+            {security.totpEnabled ? (
+              <label className="field">
+                <span>Authenticator code</span>
+                <input
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  name="otp"
+                  placeholder="123456"
+                  maxLength={6}
+                  required
+                />
+              </label>
+            ) : null}
             <button type="submit" className="button">
               Enter portal
             </button>

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { isAuthenticated } from "@/lib/auth";
+import { getPortalSecurityState, isAuthenticated } from "@/lib/auth";
 import { readConfig } from "@/lib/config-store";
 import { formatPriceLabel, sortProducts } from "@/lib/funnel";
 import {
@@ -33,6 +33,7 @@ export default async function DashboardPage({
   }
 
   const config = await readConfig();
+  const security = getPortalSecurityState();
   const shopifyState = await getShopifyConnectionState(config);
   const orders = await getReportOrders(config);
   const productSales = summarizeProductSales(orders);
@@ -111,6 +112,17 @@ export default async function DashboardPage({
               {topProduct ? `${topProduct.productName} (${topProduct.quantity})` : "No sales yet"}
             </strong>
             <p className="microcopy">Compact snapshot before you dive into the full report.</p>
+          </article>
+          <article className="summary-card portal-quick-card">
+            <span className="portal-quick-label">Portal security</span>
+            <strong className="portal-quick-value">
+              {security.totpEnabled ? "2FA enabled" : "Password only"}
+            </strong>
+            <p className="microcopy">
+              {security.totpEnabled
+                ? "Authenticator app login is active."
+                : "Run npm run auth:setup, then add ADMIN_TOTP_SECRET to enable MFA."}
+            </p>
           </article>
         </section>
 

@@ -37,15 +37,19 @@ https://{shopifyStoreHost}/cart/{variantId},{variantId}?channel=buy_button&disco
 ## Local setup
 
 1. Copy `.env.example` to `.env.local`
-2. Set `ADMIN_PASSWORD`
-3. Optional: set `GITHUB_STORAGE_TOKEN`, `GITHUB_STORAGE_REPO`, and `GITHUB_STORAGE_BRANCH` if you want local saves to write back to GitHub instead of the local JSON file
-4. Optional: set `SHOPIFY_STORE_DOMAIN` and either `SHOPIFY_ADMIN_ACCESS_TOKEN` or both `SHOPIFY_CLIENT_ID` and `SHOPIFY_CLIENT_SECRET` to enable live reports from Shopify
-4. Install dependencies with `npm install`
-5. Run `npm run dev`
+2. Set `ADMIN_USERNAME` and `ADMIN_PASSWORD`
+3. Set `ADMIN_SESSION_SECRET` to a long random string for signed portal sessions
+4. Optional but recommended: run `npm run auth:setup`, scan the QR code in your authenticator app, then set `ADMIN_TOTP_SECRET`
+5. Optional: set `GITHUB_STORAGE_TOKEN`, `GITHUB_STORAGE_REPO`, and `GITHUB_STORAGE_BRANCH` if you want local saves to write back to GitHub instead of the local JSON file
+6. Optional: set `SHOPIFY_STORE_DOMAIN` and either `SHOPIFY_ADMIN_ACCESS_TOKEN` or both `SHOPIFY_CLIENT_ID` and `SHOPIFY_CLIENT_SECRET` to enable live reports from Shopify
+7. Install dependencies with `npm install`
+8. Run `npm run dev`
 
 ## Notes
 
 - This version uses a JSON file as its backend store so changes persist in a stateful Node environment.
+- Portal auth now supports username + password + optional authenticator app code (`ADMIN_TOTP_SECRET`).
+- Login attempts are throttled in-app to slow down password guessing.
 - In production on Vercel, filesystem writes do not persist. To make the portal work there, set:
   - `GITHUB_STORAGE_TOKEN`: a GitHub token with contents write access to the repo
   - `GITHUB_STORAGE_REPO`: for example `chuggaboomband-netizen/chuggaboomfreecd`
