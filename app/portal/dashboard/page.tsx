@@ -26,7 +26,7 @@ import { PortalLinkBuilder } from "./portal-link-builder";
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ error?: string; saved?: string }>;
+  searchParams?: Promise<{ error?: string; saved?: string; discounts?: string }>;
 }) {
   if (!(await isAuthenticated())) {
     redirect("/portal");
@@ -45,6 +45,7 @@ export default async function DashboardPage({
     b.recordedAt.localeCompare(a.recordedAt),
   );
   const params = searchParams ? await searchParams : undefined;
+  const discountsOpen = params?.discounts === "1";
 
   return (
     <main className="section hero portal-surface">
@@ -182,7 +183,7 @@ export default async function DashboardPage({
           </form>
         </section>
 
-        <section className="admin-grid portal-admin-grid">
+        <section className="admin-grid">
           <div className="admin-card stack">
             <div className="report-header-row">
               <div>
@@ -191,9 +192,14 @@ export default async function DashboardPage({
                   Product editing, images, upsell copy, and live funnel selection now live on their own page so the portal stays easier to navigate.
                 </p>
               </div>
-              <Link href="/portal/upsells" className="button">
-                Open upsell manager
-              </Link>
+              <div className="portal-header-actions">
+                <Link href="/portal/dashboard?discounts=1" className="button secondary">
+                  Manage discounts
+                </Link>
+                <Link href="/portal/upsells" className="button">
+                  Open upsell manager
+                </Link>
+              </div>
             </div>
             <div className="portal-live-list">
               {products.map((product) => (
@@ -209,67 +215,34 @@ export default async function DashboardPage({
               ))}
             </div>
           </div>
-          <div className="admin-card stack discounts-panel">
+        </section>
+
+        <section className="admin-card stack">
+          <div className="report-header-row">
             <div>
-              <h2>Discounts</h2>
+              <h2>Discount rules</h2>
               <p className="microcopy">
-                Codes can now be edited in place. If you rename a discount code here, linked product auto-discount references will update with it.
+                Discount editing now lives in a floating window so the dashboard can stay focused on campaign settings, products, and reporting.
               </p>
             </div>
-
-            <div className="stack">
-              {discounts.map((discount) => (
-                <div key={discount.id} className="summary-card stack discount-card">
-                  <form action={updateDiscountAction} className="stack">
-                    <input type="hidden" name="id" value={discount.id} />
-                    <label className="field">
-                      <span>Discount name</span>
-                      <input name="name" defaultValue={discount.name} required />
-                    </label>
-                    <label className="field">
-                      <span>Discount code</span>
-                      <input name="code" defaultValue={discount.code} required />
-                    </label>
-                    <label className="field">
-                      <span>Priority</span>
-                      <input name="priority" type="number" defaultValue={String(discount.priority)} required />
-                    </label>
-                    <div className="discount-actions">
-                      <button type="submit" className="button">
-                        Save discount
-                      </button>
-                    </div>
-                  </form>
-                  <form action={deleteDiscountAction}>
-                    <input type="hidden" name="id" value={discount.id} />
-                    <button type="submit" className="button secondary">
-                      Remove discount
-                    </button>
-                  </form>
-                </div>
-              ))}
-            </div>
-
-            <form action={addDiscountAction} className="stack discount-create-form">
-              <label className="field">
-                <span>Discount name</span>
-                <input name="name" required />
-              </label>
-              <label className="field">
-                <span>Discount code</span>
-                <input name="code" placeholder="FREECD100" required />
-              </label>
-              <label className="field">
-                <span>Priority</span>
-                <input name="priority" type="number" defaultValue="10" required />
-              </label>
-              <div className="discount-actions">
-                <button type="submit" className="button">
-                  Add discount
-                </button>
-              </div>
-            </form>
+            <Link href="/portal/dashboard?discounts=1" className="button">
+              Open discounts window
+            </Link>
           </div>
+          <div className="portal-live-list">
+            {discounts.slice(0, 4).map((discount) => (
+              <div key={discount.id} className="reports-list-row">
+                <span className="portal-list-item-stack">
+                  <strong>{discount.name}</strong>
+                  <span className="microcopy">{discount.code}</span>
+                </span>
+                <strong>Priority {discount.priority}</strong>
+              </div>
+            ))}
+          </div>
+          {discounts.length > 4 ? (
+            <p className="microcopy">Showing 4 of {discounts.length} discounts.</p>
+          ) : null}
         </section>
 
         <section className="admin-card stack">
@@ -416,6 +389,87 @@ export default async function DashboardPage({
           products={products}
           discounts={discounts}
         />
+
+        {discountsOpen ? (
+          <div className="portal-modal-overlay">
+            <div className="portal-modal-card portal-discounts-modal">
+              <div className="report-header-row">
+                <div>
+                  <h2>Discounts</h2>
+                  <p className="microcopy">
+                    Edit discount codes here without letting them take over the main dashboard. Renaming a discount still updates linked product auto-discount references.
+                  </p>
+                </div>
+                <Link href="/portal/dashboard" className="button secondary">
+                  Close
+                </Link>
+              </div>
+
+              <div className="portal-modal-grid portal-discounts-grid">
+                <div className="stack portal-discounts-scroll">
+                  {discounts.map((discount) => (
+                    <div key={discount.id} className="summary-card stack discount-card">
+                      <form action={updateDiscountAction} className="stack">
+                        <input type="hidden" name="id" value={discount.id} />
+                        <label className="field">
+                          <span>Discount name</span>
+                          <input name="name" defaultValue={discount.name} required />
+                        </label>
+                        <label className="field">
+                          <span>Discount code</span>
+                          <input name="code" defaultValue={discount.code} required />
+                        </label>
+                        <label className="field">
+                          <span>Priority</span>
+                          <input name="priority" type="number" defaultValue={String(discount.priority)} required />
+                        </label>
+                        <div className="discount-actions">
+                          <button type="submit" className="button">
+                            Save discount
+                          </button>
+                        </div>
+                      </form>
+                      <form action={deleteDiscountAction}>
+                        <input type="hidden" name="id" value={discount.id} />
+                        <button type="submit" className="button secondary">
+                          Remove discount
+                        </button>
+                      </form>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="summary-card stack discount-create-form">
+                  <div>
+                    <h3>Add discount</h3>
+                    <p className="microcopy">
+                      Create a new discount code and set its priority here.
+                    </p>
+                  </div>
+                  <form action={addDiscountAction} className="stack">
+                    <label className="field">
+                      <span>Discount name</span>
+                      <input name="name" required />
+                    </label>
+                    <label className="field">
+                      <span>Discount code</span>
+                      <input name="code" placeholder="FREECD100" required />
+                    </label>
+                    <label className="field">
+                      <span>Priority</span>
+                      <input name="priority" type="number" defaultValue="10" required />
+                    </label>
+                    <div className="discount-actions">
+                      <button type="submit" className="button">
+                        Add discount
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     </main>
   );
