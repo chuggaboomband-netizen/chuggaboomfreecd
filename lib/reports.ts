@@ -12,6 +12,12 @@ import {
 } from "@/lib/types";
 import { writeConfig } from "@/lib/config-store";
 import { isProductActiveInFunnel, parsePriceLabel, weekStartFromDate } from "@/lib/funnel";
+import {
+  hasReportDatabase,
+  readStoredOrders,
+  readSyncState,
+  replaceStoredOrders,
+} from "@/lib/report-store";
 
 export type ShopifyConnectionState =
   | {
@@ -367,6 +373,22 @@ function getCachedOrders(config: FunnelConfig) {
         a.purchasedAtTimestamp || `${a.purchasedAt}T12:00:00.000Z`,
       ),
     );
+}
+
+async function getPersistedOrders(config: FunnelConfig, activeTrackingKey: string) {
+  if (hasReportDatabase()) {
+    const storedOrders = await readStoredOrders(activeTrackingKey);
+    return storedOrders
+      .filter((order) => order.source === "shopify")
+      .filter((order) => isOnOrAfterReportStart(order.purchasedAt))
+      .sort((a, b) =>
+        (b.purchasedAtTimestamp || `${b.purchasedAt}T12:00:00.000Z`).localeCompare(
+          a.purchasedAtTimestamp || `${a.purchasedAt}T12:00:00.000Z`,
+        ),
+      );
+  }
+
+  return getCachedOrders(config);
 }
 
 function newestCachedTimestamp(cachedOrders: StoredReportOrder[]) {
@@ -891,9 +913,11 @@ async function syncCachedShopifyOrders(
   const trackedDiscountCode = config.reporting?.reportDiscountCode || "FREECD";
   const trackedProductSku = config.reporting?.trackedProductSku?.trim();
   const activeTrackingKey = trackingKey(config);
-  const previousSync: ReportingSyncState | undefined = config.reporting?.sync;
+  const previousSync: ReportingSyncState | undefined = hasReportDatabase()
+    ? await readSyncState(activeTrackingKey)
+    : config.reporting?.sync;
   const shouldResetCache = previousSync?.trackingKey !== activeTrackingKey;
-  const baseCachedOrders = shouldResetCache ? [] : getCachedOrders(config);
+  const baseCachedOrders = shouldResetCache ? [] : await getPersistedOrders(config, activeTrackingKey);
   const cachedById = new Map(baseCachedOrders.map((order) => [order.id, order]));
   const newestKnownTimestamp = shouldResetCache ? "" : previousSync?.newestOrderCreatedAt || newestCachedTimestamp(baseCachedOrders);
   const maxOrdersToScan = options.maxOrdersToScan && options.maxOrdersToScan > 0 ? options.maxOrdersToScan : Infinity;
@@ -956,13 +980,19 @@ async function syncCachedShopifyOrders(
     ),
   );
 
-  config.reporting.cachedOrders = mergedOrders;
-  config.reporting.sync = {
+  const nextSyncState: ReportingSyncState = {
     lastSyncedAt: new Date().toISOString(),
     newestOrderCreatedAt: newestCachedTimestamp(mergedOrders),
     trackingKey: activeTrackingKey,
   };
-  await writeConfig(config);
+
+  if (hasReportDatabase()) {
+    await replaceStoredOrders(activeTrackingKey, mergedOrders, nextSyncState);
+  } else {
+    config.reporting.cachedOrders = mergedOrders;
+    config.reporting.sync = nextSyncState;
+    await writeConfig(config);
+  }
 
   return mergedOrders;
 }
@@ -1011,7 +1041,7 @@ export async function getReportOrders(config: FunnelConfig, options?: ReportSync
     console.error("Shopify reporting sync failed. Falling back to cached or placeholder report data.", error);
   }
 
-  const cachedOrders = getCachedOrders(config);
+  const cachedOrders = await getPersistedOrders(config, trackingKey(config));
   if (cachedOrders.length > 0) {
     return hydrateStoredOrders(config, cachedOrders);
   }
