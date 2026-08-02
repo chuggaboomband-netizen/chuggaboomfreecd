@@ -21,6 +21,7 @@ import {
   saveReportingAction,
   updateDiscountAction,
 } from "../actions";
+import { PendingSubmitButton } from "../pending-submit-button";
 import { PortalLinkBuilder } from "./portal-link-builder";
 
 export default async function DashboardPage({
@@ -66,9 +67,9 @@ export default async function DashboardPage({
               Export CSV
             </a>
             <form action={logoutAction}>
-              <button type="submit" className="button secondary">
+              <PendingSubmitButton className="button secondary" pendingLabel="Logging out...">
                 Log out
-              </button>
+              </PendingSubmitButton>
             </form>
           </div>
         </header>
@@ -177,9 +178,9 @@ export default async function DashboardPage({
               <textarea name="subheadline" defaultValue={config.campaign.subheadline} required />
             </label>
 
-            <button type="submit" className="button">
+            <PendingSubmitButton pendingLabel="Saving campaign copy...">
               Save campaign copy
-            </button>
+            </PendingSubmitButton>
           </form>
         </section>
 
@@ -315,9 +316,9 @@ export default async function DashboardPage({
               Fallback postage is only used when a product does not have its own postage cost set. If a tracked SKU is filled in here, reports will use that instead of relying on the discount code field. The total ad spend shown here comes from the latest entry in your ad spend log below.
             </p>
 
-            <button type="submit" className="button">
+            <PendingSubmitButton pendingLabel="Saving reporting settings...">
               Save reporting settings
-            </button>
+            </PendingSubmitButton>
           </form>
 
           <div className="summary-card stack">
@@ -339,9 +340,9 @@ export default async function DashboardPage({
                   <input name="notes" placeholder="Weekend Meta push" />
                 </label>
               </div>
-              <button type="submit" className="button">
+              <PendingSubmitButton pendingLabel="Saving snapshot...">
                 Add ad spend snapshot
-              </button>
+              </PendingSubmitButton>
             </form>
 
             <div className="reports-list">
@@ -356,9 +357,9 @@ export default async function DashboardPage({
                       <strong>{entry.totalAmount}</strong>
                       <form action={deleteAdSpendEntryAction}>
                         <input type="hidden" name="id" value={entry.id} />
-                        <button type="submit" className="button secondary button-small">
+                        <PendingSubmitButton className="button secondary button-small" pendingLabel="Removing...">
                           Remove
-                        </button>
+                        </PendingSubmitButton>
                       </form>
                     </span>
                   </div>
@@ -424,16 +425,16 @@ export default async function DashboardPage({
                           <input name="priority" type="number" defaultValue={String(discount.priority)} required />
                         </label>
                         <div className="discount-actions">
-                          <button type="submit" className="button">
+                          <PendingSubmitButton pendingLabel="Saving discount...">
                             Save discount
-                          </button>
+                          </PendingSubmitButton>
                         </div>
                       </form>
                       <form action={deleteDiscountAction}>
                         <input type="hidden" name="id" value={discount.id} />
-                        <button type="submit" className="button secondary">
+                        <PendingSubmitButton className="button secondary" pendingLabel="Removing...">
                           Remove discount
-                        </button>
+                        </PendingSubmitButton>
                       </form>
                     </div>
                   ))}
@@ -460,9 +461,9 @@ export default async function DashboardPage({
                       <input name="priority" type="number" defaultValue="10" required />
                     </label>
                     <div className="discount-actions">
-                      <button type="submit" className="button">
+                      <PendingSubmitButton pendingLabel="Adding discount...">
                         Add discount
-                      </button>
+                      </PendingSubmitButton>
                     </div>
                   </form>
                 </div>

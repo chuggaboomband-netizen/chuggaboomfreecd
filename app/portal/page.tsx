@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getPortalSecurityState, isAuthenticated } from "@/lib/auth";
 
 import { loginAction } from "./actions";
+import { PendingSubmitButton } from "./pending-submit-button";
 
 export default async function PortalPage({
   searchParams,
@@ -61,9 +62,9 @@ export default async function PortalPage({
                 />
               </label>
             ) : null}
-            <button type="submit" className="button">
+            <PendingSubmitButton pendingLabel="Entering portal...">
               Enter portal
-            </button>
+            </PendingSubmitButton>
           </form>
         </section>
       </div>

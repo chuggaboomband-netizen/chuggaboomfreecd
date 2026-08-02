@@ -13,6 +13,7 @@ import {
   saveFunnelSelectionAction,
   updateProductAction,
 } from "../actions";
+import { PendingSubmitButton } from "../pending-submit-button";
 
 export default async function UpsellsPage({
   searchParams,
@@ -57,9 +58,9 @@ export default async function UpsellsPage({
               Choose funnel products
             </Link>
             <form action={logoutAction}>
-              <button type="submit" className="button secondary">
+              <PendingSubmitButton className="button secondary" pendingLabel="Logging out...">
                 Log out
-              </button>
+              </PendingSubmitButton>
             </form>
           </div>
         </header>
@@ -265,9 +266,9 @@ export default async function UpsellsPage({
               Variants format: <code>handle|label|variantId|discounted price|value price</code>
             </p>
 
-            <button type="submit" className="button">
+            <PendingSubmitButton pendingLabel="Adding product...">
               Add product
-            </button>
+            </PendingSubmitButton>
           </form>
         </section>
 
@@ -309,9 +310,9 @@ export default async function UpsellsPage({
                   <Link href="/portal/upsells" className="button secondary">
                     Cancel
                   </Link>
-                  <button type="submit" className="button">
+                  <PendingSubmitButton pendingLabel="Saving selection...">
                     Save funnel selection
-                  </button>
+                  </PendingSubmitButton>
                 </div>
               </form>
             </div>
@@ -488,17 +489,17 @@ function ProductEditor({
           </div>
         ) : null}
         <div className="cta-row">
-          <button type="submit" className="button">
+          <PendingSubmitButton pendingLabel="Saving product...">
             Save product
-          </button>
+          </PendingSubmitButton>
         </div>
       </form>
       <form action={deleteProductAction}>
         <input type="hidden" name="id" value={product.id} />
         <input type="hidden" name="returnTo" value={returnTo} />
-        <button type="submit" className="button secondary">
+        <PendingSubmitButton className="button secondary" pendingLabel="Removing product...">
           Remove product
-        </button>
+        </PendingSubmitButton>
       </form>
     </div>
   );
