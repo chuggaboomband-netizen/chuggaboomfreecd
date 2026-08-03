@@ -102,7 +102,7 @@ export type ReportOrderItem = {
   quantity: number;
   revenue: number;
   unitCost: number;
-  stockOnHand?: number | null;
+  availableStock?: number | null;
 };
 
 export type ReportShippingAddress = {

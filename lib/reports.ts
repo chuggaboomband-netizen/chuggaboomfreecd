@@ -103,7 +103,7 @@ type ShopifyOrderNode = {
         variant: null | {
           id: string;
           sku: string | null;
-          inventoryQuantity: number | null;
+          availableQuantity: number | null;
         };
       };
     }>;
@@ -133,7 +133,7 @@ type ShopifyVariantInventoryResponse = {
       | {
           __typename?: "ProductVariant";
           id: string;
-          inventoryQuantity: number | null;
+          availableQuantity: number | null;
         }
       | null
     >;
@@ -334,7 +334,7 @@ function placeholderItems(config: FunnelConfig): ReportOrderItem[] {
     quantity: 1,
     revenue: toCurrencyValue(product.priceLabel),
     unitCost: productUnitCost(product),
-    stockOnHand: null,
+    availableStock: null,
   }));
 }
 
@@ -688,7 +688,7 @@ export async function getShopifyInventorySnapshot(
               __typename
               ... on ProductVariant {
                 id
-                inventoryQuantity
+                availableQuantity: inventoryQuantity
               }
             }
           }
@@ -728,7 +728,7 @@ export async function getShopifyInventorySnapshot(
       continue;
     }
 
-    byNumericId.set(numericId, node.inventoryQuantity ?? null);
+    byNumericId.set(numericId, node.availableQuantity ?? null);
   }
 
   const snapshot: InventorySnapshot = {};
@@ -802,7 +802,7 @@ async function fetchShopifyOrderPage(
                   variant {
                     id
                     sku
-                    inventoryQuantity
+                    availableQuantity: inventoryQuantity
                   }
                 }
               }
@@ -860,7 +860,7 @@ function mapShopifyOrderToStoredOrder(
       quantity: node.quantity,
       revenue: moneyToNumber(node.discountedTotalSet?.shopMoney),
       unitCost: productUnitCost(product),
-      stockOnHand: node.variant?.inventoryQuantity ?? null,
+      availableStock: node.variant?.availableQuantity ?? null,
     };
   });
 
@@ -1050,17 +1050,17 @@ export async function getReportOrders(config: FunnelConfig, options?: ReportSync
 }
 
 export function summarizeProductSales(orders: ReportOrder[]) {
-  const counts = new Map<string, { quantity: number; stockOnHand: number | null }>();
+  const counts = new Map<string, { quantity: number; availableStock: number | null }>();
 
   for (const order of orders) {
     for (const item of order.items) {
       const existing = counts.get(item.productName);
       counts.set(item.productName, {
         quantity: (existing?.quantity || 0) + item.quantity,
-        stockOnHand:
-          item.stockOnHand != null
-            ? item.stockOnHand
-            : (existing?.stockOnHand ?? null),
+        availableStock:
+          item.availableStock != null
+            ? item.availableStock
+            : (existing?.availableStock ?? null),
       });
     }
   }
@@ -1069,7 +1069,7 @@ export function summarizeProductSales(orders: ReportOrder[]) {
     .map(([productName, summary]) => ({
       productName,
       quantity: summary.quantity,
-      stockOnHand: summary.stockOnHand,
+      availableStock: summary.availableStock,
     }))
     .sort((a, b) => b.quantity - a.quantity || a.productName.localeCompare(b.productName));
 }

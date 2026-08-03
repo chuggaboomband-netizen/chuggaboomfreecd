@@ -87,7 +87,7 @@ export default async function ReportsPage() {
                     <span className="portal-list-item-stack">
                       <strong>{item.productName}</strong>
                       <span className="microcopy">
-                        Stock on hand: {item.stockOnHand ?? "—"}
+                        Available stock: {item.availableStock ?? "—"}
                       </span>
                     </span>
                     <strong>{item.quantity}</strong>
@@ -181,7 +181,7 @@ export default async function ReportsPage() {
                   <th>Order</th>
                   <th>Date</th>
                   <th>Items</th>
-                  <th>Stock</th>
+                  <th>Available</th>
                   <th>Revenue</th>
                   <th>Unit cost</th>
                   <th>Postage</th>
@@ -210,7 +210,7 @@ export default async function ReportsPage() {
                           {order.items.map((item) => (
                             <div key={`${order.id}-${item.productName}-stock`} className="reports-item-line">
                               <span>{item.productName}</span>
-                              <span>{item.stockOnHand ?? "—"}</span>
+                              <span>{item.availableStock ?? "—"}</span>
                             </div>
                           ))}
                         </div>

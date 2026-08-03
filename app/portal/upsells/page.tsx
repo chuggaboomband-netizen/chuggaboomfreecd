@@ -345,7 +345,7 @@ function ProductEditor({
         </div>
         <div className="portal-stock-badges">
           <span className={`portal-stock-pill ${stockTone(mainVariantStock)}`}>
-            Shopify stock: {formatStockLabel(mainVariantStock)}
+            Available stock: {formatStockLabel(mainVariantStock)}
           </span>
           {product.variants?.length ? (
             <span className="portal-stock-pill is-neutral">{product.variants.length} variants saved</span>
@@ -522,7 +522,7 @@ function formatStockLabel(stock: number | null) {
     return "Out of stock";
   }
 
-  return `${stock} in stock`;
+  return `${stock} available`;
 }
 
 function stockTone(stock: number | null) {

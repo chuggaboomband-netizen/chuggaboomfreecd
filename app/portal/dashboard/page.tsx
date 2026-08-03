@@ -3,10 +3,11 @@ import { redirect } from "next/navigation";
 
 import { getPortalSecurityState, isAuthenticated } from "@/lib/auth";
 import { readConfig } from "@/lib/config-store";
-import { formatPriceLabel, sortProducts } from "@/lib/funnel";
+import { formatPriceLabel, isProductActiveInFunnel, isProductOfferAvailable, sortProducts } from "@/lib/funnel";
 import {
   getReportOrders,
   getShopifyConnectionState,
+  getShopifyInventorySnapshot,
   summarizeProductSales,
   totalProfitLoss,
 } from "@/lib/reports";
@@ -41,6 +42,18 @@ export default async function DashboardPage({
   const totalPnL = totalProfitLoss(orders);
   const topProduct = productSales[0];
   const products = sortProducts(config.products);
+  let inventorySnapshot: Record<string, number | null> = {};
+  try {
+    inventorySnapshot = await getShopifyInventorySnapshot(config);
+  } catch (error) {
+    console.error("Shopify inventory snapshot failed for dashboard.", error);
+  }
+  const liveSoldOutUpsells = products.filter(
+    (product) =>
+      product.type === "upsell" &&
+      isProductActiveInFunnel(product) &&
+      !isProductOfferAvailable(product, inventorySnapshot),
+  );
   const discounts = [...config.discounts].sort((a, b) => b.priority - a.priority);
   const adSpendEntries = [...(config.reporting?.adSpendEntries || [])].sort((a, b) =>
     b.recordedAt.localeCompare(a.recordedAt),
@@ -80,6 +93,12 @@ export default async function DashboardPage({
 
         {params?.error ? (
           <div className="banner warning">{params.error}</div>
+        ) : null}
+
+        {liveSoldOutUpsells.length > 0 ? (
+          <div className="banner warning">
+            Live upsell warning: {liveSoldOutUpsells.map((product) => product.name).join(", ")} {liveSoldOutUpsells.length === 1 ? "is" : "are"} live in the funnel but currently out of available stock.
+          </div>
         ) : null}
 
         <section className="portal-quick-grid">
