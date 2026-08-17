@@ -388,7 +388,7 @@ function ProductEditor({
             <span>Unit cost</span>
             <input name="unitCost" defaultValue={product.unitCost || ""} placeholder="£2.50" />
           </label>
-          <div className="field">
+          <div className="field cost-history-field">
             <span>Cost history</span>
             <CostTierEditor tiers={product.costTiers} fallbackUnitCost={product.unitCost} />
           </div>

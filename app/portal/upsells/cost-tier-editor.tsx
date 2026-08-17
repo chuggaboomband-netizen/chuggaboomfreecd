@@ -39,7 +39,7 @@ export function CostTierEditor({
           {rows.map((row, index) => (
             <div className="cost-tier-row" key={`${row.startAtUnit}-${index}`}>
               <label className="field">
-                <span>From CD number</span>
+                <span>From CD #</span>
                 <input
                   type="number"
                   min="1"
