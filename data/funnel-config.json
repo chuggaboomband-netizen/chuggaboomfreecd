@@ -27,7 +27,21 @@
       "variants": [],
       "unitCost": "1.46",
       "postageCost": "1.11",
-      "activeInFunnel": true
+      "activeInFunnel": true,
+      "costTiers": [
+        {
+          "id": "f041694f-7330-4a53-a795-e4334fccf346",
+          "startAtUnit": 1,
+          "unitCost": "1.46",
+          "note": "Original batch (inc. flyer)"
+        },
+        {
+          "id": "961563dc-70a2-4a6b-b148-1c39ea6a56cf",
+          "startAtUnit": 201,
+          "unitCost": "0.61",
+          "note": "1000 unit re-stock (inc. flyer)"
+        }
+      ]
     },
     {
       "id": "2ece3c66-f73d-448a-b882-c2f2fc6172fe",
