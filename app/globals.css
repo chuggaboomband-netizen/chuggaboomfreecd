@@ -1728,9 +1728,17 @@ textarea {
   gap: 10px;
 }
 
+.field-grid > .cost-history-field {
+  grid-column: 1 / -1;
+  padding: 16px;
+  border: 1px solid rgba(255, 213, 79, 0.14);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
 .cost-tier-row {
   display: grid;
-  grid-template-columns: 0.8fr 0.8fr 1.4fr auto;
+  grid-template-columns: 140px 160px minmax(200px, 1fr) max-content;
   gap: 10px;
   align-items: end;
   padding: 12px;
@@ -1740,11 +1748,21 @@ textarea {
 
 .cost-tier-remove {
   margin-bottom: 1px;
+  min-width: 98px;
+}
+
+.cost-tier-editor > .button.secondary {
+  width: fit-content;
 }
 
 @media (max-width: 700px) {
   .cost-tier-row {
     grid-template-columns: 1fr;
+  }
+
+  .cost-tier-remove,
+  .cost-tier-editor > .button.secondary {
+    width: 100%;
   }
 }
 
