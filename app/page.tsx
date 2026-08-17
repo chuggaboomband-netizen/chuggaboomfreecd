@@ -18,7 +18,7 @@ export default async function HomePage() {
             alt={`${campaign.bandName} logo`}
             className="bk-logo-image"
             width={750}
-            height={257}
+            height={256}
             sizes="(max-width: 700px) 280px, 420px"
             priority
           />
@@ -69,7 +69,7 @@ export default async function HomePage() {
         </section>
         <section className="bk-copy-section">
           <div className="bk-scroll-image">
-            <Image src="/john-and-levi.png" alt="ChuggaBoom promo" className="bk-promo-wide-image" width={960} height={390} sizes="(max-width: 700px) 100vw, 960px" />
+            <Image src="/john-and-levi.jpg" alt="ChuggaBoom promo" className="bk-promo-wide-image" width={1200} height={800} sizes="(max-width: 700px) 100vw, 960px" />
           </div>
           <p className="bk-body">
             You still here? Lovely. It probably makes sense for us to introduce ourselves a bit, since we&apos;re presently randoms on the internet that you&apos;ve never met before. It&apos;s also good to let you know exactly what you&apos;ll be getting from us.

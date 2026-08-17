@@ -178,7 +178,7 @@ export function UpsellSelector({
             alt="ChuggaBoom logo"
             className="upsell-logo"
             width={750}
-            height={257}
+            height={256}
             sizes="(max-width: 700px) 220px, 320px"
           />
           <h1 className="upsell-title">Your bundle is ready</h1>
@@ -239,7 +239,7 @@ export function UpsellSelector({
           alt="ChuggaBoom logo"
           className="upsell-logo"
           width={750}
-          height={257}
+          height={256}
           sizes="(max-width: 700px) 220px, 320px"
         />
         <h1 className="upsell-title">

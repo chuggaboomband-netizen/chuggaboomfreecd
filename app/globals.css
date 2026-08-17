@@ -64,6 +64,13 @@ textarea {
   padding: 28px 0 72px;
 }
 
+/* Next Image receives width/height metadata for layout stability. Keep every
+   customer-facing image's rendered height proportional to its loaded source. */
+.landing-page img,
+.upsell-page img {
+  height: auto;
+}
+
 .loading-panel {
   min-height: min(62vh, 520px);
   display: grid;
@@ -105,6 +112,7 @@ textarea {
 .bk-logo-image {
   display: block;
   width: min(100%, 520px);
+  height: auto;
   margin: 0 auto 22px;
 }
 
@@ -166,8 +174,8 @@ textarea {
 .bk-promo-image {
   display: block;
   width: 100%;
+  height: auto;
   border-radius: 22px;
-  object-fit: cover;
 }
 
 .bk-photo-badge {
@@ -283,6 +291,7 @@ textarea {
 .bk-promo-wide-image {
   display: block;
   width: 100%;
+  height: auto;
   border-radius: 18px;
   box-shadow: 0 20px 46px rgba(221, 127, 18, 0.18);
 }
@@ -298,6 +307,7 @@ textarea {
 .bk-bottom-photo-image {
   display: block;
   width: 100%;
+  height: auto;
   border-radius: 18px;
   box-shadow: 0 20px 46px rgba(221, 127, 18, 0.16);
 }
@@ -338,6 +348,7 @@ textarea {
 .upsell-logo {
   display: block;
   width: min(100%, 420px);
+  height: auto;
   margin: 0 auto 18px;
 }
 
@@ -382,6 +393,7 @@ textarea {
 .upsell-product-image {
   display: block;
   width: 100%;
+  height: auto;
   border-radius: 16px;
 }
 
@@ -547,6 +559,7 @@ textarea {
 .checkout-logo {
   display: block;
   width: min(100%, 420px);
+  height: auto;
   margin: 0 auto;
 }
 

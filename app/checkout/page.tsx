@@ -55,7 +55,7 @@ export default async function CheckoutPage({
               alt="ChuggaBoom logo"
               className="checkout-logo"
               width={750}
-              height={257}
+              height={256}
               sizes="(max-width: 700px) 220px, 320px"
             />
             <span className="checkout-kicker">Final step</span>
