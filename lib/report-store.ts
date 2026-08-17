@@ -184,10 +184,12 @@ export async function readSyncState(trackingKey: string): Promise<ReportingSyncS
   };
 }
 
-export async function replaceStoredOrders(
+export async function syncStoredOrders(
   trackingKey: string,
-  orders: StoredReportOrder[],
+  changedOrders: StoredReportOrder[],
+  removedOrderIds: string[],
   sync: ReportingSyncState,
+  reset = false,
 ): Promise<void> {
   if (!hasReportDatabase()) {
     return;
@@ -197,9 +199,15 @@ export async function replaceStoredOrders(
   const sql = getSql();
 
   await sql.begin(async (transaction) => {
-    await transaction`delete from report_orders where tracking_key = ${trackingKey}`;
+    if (reset) {
+      await transaction`delete from report_orders where tracking_key = ${trackingKey}`;
+    }
 
-    for (const order of orders) {
+    for (const orderId of removedOrderIds) {
+      await transaction`delete from report_orders where tracking_key = ${trackingKey} and id = ${orderId}`;
+    }
+
+    for (const order of changedOrders) {
       await transaction`
         insert into report_orders (
           id,
@@ -232,6 +240,21 @@ export async function replaceStoredOrders(
           ${transaction.json(order.items || [])},
           ${order.source}
         )
+        on conflict (id) do update set
+          tracking_key = excluded.tracking_key,
+          order_number = excluded.order_number,
+          purchased_at = excluded.purchased_at,
+          purchased_at_timestamp = excluded.purchased_at_timestamp,
+          week_start = excluded.week_start,
+          email = excluded.email,
+          shipping_address = excluded.shipping_address,
+          discount_codes = excluded.discount_codes,
+          postage_cost = excluded.postage_cost,
+          revenue = excluded.revenue,
+          unit_cost_total = excluded.unit_cost_total,
+          items = excluded.items,
+          source = excluded.source,
+          updated_at = now()
       `;
     }
 

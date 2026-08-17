@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 import { readConfig } from "@/lib/config-store";
 import { sortProducts } from "@/lib/funnel";
@@ -12,10 +13,14 @@ export default async function HomePage() {
     <main className="landing-page">
       <div className="shell">
         <section className="bk-hero">
-          <img
+          <Image
             src="/chuggaboom-logo-straight.png"
             alt={`${campaign.bandName} logo`}
             className="bk-logo-image"
+            width={750}
+            height={257}
+            sizes="(max-width: 700px) 280px, 420px"
+            priority
           />
           <h1 className="bk-title">Claim your FREE CD from {campaign.bandName}!</h1>
           <p className="bk-subtitle">Just help us out with the shipping, and it&apos;s yours for free.</p>
@@ -29,10 +34,13 @@ export default async function HomePage() {
         <section className="bk-offer-grid">
           <div className="bk-product-shot">
             <div className="bk-photo-frame">
-              <img
+              <Image
                 src="/cd-mockup.png"
                 alt={`${coreProduct?.name ?? "ChuggaBoom CD"} mockup`}
                 className="bk-promo-image"
+                width={1000}
+                height={696}
+                sizes="(max-width: 700px) 90vw, 500px"
               />
               <div className="bk-photo-badge">
                 <strong>{coreProduct?.name ?? "Free CD"}</strong>
@@ -61,7 +69,7 @@ export default async function HomePage() {
         </section>
         <section className="bk-copy-section">
           <div className="bk-scroll-image">
-            <img src="/john-and-levi.png" alt="ChuggaBoom promo" className="bk-promo-wide-image" />
+            <Image src="/john-and-levi.png" alt="ChuggaBoom promo" className="bk-promo-wide-image" width={960} height={390} sizes="(max-width: 700px) 100vw, 960px" />
           </div>
           <p className="bk-body">
             You still here? Lovely. It probably makes sense for us to introduce ourselves a bit, since we&apos;re presently randoms on the internet that you&apos;ve never met before. It&apos;s also good to let you know exactly what you&apos;ll be getting from us.
@@ -104,7 +112,7 @@ export default async function HomePage() {
           </p>
           <div className="bk-bottom-split">
             <div className="bk-bottom-photo">
-              <img src="/chuggaboom-live.jpg" alt="ChuggaBoom live crowd photo" className="bk-bottom-photo-image" />
+              <Image src="/chuggaboom-live.jpg" alt="ChuggaBoom live crowd photo" className="bk-bottom-photo-image" width={1600} height={1200} sizes="(max-width: 700px) 90vw, 600px" />
             </div>
             <div className="bk-bottom-copy">
               <p className="bk-body">

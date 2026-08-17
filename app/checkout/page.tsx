@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 import { readConfig } from "@/lib/config-store";
 import {
@@ -49,10 +50,13 @@ export default async function CheckoutPage({
       <div className="shell">
         <section className="checkout-page">
           <div className="checkout-hero">
-            <img
+            <Image
               src="/chuggaboom-logo-straight.png"
               alt="ChuggaBoom logo"
               className="checkout-logo"
+              width={750}
+              height={257}
+              sizes="(max-width: 700px) 220px, 320px"
             />
             <span className="checkout-kicker">Final step</span>
             <h1 className="checkout-title">Your bundle is ready</h1>

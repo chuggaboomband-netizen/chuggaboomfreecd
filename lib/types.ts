@@ -47,6 +47,14 @@ export type ProductVariant = {
 
 export type InventorySnapshot = Record<string, number | null>;
 
+export type ProductCostTier = {
+  id: string;
+  /** The one-based number of this product unit from which the cost applies. */
+  startAtUnit: number;
+  unitCost: string;
+  note?: string;
+};
+
 export type Product = {
   id: string;
   handle: string;
@@ -61,6 +69,7 @@ export type Product = {
   sortOrder: number;
   autoDiscountCodes: string[];
   unitCost?: string;
+  costTiers?: ProductCostTier[];
   postageCost?: string;
   imageSrc?: string;
   upsellHeadline?: string;
@@ -98,6 +107,8 @@ export type FunnelConfig = {
 };
 
 export type ReportOrderItem = {
+  productId?: string;
+  variantId?: string;
   productName: string;
   quantity: number;
   revenue: number;

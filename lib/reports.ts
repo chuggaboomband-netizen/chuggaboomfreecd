@@ -16,7 +16,7 @@ import {
   hasReportDatabase,
   readStoredOrders,
   readSyncState,
-  replaceStoredOrders,
+  syncStoredOrders,
 } from "@/lib/report-store";
 
 export type ShopifyConnectionState =
@@ -171,6 +171,17 @@ function productUnitCost(product?: Product | null) {
   return toCurrencyValue(product?.unitCost);
 }
 
+function productUnitCostAtUnit(product: Product, soldUnit: number) {
+  const tiers = [...(product.costTiers || [])]
+    .filter((tier) => Number.isInteger(tier.startAtUnit) && tier.startAtUnit > 0 && tier.unitCost)
+    .sort((left, right) => left.startAtUnit - right.startAtUnit);
+  const applicableTier = tiers.reduce<typeof tiers[number] | undefined>(
+    (current, tier) => (tier.startAtUnit <= soldUnit ? tier : current),
+    undefined,
+  );
+  return applicableTier ? toCurrencyValue(applicableTier.unitCost) : productUnitCost(product);
+}
+
 function productPostageCost(product?: Product | null, fallbackPostageCost = 0) {
   const productPostage = toCurrencyValue(product?.postageCost);
   return productPostage > 0 ? productPostage : fallbackPostageCost;
@@ -241,8 +252,20 @@ function productByVariantId(config: FunnelConfig, variantId?: string | null) {
   return null;
 }
 
+function productForReportItem(config: FunnelConfig, item: ReportOrderItem) {
+  if (item.productId) {
+    const product = config.products.find((candidate) => candidate.id === item.productId);
+    if (product) return product;
+  }
+
+  return productByVariantId(config, item.variantId) ||
+    config.products.find((product) => product.name === item.productName) ||
+    null;
+}
+
 const REPORT_START_DATE = "2026-07-01";
 const REPORT_START_TIMESTAMP = "2026-07-01T00:00:00.000Z";
+const REPORT_SYNC_FRESHNESS_MS = 5 * 60 * 1000;
 
 function isOnOrAfterReportStart(purchasedAt: string) {
   return purchasedAt >= REPORT_START_DATE;
@@ -330,6 +353,8 @@ function placeholderItems(config: FunnelConfig): ReportOrderItem[] {
   const selected = [...defaults, ...upsells];
 
   return selected.map((product) => ({
+    productId: product.id,
+    variantId: product.variantId,
     productName: product.name,
     quantity: 1,
     revenue: toCurrencyValue(product.priceLabel),
@@ -398,8 +423,45 @@ function newestCachedTimestamp(cachedOrders: StoredReportOrder[]) {
   }, "");
 }
 
+function applyProductCostHistory(config: FunnelConfig, storedOrders: StoredReportOrder[]): StoredReportOrder[] {
+  const soldUnitsByProduct = new Map<string, number>();
+  const oldestFirst = [...storedOrders].sort((left, right) => {
+    const leftTimestamp = left.purchasedAtTimestamp || `${left.purchasedAt}T12:00:00.000Z`;
+    const rightTimestamp = right.purchasedAtTimestamp || `${right.purchasedAt}T12:00:00.000Z`;
+    return leftTimestamp.localeCompare(rightTimestamp) || left.id.localeCompare(right.id);
+  });
+
+  const processedById = new Map(oldestFirst.map((order) => {
+    let unitCostTotal = 0;
+    const items = order.items.map((item) => {
+      const product = productForReportItem(config, item);
+      if (!product) {
+        unitCostTotal += item.unitCost * item.quantity;
+        return item;
+      }
+
+      const soldBefore = soldUnitsByProduct.get(product.id) || 0;
+      const itemCostTotal = Array.from({ length: item.quantity }, (_, index) =>
+        productUnitCostAtUnit(product, soldBefore + index + 1),
+      ).reduce((sum, unitCost) => sum + unitCost, 0);
+      soldUnitsByProduct.set(product.id, soldBefore + item.quantity);
+      unitCostTotal += itemCostTotal;
+
+      return {
+        ...item,
+        productId: product.id,
+        unitCost: item.quantity ? itemCostTotal / item.quantity : 0,
+      };
+    });
+
+    return [order.id, { ...order, items, unitCostTotal }] as const;
+  }));
+
+  return storedOrders.map((order) => processedById.get(order.id) || order);
+}
+
 function hydrateStoredOrders(config: FunnelConfig, storedOrders: StoredReportOrder[]) {
-  return withAllocatedWeeklyAdSpend(config, storedOrders);
+  return withAllocatedWeeklyAdSpend(config, applyProductCostHistory(config, storedOrders));
 }
 
 function escapeCsvCell(value: string | number | null | undefined) {
@@ -856,6 +918,8 @@ function mapShopifyOrderToStoredOrder(
   const items: ReportOrderItem[] = order.lineItems.edges.map(({ node }) => {
     const product = productByVariantId(config, node.variant?.id || null);
     return {
+      productId: product?.id,
+      variantId: node.variant?.id || undefined,
       productName: product?.name || node.title,
       quantity: node.quantity,
       revenue: moneyToNumber(node.discountedTotalSet?.shopMoney),
@@ -909,7 +973,6 @@ async function syncCachedShopifyOrders(
     return getCachedOrders(config);
   }
 
-  const accessToken = await getShopifyAccessTokenForEnv(env);
   const trackedDiscountCode = config.reporting?.reportDiscountCode || "FREECD";
   const trackedProductSku = config.reporting?.trackedProductSku?.trim();
   const activeTrackingKey = trackingKey(config);
@@ -921,6 +984,20 @@ async function syncCachedShopifyOrders(
   const cachedById = new Map(baseCachedOrders.map((order) => [order.id, order]));
   const newestKnownTimestamp = shouldResetCache ? "" : previousSync?.newestOrderCreatedAt || newestCachedTimestamp(baseCachedOrders);
   const maxOrdersToScan = options.maxOrdersToScan && options.maxOrdersToScan > 0 ? options.maxOrdersToScan : Infinity;
+
+  const lastSyncedAt = previousSync?.lastSyncedAt ? Date.parse(previousSync.lastSyncedAt) : 0;
+  if (
+    !options.forceRescan &&
+    baseCachedOrders.length > 0 &&
+    lastSyncedAt > 0 &&
+    Date.now() - lastSyncedAt < REPORT_SYNC_FRESHNESS_MS
+  ) {
+    return baseCachedOrders;
+  }
+
+  const accessToken = await getShopifyAccessTokenForEnv(env);
+  const changedOrders = new Map<string, StoredReportOrder>();
+  const removedOrderIds = new Set<string>();
 
   let afterCursor: string | undefined;
   let hasNextPage = true;
@@ -948,9 +1025,14 @@ async function syncCachedShopifyOrders(
       const matchesFunnel = orderMatchesFunnel(order, trackedDiscountCode, trackedProductSku);
 
       if (matchesFunnel) {
-        cachedById.set(order.id, mapShopifyOrderToStoredOrder(config, order));
+        const mappedOrder = mapShopifyOrderToStoredOrder(config, order);
+        cachedById.set(order.id, mappedOrder);
+        if (!existingOrder || JSON.stringify(existingOrder) !== JSON.stringify(mappedOrder)) {
+          changedOrders.set(order.id, mappedOrder);
+        }
       } else if (existingOrder) {
         cachedById.delete(order.id);
+        removedOrderIds.add(order.id);
       }
     }
 
@@ -987,7 +1069,13 @@ async function syncCachedShopifyOrders(
   };
 
   if (hasReportDatabase()) {
-    await replaceStoredOrders(activeTrackingKey, mergedOrders, nextSyncState);
+    await syncStoredOrders(
+      activeTrackingKey,
+      [...changedOrders.values()],
+      [...removedOrderIds],
+      nextSyncState,
+      shouldResetCache,
+    );
   } else {
     config.reporting.cachedOrders = mergedOrders;
     config.reporting.sync = nextSyncState;
@@ -1015,20 +1103,12 @@ export async function getShopifyConnectionState(config: FunnelConfig): Promise<S
     };
   }
 
-  try {
-    await fetchShopifyOrders(config);
-    return {
-      status: "connected",
-      message: config.reporting?.trackedProductSku
-        ? `Shopify API is responding for ${env.domain} using ${shopifyAuthMode(env)}. Orders are being filtered by SKU ${config.reporting.trackedProductSku}.`
-        : `Shopify API is responding for ${env.domain} using ${shopifyAuthMode(env)}. Orders are being filtered by the ${config.reporting?.reportDiscountCode || "FREECD"} discount code.`,
-    };
-  } catch (error) {
-    return {
-      status: "error",
-      message: error instanceof Error ? error.message : "Shopify reporting fetch failed.",
-    };
-  }
+  return {
+    status: "connected",
+    message: config.reporting?.trackedProductSku
+      ? `Shopify is configured for ${env.domain}; reports are filtered by SKU ${config.reporting.trackedProductSku}.`
+      : `Shopify is configured for ${env.domain}; reports are filtered by the ${config.reporting?.reportDiscountCode || "FREECD"} discount code.`,
+  };
 }
 
 export async function getReportOrders(config: FunnelConfig, options?: ReportSyncOptions) {
