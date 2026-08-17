@@ -20,7 +20,7 @@ import {
 } from "@/lib/auth";
 import { readConfig, savePublicUpload, writeConfig } from "@/lib/config-store";
 import { parseHandleList, parseWeeklyAdSpend } from "@/lib/funnel";
-import type { AdSpendEntry, Discount, Product, ProductVariant } from "@/lib/types";
+import type { AdSpendEntry, Discount, Product, ProductCostTier, ProductVariant } from "@/lib/types";
 
 function getString(formData: FormData, key: string): string {
   return String(formData.get(key) || "").trim();
@@ -65,6 +65,25 @@ function parseVariants(value: string): ProductVariant[] {
       };
     })
     .filter((variant) => variant.handle && variant.name && variant.variantId && variant.priceLabel);
+}
+
+function parseCostTiers(value: string): ProductCostTier[] {
+  return value
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [startAtUnit, unitCost, note] = line.split("|").map((item) => item.trim());
+      return {
+        id: crypto.randomUUID(),
+        startAtUnit: Number(startAtUnit),
+        unitCost,
+        note: note || undefined,
+      };
+    })
+    .filter((tier) => Number.isInteger(tier.startAtUnit) && tier.startAtUnit > 0 && Boolean(tier.unitCost))
+    .sort((left, right) => left.startAtUnit - right.startAtUnit)
+    .filter((tier, index, tiers) => index === 0 || tier.startAtUnit !== tiers[index - 1].startAtUnit);
 }
 
 function revalidateFunnelPaths() {
@@ -240,6 +259,7 @@ export async function addProductAction(formData: FormData) {
       sortOrder: Number(getString(formData, "sortOrder") || "0"),
       autoDiscountCodes: parseHandleList(getString(formData, "autoDiscountCodes")),
       unitCost: getString(formData, "unitCost") || undefined,
+      costTiers: parseCostTiers(getString(formData, "costTiersText")),
       postageCost: getString(formData, "postageCost") || undefined,
       imageSrc: uploadedImageSrc || getString(formData, "imageSrc") || undefined,
       upsellHeadline: getString(formData, "upsellHeadline") || undefined,
@@ -279,6 +299,7 @@ export async function updateProductAction(formData: FormData) {
             sortOrder: Number(getString(formData, "sortOrder") || "0"),
             autoDiscountCodes: parseHandleList(getString(formData, "autoDiscountCodes")),
             unitCost: getString(formData, "unitCost") || undefined,
+            costTiers: parseCostTiers(getString(formData, "costTiersText")),
             postageCost: getString(formData, "postageCost") || undefined,
             imageSrc: uploadedImageSrc || getString(formData, "imageSrc") || undefined,
             upsellHeadline: getString(formData, "upsellHeadline") || undefined,

@@ -1722,6 +1722,32 @@ textarea {
   gap: 12px;
 }
 
+.cost-tier-editor,
+.cost-tier-list {
+  display: grid;
+  gap: 10px;
+}
+
+.cost-tier-row {
+  display: grid;
+  grid-template-columns: 0.8fr 0.8fr 1.4fr auto;
+  gap: 10px;
+  align-items: end;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.cost-tier-remove {
+  margin-bottom: 1px;
+}
+
+@media (max-width: 700px) {
+  .cost-tier-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 .brand {
   font-family: var(--display);
   letter-spacing: 0.04em;

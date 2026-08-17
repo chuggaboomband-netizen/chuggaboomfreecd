@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 import type { Product, SelectedItem } from "@/lib/types";
 
@@ -172,10 +173,13 @@ export function UpsellSelector({
     return (
       <div className="upsell-page">
         <section className="upsell-hero">
-          <img
+          <Image
             src="/chuggaboom-logo-straight.png"
             alt="ChuggaBoom logo"
             className="upsell-logo"
+            width={750}
+            height={257}
+            sizes="(max-width: 700px) 220px, 320px"
           />
           <h1 className="upsell-title">Your bundle is ready</h1>
           <p className="upsell-subtitle">
@@ -230,10 +234,13 @@ export function UpsellSelector({
   return (
     <div className="upsell-page">
       <section className="upsell-hero">
-        <img
+        <Image
           src="/chuggaboom-logo-straight.png"
           alt="ChuggaBoom logo"
           className="upsell-logo"
+          width={750}
+          height={257}
+          sizes="(max-width: 700px) 220px, 320px"
         />
         <h1 className="upsell-title">
           {featuredUpsell?.upsellHeadline || "Want even more music while you&apos;re here?"}
@@ -250,10 +257,13 @@ export function UpsellSelector({
       <section className="upsell-offer-grid">
         <div className="upsell-product-panel">
           <div className="upsell-product-frame">
-            <img
+            <Image
               src={featuredUpsell.imageSrc || "/cd-mockup.png"}
               alt={featuredUpsell.name}
               className="upsell-product-image"
+              width={1000}
+              height={1000}
+              sizes="(max-width: 700px) 90vw, 500px"
             />
           </div>
         </div>

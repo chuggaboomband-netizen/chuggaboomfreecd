@@ -14,6 +14,7 @@ import {
   updateProductAction,
 } from "../actions";
 import { PendingSubmitButton } from "../pending-submit-button";
+import { CostTierEditor } from "./cost-tier-editor";
 
 export default async function UpsellsPage({
   searchParams,
@@ -193,6 +194,10 @@ export default async function UpsellsPage({
                 <span>Unit cost</span>
                 <input name="unitCost" placeholder="£2.50" />
               </label>
+              <div className="field">
+                <span>Cost history</span>
+                <CostTierEditor />
+              </div>
               <label className="field">
                 <span>Postage cost</span>
                 <input name="postageCost" placeholder="£1.85" />
@@ -383,6 +388,10 @@ function ProductEditor({
             <span>Unit cost</span>
             <input name="unitCost" defaultValue={product.unitCost || ""} placeholder="£2.50" />
           </label>
+          <div className="field">
+            <span>Cost history</span>
+            <CostTierEditor tiers={product.costTiers} fallbackUnitCost={product.unitCost} />
+          </div>
           <label className="field">
             <span>Postage cost</span>
             <input name="postageCost" defaultValue={product.postageCost || ""} placeholder="£1.85" />
