@@ -160,5 +160,7 @@ export type ProfitTimelinePoint = {
   netProfit: number;
   cumulativeGrossProfit: number;
   cumulativeAdSpend: number;
+  cumulativeCosts: number;
+  cumulativeRevenue: number;
   kind: "order" | "ad-spend";
 };

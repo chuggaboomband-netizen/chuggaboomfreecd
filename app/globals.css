@@ -1466,6 +1466,72 @@ textarea {
   flex-wrap: wrap;
 }
 
+.reports-chart-toolbar,
+.reports-chart-range,
+.reports-chart-toggles,
+.reports-chart-key {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.reports-chart-toolbar {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.reports-chart-filter {
+  min-height: 34px;
+  padding: 7px 11px;
+  border: 1px solid rgba(235, 239, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(235, 239, 255, 0.06);
+  color: rgba(235, 239, 255, 0.82);
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.reports-chart-filter:hover,
+.reports-chart-filter.is-active {
+  border-color: rgba(69, 181, 112, 0.65);
+  background: rgba(69, 181, 112, 0.18);
+  color: #eafff1;
+}
+
+.reports-chart-toggles label,
+.reports-chart-key span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: rgba(235, 239, 255, 0.78);
+  font-size: 0.84rem;
+}
+
+.reports-chart-toggles input {
+  accent-color: #45b570;
+}
+
+.reports-chart-key i {
+  display: inline-block;
+  width: 22px;
+  height: 3px;
+  border-radius: 999px;
+}
+
+.reports-key-profit {
+  background: linear-gradient(90deg, #45b570 0 50%, #d14836 50% 100%);
+}
+
+.reports-key-spend {
+  background: #ff8c5a;
+}
+
+.reports-key-costs {
+  background: #a98bff;
+}
+
 .reports-chart {
   width: 100%;
   max-height: 360px;
@@ -1479,13 +1545,39 @@ textarea {
   stroke-dasharray: 6 6;
 }
 
-.reports-chart-line {
+.reports-chart-line,
+.reports-chart-profit-segment,
+.reports-chart-spend-line,
+.reports-chart-cost-line {
   fill: none;
-  stroke: #ffd54f;
   stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.reports-chart-line {
+  stroke: #ffd54f;
   filter: drop-shadow(0 10px 24px rgba(255, 213, 79, 0.2));
+}
+
+.reports-chart-profit-segment.is-up {
+  stroke: #45b570;
+  filter: drop-shadow(0 8px 16px rgba(69, 181, 112, 0.24));
+}
+
+.reports-chart-profit-segment.is-down {
+  stroke: #d14836;
+  filter: drop-shadow(0 8px 16px rgba(209, 72, 54, 0.2));
+}
+
+.reports-chart-spend-line {
+  stroke: #ff8c5a;
+  stroke-dasharray: 8 7;
+}
+
+.reports-chart-cost-line {
+  stroke: #a98bff;
+  stroke-dasharray: 8 7;
 }
 
 .reports-chart-dot {
