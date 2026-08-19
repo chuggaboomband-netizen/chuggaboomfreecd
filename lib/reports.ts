@@ -1185,6 +1185,8 @@ export function buildProfitTimeline(
   let cumulativeGrossProfit = 0;
   let cumulativeAdSpend = 0;
   let cumulativeNetProfit = 0;
+  let cumulativeCosts = 0;
+  let cumulativeRevenue = 0;
 
   const points: ProfitTimelinePoint[] = [
     {
@@ -1193,6 +1195,8 @@ export function buildProfitTimeline(
       netProfit: 0,
       cumulativeGrossProfit: 0,
       cumulativeAdSpend: 0,
+      cumulativeCosts: 0,
+      cumulativeRevenue: 0,
       kind: "ad-spend",
     },
   ];
@@ -1202,6 +1206,8 @@ export function buildProfitTimeline(
     cumulativeGrossProfit += grossProfit;
     cumulativeAdSpend += order.adSpendAllocated;
     cumulativeNetProfit += order.profitLoss;
+    cumulativeCosts += order.unitCostTotal + order.postageCost;
+    cumulativeRevenue += order.revenue;
 
     points.push({
       timestamp: order.purchasedAtTimestamp || `${order.purchasedAt}T12:00:00.000Z`,
@@ -1209,6 +1215,8 @@ export function buildProfitTimeline(
       netProfit: cumulativeNetProfit,
       cumulativeGrossProfit,
       cumulativeAdSpend,
+      cumulativeCosts,
+      cumulativeRevenue,
       kind: "order",
     });
   }

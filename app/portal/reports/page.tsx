@@ -13,6 +13,7 @@ import {
   summarizeWeeklyProfitLoss,
   totalProfitLoss,
 } from "@/lib/reports";
+import { ProfitTimelineChart } from "./profit-timeline-chart";
 
 export default async function ReportsPage() {
   if (!(await isAuthenticated())) {
@@ -235,83 +236,6 @@ export default async function ReportsPage() {
         </section>
       </div>
     </main>
-  );
-}
-
-function ProfitTimelineChart({
-  points,
-}: {
-  points: ReturnType<typeof buildProfitTimeline>;
-}) {
-  const width = 760;
-  const height = 260;
-  const padding = 24;
-  const values = points.map((point) => point.netProfit);
-  const minValue = Math.min(...values, 0);
-  const maxValue = Math.max(...values, 0);
-  const valueRange = maxValue - minValue || 1;
-  const denominator = Math.max(points.length - 1, 1);
-
-  const coordinates = points.map((point, index) => {
-    const x = padding + ((width - padding * 2) * index) / denominator;
-    const y =
-      height - padding - ((point.netProfit - minValue) / valueRange) * (height - padding * 2);
-
-    return { x, y, point };
-  });
-
-  const path = coordinates
-    .map((coordinate, index) =>
-      `${index === 0 ? "M" : "L"} ${coordinate.x.toFixed(2)} ${coordinate.y.toFixed(2)}`,
-    )
-    .join(" ");
-
-  const zeroY =
-    height - padding - ((0 - minValue) / valueRange) * (height - padding * 2);
-
-  const latestPoint = points[points.length - 1];
-
-  return (
-    <div className="reports-chart-card">
-      <div className="reports-chart-meta">
-        <strong>Latest net profit: {formatPriceLabel(latestPoint.netProfit)}</strong>
-        <span className="microcopy">
-          Latest tracked ad spend: {formatPriceLabel(latestPoint.cumulativeAdSpend)}
-        </span>
-      </div>
-      <svg
-        viewBox={`0 0 ${width} ${height}`}
-        className="reports-chart"
-        role="img"
-        aria-label="Profit over time graph"
-      >
-        <line
-          x1={padding}
-          x2={width - padding}
-          y1={zeroY}
-          y2={zeroY}
-          className="reports-chart-zero"
-        />
-        <path d={path} className="reports-chart-line" />
-        {coordinates.map(({ x, y, point }, index) => (
-          <g key={`${point.timestamp}-${index}`}>
-            <circle
-              cx={x}
-              cy={y}
-              r="4"
-              className={point.kind === "ad-spend" ? "reports-chart-dot is-spend" : "reports-chart-dot is-order"}
-            />
-            <title>
-              {`${formatPortalDateTime(point.timestamp)} - ${formatPriceLabel(point.netProfit)}`}
-            </title>
-          </g>
-        ))}
-      </svg>
-      <div className="reports-chart-labels">
-        <span>{formatPortalDateTime(points[0].timestamp)}</span>
-        <span>{formatPortalDateTime(latestPoint.timestamp)}</span>
-      </div>
-    </div>
   );
 }
 
