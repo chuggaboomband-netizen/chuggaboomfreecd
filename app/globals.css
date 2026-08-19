@@ -1608,9 +1608,17 @@ textarea {
 
 .reports-chart-point-details > div span,
 .reports-chart-point-details em {
-  color: rgba(235, 239, 255, 0.62);
   font-size: 0.82rem;
   font-style: normal;
+}
+
+.reports-chart-point-details > div span {
+  color: rgba(235, 239, 255, 0.72);
+}
+
+.reports-chart-point-details em,
+.reports-chart-point-details dd {
+  color: #fff;
 }
 
 .reports-chart-point-details dl {
@@ -1635,6 +1643,7 @@ textarea {
   gap: 2px;
   margin: 0;
   font-weight: 700;
+  text-shadow: 0 1px 10px rgba(255, 255, 255, 0.18);
 }
 
 .reports-chart-dot {
