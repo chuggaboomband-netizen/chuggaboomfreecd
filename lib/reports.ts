@@ -1182,9 +1182,26 @@ export function buildProfitTimeline(
       ),
     );
 
+  const adSpendEvents = getAdSpendEntries(config)
+    .filter((entry) => entry.recordedAt >= REPORT_START_TIMESTAMP)
+    .map((entry) => ({
+      timestamp: entry.recordedAt,
+      kind: "ad-spend" as const,
+      label: entry.notes ? `Ad spend: ${entry.notes}` : "Ad spend update",
+      totalAmount: toCurrencyValue(entry.totalAmount),
+    }));
+  const orderEvents = orderedOrders.map((order) => ({
+    timestamp: order.purchasedAtTimestamp || `${order.purchasedAt}T12:00:00.000Z`,
+    kind: "order" as const,
+    label: order.orderNumber,
+    order,
+  }));
+  const events = [...adSpendEvents, ...orderEvents].sort(
+    (a, b) => a.timestamp.localeCompare(b.timestamp) || a.kind.localeCompare(b.kind),
+  );
+
   let cumulativeGrossProfit = 0;
   let cumulativeAdSpend = 0;
-  let cumulativeNetProfit = 0;
   let cumulativeCosts = 0;
   let cumulativeRevenue = 0;
 
@@ -1201,23 +1218,25 @@ export function buildProfitTimeline(
     },
   ];
 
-  for (const order of orderedOrders) {
-    const grossProfit = order.revenue - order.unitCostTotal - order.postageCost;
-    cumulativeGrossProfit += grossProfit;
-    cumulativeAdSpend += order.adSpendAllocated;
-    cumulativeNetProfit += order.profitLoss;
-    cumulativeCosts += order.unitCostTotal + order.postageCost;
-    cumulativeRevenue += order.revenue;
+  for (const event of events) {
+    if (event.kind === "ad-spend") {
+      // Each spend log entry is a total-to-date snapshot, not a new cost for every order.
+      cumulativeAdSpend = event.totalAmount;
+    } else {
+      cumulativeRevenue += event.order.revenue;
+      cumulativeCosts += event.order.unitCostTotal + event.order.postageCost;
+      cumulativeGrossProfit = cumulativeRevenue - cumulativeCosts;
+    }
 
     points.push({
-      timestamp: order.purchasedAtTimestamp || `${order.purchasedAt}T12:00:00.000Z`,
-      label: order.orderNumber,
-      netProfit: cumulativeNetProfit,
+      timestamp: event.timestamp,
+      label: event.label,
+      netProfit: cumulativeGrossProfit - cumulativeAdSpend,
       cumulativeGrossProfit,
       cumulativeAdSpend,
       cumulativeCosts,
       cumulativeRevenue,
-      kind: "order",
+      kind: event.kind,
     });
   }
 
