@@ -212,7 +212,7 @@
         "notes": "Campaign Launch"
       }
     ],
-    "totalAdSpend": "1914.17",
+    "totalAdSpend": "1928.16",
     "adSpendEntries": [
       {
         "id": "739b2180-47a8-47a7-b6ec-2df0f2943f12",
@@ -594,6 +594,12 @@
         "id": "33042b30-7c7f-4a4f-819c-6e908fcbdf77",
         "recordedAt": "2026-09-01T12:39:46.093Z",
         "totalAmount": "1914.17"
+      },
+      {
+        "id": "19bac253-dc86-4f4a-a63e-225f0a4d39e7",
+        "recordedAt": "2026-09-01T18:22:00.031Z",
+        "totalAmount": "1928.16",
+        "notes": "Reduced spend to £45 per day"
       }
     ],
     "cachedOrders": []
