@@ -103,7 +103,7 @@
       "compareAtPriceLabel": "24.99",
       "type": "upsell",
       "isDefault": false,
-      "activeInFunnel": true,
+      "activeInFunnel": false,
       "sortOrder": 10,
       "autoDiscountCodes": [
         "ChuggaChupCheap"
