@@ -9,6 +9,7 @@ import {
   getAdSpendEntries,
   getReportOrders,
   getShopifyConnectionState,
+  getShopifyInventorySnapshot,
   summarizeProductSales,
   summarizeWeeklyProfitLoss,
   totalProfitLoss,
@@ -23,9 +24,15 @@ export default async function ReportsPage() {
   const config = await readConfig();
   const shopifyState = await getShopifyConnectionState(config);
   const orders = await getReportOrders(config);
+  let inventorySnapshot: Record<string, number | null> = {};
+  try {
+    inventorySnapshot = await getShopifyInventorySnapshot(config);
+  } catch (error) {
+    console.error("Shopify inventory snapshot failed for reports.", error);
+  }
   const adSpendEntries = [...getAdSpendEntries(config)].sort((a, b) => b.recordedAt.localeCompare(a.recordedAt));
   const profitTimeline = buildProfitTimeline(config, orders);
-  const productSales = summarizeProductSales(orders);
+  const productSales = summarizeProductSales(orders, config, inventorySnapshot);
   const weeklyProfitLoss = summarizeWeeklyProfitLoss(orders);
   const totalPnL = totalProfitLoss(orders);
   const isLive = shopifyState.status === "connected" && orders.some((order) => order.source === "shopify");
@@ -81,17 +88,31 @@ export default async function ReportsPage() {
 
           <article className="admin-card stack">
             <h2>Products sold</h2>
-            <div className="reports-list">
+            <div className="reports-list reports-product-sales">
               {productSales.length > 0 ? (
                 productSales.map((item) => (
-                  <div key={item.productName} className="reports-list-row">
-                    <span className="portal-list-item-stack">
-                      <strong>{item.productName}</strong>
-                      <span className="microcopy">
-                        Available stock: {item.availableStock ?? "—"}
+                  <div key={item.productName} className="reports-product-sales-row">
+                    <div className="reports-product-sales-header">
+                      <span className="portal-list-item-stack">
+                        <strong>{item.productName}</strong>
+                        <span className="microcopy">
+                          Current stock: {formatStockLabel(item.availableStock)}
+                        </span>
                       </span>
-                    </span>
-                    <strong>{item.quantity}</strong>
+                      <strong>{item.quantity} sold</strong>
+                    </div>
+                    {item.variants.length > 0 ? (
+                      <div className="reports-product-variant-list">
+                        {item.variants.map((variant) => (
+                          <div key={`${item.productName}-${variant.name}`} className="reports-product-variant-row">
+                            <strong>{variant.name}</strong>
+                            <span>
+                              {variant.quantity} sold · {formatStockLabel(variant.availableStock)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
                   </div>
                 ))
               ) : (
@@ -237,6 +258,12 @@ export default async function ReportsPage() {
       </div>
     </main>
   );
+}
+
+function formatStockLabel(stock: number | null) {
+  if (stock == null) return "Stock unavailable";
+  if (stock <= 0) return "Out of stock";
+  return `${stock} available`;
 }
 
 function formatPortalDateTime(value: string) {

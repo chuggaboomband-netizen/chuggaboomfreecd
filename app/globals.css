@@ -1366,6 +1366,39 @@ textarea {
   background: rgba(255, 255, 255, 0.04);
 }
 
+.reports-product-sales-row {
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 213, 79, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.reports-product-sales-header,
+.reports-product-variant-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.reports-product-variant-list {
+  display: grid;
+  gap: 7px;
+}
+
+.reports-product-variant-row {
+  padding: 9px 11px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.portal-surface .reports-product-variant-row span {
+  color: rgba(235, 239, 255, 0.78);
+  font-size: 0.9rem;
+}
+
 .portal-list-item-stack {
   display: grid;
   gap: 4px;

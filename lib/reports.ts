@@ -1129,28 +1129,118 @@ export async function getReportOrders(config: FunnelConfig, options?: ReportSync
   return buildPlaceholderOrders(config);
 }
 
-export function summarizeProductSales(orders: ReportOrder[]) {
-  const counts = new Map<string, { quantity: number; availableStock: number | null }>();
+export type ProductSalesSummary = {
+  productName: string;
+  quantity: number;
+  /** Current Shopify inventory, not the stock level captured when an order was placed. */
+  availableStock: number | null;
+  variants: Array<{
+    name: string;
+    quantity: number;
+    availableStock: number | null;
+  }>;
+};
+
+function inventoryForVariant(snapshot: InventorySnapshot, variantId?: string | null) {
+  const normalizedId = normalizeVariantId(variantId);
+  if (!normalizedId) return null;
+
+  if (Object.prototype.hasOwnProperty.call(snapshot, normalizedId)) {
+    return snapshot[normalizedId];
+  }
+
+  const numericId = extractVariantNumericId(normalizedId);
+  const matchingKey = Object.keys(snapshot).find(
+    (key) => extractVariantNumericId(key) === numericId,
+  );
+  return matchingKey ? snapshot[matchingKey] : null;
+}
+
+export function summarizeProductSales(
+  orders: ReportOrder[],
+  config?: FunnelConfig,
+  inventorySnapshot: InventorySnapshot = {},
+): ProductSalesSummary[] {
+  type MutableVariantSummary = ProductSalesSummary["variants"][number] & { variantId?: string };
+  type MutableProductSummary = Omit<ProductSalesSummary, "variants" | "availableStock"> & {
+    product?: Product;
+    variants: MutableVariantSummary[];
+  };
+
+  const summaries = new Map<string, MutableProductSummary>();
 
   for (const order of orders) {
     for (const item of order.items) {
-      const existing = counts.get(item.productName);
-      counts.set(item.productName, {
-        quantity: (existing?.quantity || 0) + item.quantity,
-        availableStock:
-          item.availableStock != null
-            ? item.availableStock
-            : (existing?.availableStock ?? null),
+      const product = config ? productForReportItem(config, item) : null;
+      const summaryKey = product?.id || item.productId || item.productName;
+      let summary = summaries.get(summaryKey);
+
+      if (!summary) {
+        summary = {
+          productName: product?.name || item.productName,
+          quantity: 0,
+          product: product || undefined,
+          variants: (product?.variants || []).map((variant) => ({
+            name: variant.name,
+            variantId: variant.variantId,
+            quantity: 0,
+            availableStock: inventoryForVariant(inventorySnapshot, variant.variantId),
+          })),
+        };
+        summaries.set(summaryKey, summary);
+      }
+
+      summary.quantity += item.quantity;
+
+      if (summary.variants.length === 0) {
+        continue;
+      }
+
+      const normalizedItemVariantId = normalizeVariantId(item.variantId);
+      const itemNumericVariantId = extractVariantNumericId(item.variantId);
+      let variant = summary.variants.find((candidate) => {
+        const candidateId = normalizeVariantId(candidate.variantId);
+        return (
+          candidateId === normalizedItemVariantId ||
+          extractVariantNumericId(candidateId) === itemNumericVariantId
+        );
       });
+
+      if (!variant) {
+        variant = {
+          name: item.productName,
+          variantId: item.variantId,
+          quantity: 0,
+          availableStock: null,
+        };
+        summary.variants.push(variant);
+      }
+      variant.quantity += item.quantity;
     }
   }
 
-  return [...counts.entries()]
-    .map(([productName, summary]) => ({
-      productName,
-      quantity: summary.quantity,
-      availableStock: summary.availableStock,
-    }))
+  return [...summaries.values()]
+    .map((summary) => {
+      const variantStocks = summary.variants.map((variant) => variant.availableStock);
+      const availableStock = summary.product
+        ? summary.variants.length > 0
+          ? variantStocks.every((stock) => stock != null)
+            ? variantStocks.reduce((total, stock) => total + (stock || 0), 0)
+            : null
+          : inventoryForVariant(inventorySnapshot, summary.product.variantId)
+        : null;
+
+      return {
+        productName: summary.productName,
+        quantity: summary.quantity,
+        availableStock,
+        variants: summary.variants.map(({ name, quantity, availableStock: stock }) => ({
+          name,
+          quantity,
+          availableStock: stock,
+        })),
+      };
+    })
     .sort((a, b) => b.quantity - a.quantity || a.productName.localeCompare(b.productName));
 }
 
