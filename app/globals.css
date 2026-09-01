@@ -1668,6 +1668,23 @@ textarea {
   font-size: 0.85rem;
 }
 
+.image-upload-status {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.image-upload-status.is-working {
+  color: #ffd54f;
+}
+
+.image-upload-status.is-ready {
+  color: #79d99c;
+}
+
+.image-upload-status.is-error {
+  color: #ff8c7a;
+}
+
 .summary-layout {
   display: grid;
   grid-template-columns: 1fr 360px;
