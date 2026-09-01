@@ -523,6 +523,15 @@ textarea {
   border-color: transparent;
 }
 
+.upsell-variant-button.is-sold-out,
+.upsell-variant-button:disabled {
+  border-color: rgba(255, 140, 122, 0.35);
+  background: rgba(255, 140, 122, 0.08);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
 .upsell-total {
   display: grid;
   gap: 6px;

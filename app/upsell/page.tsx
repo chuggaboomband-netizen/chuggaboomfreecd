@@ -35,6 +35,7 @@ export default async function UpsellPage({
           products={products}
           initialSelected={selectedHandles}
           initialStep={Number.isFinite(step) ? step : 0}
+          inventorySnapshot={inventorySnapshot}
         />
       </div>
     </main>
