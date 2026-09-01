@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-import type { Product, SelectedItem } from "@/lib/types";
+import type { InventorySnapshot, Product, SelectedItem } from "@/lib/types";
 
 function parsePrice(value: string): number {
   const numeric = Number(value.replace(/[^0-9.]/g, ""));
@@ -69,14 +69,34 @@ function itemPriceDisplay(item: SelectedItem) {
   };
 }
 
+function isVariantAvailable(inventorySnapshot: InventorySnapshot, variantId: string) {
+  const stock = inventorySnapshot[variantId];
+  return stock == null || stock > 0;
+}
+
+function isHandleAvailable(products: Product[], handle: string, inventorySnapshot: InventorySnapshot) {
+  for (const product of products) {
+    if (product.handle === handle) {
+      return isVariantAvailable(inventorySnapshot, product.variantId);
+    }
+
+    const variant = product.variants?.find((item) => item.handle === handle);
+    if (variant) return isVariantAvailable(inventorySnapshot, variant.variantId);
+  }
+
+  return false;
+}
+
 export function UpsellSelector({
   products,
   initialSelected,
   initialStep,
+  inventorySnapshot,
 }: {
   products: Product[];
   initialSelected: string[];
   initialStep: number;
+  inventorySnapshot: InventorySnapshot;
 }) {
   const router = useRouter();
   const defaultSelection = products
@@ -85,18 +105,26 @@ export function UpsellSelector({
   const baseProduct = products.find((product) => product.isDefault) ?? products[0];
   const upsells = products.filter((product) => !product.isDefault);
   const selected = useMemo(
-    () => Array.from(new Set([...defaultSelection, ...initialSelected])),
-    [defaultSelection, initialSelected],
+    () => Array.from(new Set([...defaultSelection, ...initialSelected])).filter(
+      (handle) => isHandleAvailable(products, handle, inventorySnapshot),
+    ),
+    [defaultSelection, initialSelected, inventorySnapshot, products],
   );
   const currentStep = Math.max(0, Math.min(initialStep, Math.max(upsells.length - 1, 0)));
   const featuredUpsell = upsells[currentStep] ?? null;
+  const availableVariantHandles = useMemo(
+    () => featuredUpsell?.variants
+      ?.filter((variant) => isVariantAvailable(inventorySnapshot, variant.variantId))
+      .map((variant) => variant.handle) || [],
+    [featuredUpsell, inventorySnapshot],
+  );
   const [selectedVariantHandle, setSelectedVariantHandle] = useState<string>(
-    featuredUpsell?.variants?.[0]?.handle || "",
+    availableVariantHandles[0] || "",
   );
 
   useEffect(() => {
-    setSelectedVariantHandle(featuredUpsell?.variants?.[0]?.handle || "");
-  }, [featuredUpsell?.handle]);
+    setSelectedVariantHandle(availableVariantHandles[0] || "");
+  }, [featuredUpsell?.handle, availableVariantHandles]);
 
   const selectedItems = useMemo(() => resolveSelectedItems(products, selected), [products, selected]);
 
@@ -106,11 +134,11 @@ export function UpsellSelector({
     }
 
     const offeredHandle = featuredUpsell.variants?.length
-      ? selectedVariantHandle || featuredUpsell.variants[0]?.handle || featuredUpsell.handle
+      ? selectedVariantHandle || availableVariantHandles[0] || featuredUpsell.handle
       : featuredUpsell.handle;
 
     return Array.from(new Set([...selected, offeredHandle]));
-  }, [featuredUpsell, selected, selectedVariantHandle]);
+  }, [availableVariantHandles, featuredUpsell, selected, selectedVariantHandle]);
 
   const prospectiveItems = useMemo(
     () => resolveSelectedItems(products, prospectiveHandles),
@@ -163,7 +191,7 @@ export function UpsellSelector({
     }
 
     const acceptedHandle = featuredUpsell.variants?.length
-      ? selectedVariantHandle || featuredUpsell.variants[0]?.handle || featuredUpsell.handle
+      ? selectedVariantHandle || availableVariantHandles[0] || featuredUpsell.handle
       : featuredUpsell.handle;
     const acceptedHandles = Array.from(new Set([...selected, acceptedHandle]));
     routeToStepOrCheckout(acceptedHandles, currentStep + 1);
@@ -279,16 +307,20 @@ export function UpsellSelector({
             <div className="upsell-variant-block">
               <h3 className="upsell-variant-title">Choose your size</h3>
               <div className="upsell-variant-grid">
-                {featuredUpsell.variants.map((variant) => (
-                  <button
-                    key={variant.id}
-                    type="button"
-                    className={`upsell-variant-button ${selectedVariantHandle === variant.handle ? "selected" : ""}`}
-                    onClick={() => setSelectedVariantHandle(variant.handle)}
-                  >
-                    {variant.name}
-                  </button>
-                ))}
+                {featuredUpsell.variants.map((variant) => {
+                  const available = isVariantAvailable(inventorySnapshot, variant.variantId);
+                  return (
+                    <button
+                      key={variant.id}
+                      type="button"
+                      disabled={!available}
+                      className={`upsell-variant-button ${selectedVariantHandle === variant.handle ? "selected" : ""} ${!available ? "is-sold-out" : ""}`}
+                      onClick={() => setSelectedVariantHandle(variant.handle)}
+                    >
+                      {variant.name}{!available ? " — Out of stock" : ""}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           ) : null}
