@@ -212,7 +212,7 @@
         "notes": "Campaign Launch"
       }
     ],
-    "totalAdSpend": "£1,928.16",
+    "totalAdSpend": "1914.17",
     "adSpendEntries": [
       {
         "id": "739b2180-47a8-47a7-b6ec-2df0f2943f12",
@@ -594,11 +594,6 @@
         "id": "33042b30-7c7f-4a4f-819c-6e908fcbdf77",
         "recordedAt": "2026-09-01T12:39:46.093Z",
         "totalAmount": "1914.17"
-      },
-      {
-        "id": "00d00f7c-12d3-4974-8bfa-950dc3d94f10",
-        "recordedAt": "2026-09-01T18:19:59.134Z",
-        "totalAmount": "£1,928.16"
       }
     ],
     "cachedOrders": []
