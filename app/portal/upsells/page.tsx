@@ -336,6 +336,16 @@ function ProductEditor({
   inventorySnapshot: Record<string, number | null>;
 }) {
   const mainVariantStock = getProductStock(inventorySnapshot, product.variantId);
+  const variantStocks = (product.variants || []).map((variant) => ({
+    ...variant,
+    stock: getProductStock(inventorySnapshot, variant.variantId),
+  }));
+  const hasVariants = variantStocks.length > 0;
+  const hasCompleteVariantStock = hasVariants && variantStocks.every((variant) => variant.stock != null);
+  const totalVariantStock = hasCompleteVariantStock
+    ? variantStocks.reduce((total, variant) => total + (variant.stock || 0), 0)
+    : null;
+  const soldOutVariantCount = variantStocks.filter((variant) => variant.stock != null && variant.stock <= 0).length;
 
   return (
     <div className="summary-card">
@@ -347,14 +357,37 @@ function ProductEditor({
           </p>
         </div>
         <div className="portal-stock-badges">
-          <span className={`portal-stock-pill ${stockTone(mainVariantStock)}`}>
-            Available stock: {formatStockLabel(mainVariantStock)}
-          </span>
-          {product.variants?.length ? (
-            <span className="portal-stock-pill is-neutral">{product.variants.length} variants saved</span>
-          ) : null}
+          {hasVariants ? (
+            <>
+              <span className={`portal-stock-pill ${stockTone(totalVariantStock)}`}>
+                Total variant stock: {totalVariantStock == null ? "Check sizes below" : `${totalVariantStock} available`}
+              </span>
+              <span className="portal-stock-pill is-neutral">{variantStocks.length} sizes</span>
+              {soldOutVariantCount > 0 ? <span className="portal-stock-pill is-out">{soldOutVariantCount} out of stock</span> : null}
+            </>
+          ) : (
+            <span className={`portal-stock-pill ${stockTone(mainVariantStock)}`}>
+              Available stock: {formatStockLabel(mainVariantStock)}
+            </span>
+          )}
         </div>
       </div>
+      {hasVariants ? (
+        <section className="portal-variant-stock-panel" aria-label={`${product.name} variant stock`}>
+          <strong>Stock by size</strong>
+          <div className="portal-variant-stock-list">
+            {variantStocks.map((variant) => (
+              <div key={variant.id} className="reports-list-row">
+                <span className="portal-list-item-stack">
+                  <strong>{variant.name}</strong>
+                  <span className="microcopy">{variant.handle} · {variant.priceLabel}</span>
+                </span>
+                <span className={`portal-stock-pill ${stockTone(variant.stock)}`}>{formatStockLabel(variant.stock)}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
       <form action={updateProductAction} className="stack">
         <input type="hidden" name="id" value={product.id} />
         <input type="hidden" name="returnTo" value={returnTo} />
@@ -473,25 +506,6 @@ function ProductEditor({
         <p className="microcopy">
           Variants format: <code>handle|label|variantId|discounted price|value price</code>
         </p>
-        {product.variants?.length ? (
-          <div className="portal-variant-stock-list">
-            {product.variants.map((variant) => {
-              const variantStock = getProductStock(inventorySnapshot, variant.variantId);
-
-              return (
-                <div key={variant.id} className="reports-list-row">
-                  <span className="portal-list-item-stack">
-                    <strong>{variant.name}</strong>
-                    <span className="microcopy">
-                      {variant.handle} · {variant.priceLabel}
-                    </span>
-                  </span>
-                  <strong>{formatStockLabel(variantStock)}</strong>
-                </div>
-              );
-            })}
-          </div>
-        ) : null}
         <div className="cta-row">
           <PendingSubmitButton pendingLabel="Saving product...">
             Save product
