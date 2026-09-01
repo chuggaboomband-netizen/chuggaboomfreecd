@@ -92,6 +92,80 @@
       "upsellNoLabel": "Not right now, ta",
       "variants": [],
       "activeInFunnel": true
+    },
+    {
+      "id": "eea7cd7a-b0c6-4c84-a971-a582394ad493",
+      "handle": "ChuggaChups",
+      "name": "ChuggaChups T-Shirt",
+      "description": "A 4-Colour Front-Printed Tee, printed on Gildan Heavy",
+      "variantId": "53606847873404:1",
+      "priceLabel": "14.99",
+      "compareAtPriceLabel": "24.99",
+      "type": "upsell",
+      "isDefault": false,
+      "activeInFunnel": false,
+      "sortOrder": 10,
+      "autoDiscountCodes": [
+        "ChuggaChupCheap"
+      ],
+      "unitCost": "5.07",
+      "costTiers": [],
+      "imageSrc": "/uploads/chupachupsmockup-1b2117ad-dcfb-4e83-9a3c-9d6df8329fe6.webp",
+      "upsellHeadline": "Okay, you like music, but do you like fun band logos on clothing?",
+      "upsellSubheadline": "Add this T-Shirt to your order and get £10 of the value!",
+      "upsellBody": "This 4-Colour front print will arrive with your free CD, so you'll have something to wear when you come to a ChuggaBoom show!",
+      "upsellYesLabel": "Music and a Tee? Yeah, go on then!",
+      "upsellNoLabel": "I'll pass for now",
+      "variants": [
+        {
+          "id": "ca897087-2258-4a9a-ab76-bceff1d664d9",
+          "handle": "tee-s",
+          "name": "Small",
+          "variantId": "53606879953276:1",
+          "priceLabel": "14.99",
+          "compareAtPriceLabel": "24.99"
+        },
+        {
+          "id": "3c768989-ba6f-4ffe-9960-6002bdea5c66",
+          "handle": "tee-m",
+          "name": "Medium",
+          "variantId": "53606847840636:1",
+          "priceLabel": "14.99",
+          "compareAtPriceLabel": "24.99"
+        },
+        {
+          "id": "63308a49-6fda-4780-8715-784edc1289e5",
+          "handle": "tee-L",
+          "name": "Large",
+          "variantId": "53606847873404:1",
+          "priceLabel": "14.99",
+          "compareAtPriceLabel": "24.99"
+        },
+        {
+          "id": "19787f91-15b3-4240-bcc6-6b2709c3a309",
+          "handle": "tee-XL",
+          "name": "X-Large",
+          "variantId": "53606847906172:1",
+          "priceLabel": "14.99",
+          "compareAtPriceLabel": "24.99"
+        },
+        {
+          "id": "da09d76f-a3ea-4b0b-a8b1-9695d9f73c0f",
+          "handle": "tee-2XL",
+          "name": "2X-Large",
+          "variantId": "53606847938940:1",
+          "priceLabel": "14.99",
+          "compareAtPriceLabel": "24.99"
+        },
+        {
+          "id": "084c55b4-f6eb-49d9-b059-4ad9d5169056",
+          "handle": "tee-3XL",
+          "name": "3X-Large",
+          "variantId": "53606850789756:1",
+          "priceLabel": "14.99",
+          "compareAtPriceLabel": "24.99"
+        }
+      ]
     }
   ],
   "discounts": [
