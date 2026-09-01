@@ -15,6 +15,7 @@ import {
 } from "../actions";
 import { PendingSubmitButton } from "../pending-submit-button";
 import { CostTierEditor } from "./cost-tier-editor";
+import { ImageUploadField } from "./image-upload-field";
 
 export default async function UpsellsPage({
   searchParams,
@@ -232,10 +233,7 @@ export default async function UpsellsPage({
               <span>Image src</span>
               <input name="imageSrc" placeholder="/vinyl-offer.png" />
             </label>
-            <label className="field">
-              <span>Upload image</span>
-              <input name="imageFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" />
-            </label>
+            <ImageUploadField />
             <label className="field">
               <span>Upsell headline</span>
               <input name="upsellHeadline" placeholder="Want even more music while you're here?" />
@@ -425,10 +423,7 @@ function ProductEditor({
           <span>Image src</span>
           <input name="imageSrc" defaultValue={product.imageSrc || ""} placeholder="/vinyl-offer.png" />
         </label>
-        <label className="field">
-          <span>Upload image</span>
-          <input name="imageFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" />
-        </label>
+        <ImageUploadField />
         <label className="field">
           <span>Upsell headline</span>
           <input name="upsellHeadline" defaultValue={product.upsellHeadline || ""} />
