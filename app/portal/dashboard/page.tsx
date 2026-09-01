@@ -38,9 +38,6 @@ export default async function DashboardPage({
   const security = getPortalSecurityState();
   const shopifyState = await getShopifyConnectionState(config);
   const orders = await getReportOrders(config);
-  const productSales = summarizeProductSales(orders);
-  const totalPnL = totalProfitLoss(orders);
-  const topProduct = productSales[0];
   const products = sortProducts(config.products);
   let inventorySnapshot: Record<string, number | null> = {};
   try {
@@ -48,6 +45,9 @@ export default async function DashboardPage({
   } catch (error) {
     console.error("Shopify inventory snapshot failed for dashboard.", error);
   }
+  const productSales = summarizeProductSales(orders, config, inventorySnapshot);
+  const totalPnL = totalProfitLoss(orders);
+  const topProduct = productSales[0];
   const liveSoldOutUpsells = products.filter(
     (product) =>
       product.type === "upsell" &&
