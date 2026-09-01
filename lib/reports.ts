@@ -1182,26 +1182,62 @@ export function buildProfitTimeline(
       ),
     );
 
-  const adSpendEvents = getAdSpendEntries(config)
+  const adSpendSnapshots = getAdSpendEntries(config)
     .filter((entry) => entry.recordedAt >= REPORT_START_TIMESTAMP)
     .map((entry) => ({
       timestamp: entry.recordedAt,
-      kind: "ad-spend" as const,
-      label: entry.notes ? `Ad spend: ${entry.notes}` : "Ad spend update",
       totalAmount: toCurrencyValue(entry.totalAmount),
-    }));
-  const orderEvents = orderedOrders.map((order) => ({
-    timestamp: order.purchasedAtTimestamp || `${order.purchasedAt}T12:00:00.000Z`,
-    kind: "order" as const,
-    label: order.orderNumber,
-    order,
-  }));
-  const events = [...adSpendEvents, ...orderEvents].sort(
-    (a, b) => a.timestamp.localeCompare(b.timestamp) || a.kind.localeCompare(b.kind),
-  );
+    }))
+    .sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+  const ordersByTimestamp = new Map<string, ReportOrder[]>();
+  for (const order of orderedOrders) {
+    const timestamp = order.purchasedAtTimestamp || `${order.purchasedAt}T12:00:00.000Z`;
+    ordersByTimestamp.set(timestamp, [...(ordersByTimestamp.get(timestamp) || []), order]);
+  }
 
+  const latestTimestamp = [
+    REPORT_START_TIMESTAMP,
+    ...ordersByTimestamp.keys(),
+    ...adSpendSnapshots.map((snapshot) => snapshot.timestamp),
+  ].sort().at(-1) || REPORT_START_TIMESTAMP;
+  const timelineTimestamps = new Set<string>([
+    REPORT_START_TIMESTAMP,
+    ...ordersByTimestamp.keys(),
+    ...adSpendSnapshots.map((snapshot) => snapshot.timestamp),
+  ]);
+
+  // Add daily checkpoints so the estimated ad spend flows smoothly through quiet periods too.
+  const day = new Date(REPORT_START_TIMESTAMP);
+  day.setUTCDate(day.getUTCDate() + 1);
+  while (day.toISOString() <= latestTimestamp) {
+    timelineTimestamps.add(day.toISOString());
+    day.setUTCDate(day.getUTCDate() + 1);
+  }
+
+  const adSpendAt = (timestamp: string) => {
+    const time = new Date(timestamp).getTime();
+    const nextIndex = adSpendSnapshots.findIndex(
+      (snapshot) => new Date(snapshot.timestamp).getTime() >= time,
+    );
+    if (nextIndex < 0) return adSpendSnapshots.at(-1)?.totalAmount || 0;
+
+    const next = adSpendSnapshots[nextIndex];
+    if (next.timestamp === timestamp) return next.totalAmount;
+
+    const previous = adSpendSnapshots[nextIndex - 1] || {
+      timestamp: REPORT_START_TIMESTAMP,
+      totalAmount: 0,
+    };
+    const previousTime = new Date(previous.timestamp).getTime();
+    const nextTime = new Date(next.timestamp).getTime();
+    const progress = nextTime === previousTime ? 1 : (time - previousTime) / (nextTime - previousTime);
+
+    return previous.totalAmount + (next.totalAmount - previous.totalAmount) * Math.min(1, Math.max(0, progress));
+  };
+
+  const initialAdSpend = adSpendAt(REPORT_START_TIMESTAMP);
   let cumulativeGrossProfit = 0;
-  let cumulativeAdSpend = 0;
+  let cumulativeAdSpend = initialAdSpend;
   let cumulativeCosts = 0;
   let cumulativeRevenue = 0;
 
@@ -1209,34 +1245,41 @@ export function buildProfitTimeline(
     {
       timestamp: REPORT_START_TIMESTAMP,
       label: "Campaign start",
-      netProfit: 0,
+      netProfit: -initialAdSpend,
       cumulativeGrossProfit: 0,
-      cumulativeAdSpend: 0,
+      cumulativeAdSpend: initialAdSpend,
       cumulativeCosts: 0,
       cumulativeRevenue: 0,
       kind: "ad-spend",
     },
   ];
 
-  for (const event of events) {
-    if (event.kind === "ad-spend") {
-      // Each spend log entry is a total-to-date snapshot, not a new cost for every order.
-      cumulativeAdSpend = event.totalAmount;
-    } else {
-      cumulativeRevenue += event.order.revenue;
-      cumulativeCosts += event.order.unitCostTotal + event.order.postageCost;
-      cumulativeGrossProfit = cumulativeRevenue - cumulativeCosts;
+  for (const timestamp of [...timelineTimestamps].sort()) {
+    if (timestamp === REPORT_START_TIMESTAMP) continue;
+    const ordersAtTimestamp = ordersByTimestamp.get(timestamp) || [];
+
+    for (const order of ordersAtTimestamp) {
+      cumulativeRevenue += order.revenue;
+      cumulativeCosts += order.unitCostTotal + order.postageCost;
     }
+    cumulativeGrossProfit = cumulativeRevenue - cumulativeCosts;
+    cumulativeAdSpend = adSpendAt(timestamp);
+
+    const label = ordersAtTimestamp.length === 1
+      ? ordersAtTimestamp[0].orderNumber
+      : ordersAtTimestamp.length > 1
+        ? `${ordersAtTimestamp.length} orders`
+        : "Estimated ad spend";
 
     points.push({
-      timestamp: event.timestamp,
-      label: event.label,
+      timestamp,
+      label,
       netProfit: cumulativeGrossProfit - cumulativeAdSpend,
       cumulativeGrossProfit,
       cumulativeAdSpend,
       cumulativeCosts,
       cumulativeRevenue,
-      kind: event.kind,
+      kind: ordersAtTimestamp.length > 0 ? "order" : "ad-spend",
     });
   }
 
