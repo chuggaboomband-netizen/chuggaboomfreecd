@@ -147,9 +147,9 @@ export async function writeConfig(config: FunnelConfig): Promise<void> {
   await fs.writeFile(configPath, `${JSON.stringify(sanitizedConfig, null, 2)}\n`, "utf8");
 }
 
-export async function savePublicUpload(file: File, outputName: string): Promise<string> {
+export async function savePublicUpload(file: File | Buffer, outputName: string): Promise<string> {
   const uploadPath = path.posix.join("public", "uploads", outputName);
-  const bytes = Buffer.from(await file.arrayBuffer());
+  const bytes = Buffer.isBuffer(file) ? file : Buffer.from(await file.arrayBuffer());
 
   const remote = getRemoteStorageConfig();
   if (remote) {

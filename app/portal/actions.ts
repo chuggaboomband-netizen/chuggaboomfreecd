@@ -2,6 +2,7 @@
 
 import crypto from "node:crypto";
 import path from "node:path";
+import sharp from "sharp";
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -39,10 +40,22 @@ async function saveUploadedImage(file: File): Promise<string | undefined> {
     return undefined;
   }
 
-  const extension = path.extname(file.name) || ".png";
+  const extension = (path.extname(file.name) || ".png").toLowerCase();
   const baseName = path.basename(file.name, extension) || "product-image";
-  const safeName = `${sanitizeFilename(baseName)}-${crypto.randomUUID()}${extension.toLowerCase()}`;
-  return savePublicUpload(file, safeName);
+  const safeName = `${sanitizeFilename(baseName)}-${crypto.randomUUID()}`;
+
+  // Keep GIFs intact so an animated product image does not become a static WebP.
+  if (extension === ".gif" || file.type === "image/gif") {
+    return savePublicUpload(file, `${safeName}.gif`);
+  }
+
+  const compressedImage = await sharp(Buffer.from(await file.arrayBuffer()))
+    .rotate()
+    .resize({ width: 1600, height: 1600, fit: "inside", withoutEnlargement: true })
+    .webp({ quality: 82, effort: 4 })
+    .toBuffer();
+
+  return savePublicUpload(compressedImage, `${safeName}.webp`);
 }
 
 function parseVariants(value: string): ProductVariant[] {
