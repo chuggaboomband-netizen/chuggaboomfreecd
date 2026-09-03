@@ -1566,6 +1566,11 @@ textarea {
   background: linear-gradient(90deg, #45b570 0 50%, #d14836 50% 100%);
 }
 
+.reports-key-average {
+  background: #fff4bf;
+  box-shadow: 0 0 8px rgba(255, 244, 191, 0.45);
+}
+
 .reports-key-spend {
   background: #ff8c5a;
 }
@@ -1589,6 +1594,7 @@ textarea {
 
 .reports-chart-line,
 .reports-chart-profit-segment,
+.reports-chart-average-line,
 .reports-chart-spend-line,
 .reports-chart-cost-line {
   fill: none;
@@ -1610,6 +1616,12 @@ textarea {
 .reports-chart-profit-segment.is-down {
   stroke: #d14836;
   filter: drop-shadow(0 8px 16px rgba(209, 72, 54, 0.2));
+}
+
+.reports-chart-average-line {
+  stroke: #fff4bf;
+  stroke-width: 4;
+  filter: drop-shadow(0 4px 12px rgba(255, 244, 191, 0.35));
 }
 
 .reports-chart-spend-line {

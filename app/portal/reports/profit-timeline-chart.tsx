@@ -66,6 +66,14 @@ function filterRange(points: ChartPoint[], range: DateRange, includePrevious: bo
   return first < 0 ? points.slice(-1) : points.slice(Math.max(0, first - (includePrevious ? 1 : 0)));
 }
 
+function movingAverage(values: number[], windowSize: number) {
+  return values.map((_, index) => {
+    const start = Math.max(0, index - windowSize + 1);
+    const window = values.slice(start, index + 1);
+    return window.reduce((total, value) => total + value, 0) / window.length;
+  });
+}
+
 export function ProfitTimelineChart({ points }: { points: ProfitTimelinePoint[] }) {
   const [range, setRange] = useState<DateRange>("all");
   const [view, setView] = useState<ChartView>("cumulative");
@@ -79,10 +87,13 @@ export function ProfitTimelineChart({ points }: { points: ProfitTimelinePoint[] 
   const padding = 30;
   const denominator = Math.max(chartPoints.length - 1, 1);
   const coordinates = chartPoints.map((point, index) => ({ x: padding + ((width - padding * 2) * index) / denominator, point }));
-  const profitY = createScale(chartPoints.map((point) => point.netProfit), height, padding);
+  const averageWindowSize = Math.min(isCumulative ? 7 : 4, chartPoints.length);
+  const averageProfit = movingAverage(chartPoints.map((point) => point.netProfit), averageWindowSize);
+  const profitY = createScale([...chartPoints.map((point) => point.netProfit), ...averageProfit], height, padding);
   const adSpendY = createScale(chartPoints.map((point) => point.adSpend), height, padding);
   const costsY = createScale(chartPoints.map((point) => point.costs), height, padding);
   const pathFor = (value: (point: ChartPoint) => number, yFor: (value: number) => number) => coordinates.map(({ x, point }, index) => `${index ? "L" : "M"} ${x.toFixed(2)} ${yFor(value(point)).toFixed(2)}`).join(" ");
+  const averageProfitPath = coordinates.map(({ x }, index) => `${index ? "L" : "M"} ${x.toFixed(2)} ${profitY(averageProfit[index]).toFixed(2)}`).join(" ");
   const latestPoint = chartPoints[chartPoints.length - 1];
   const selectedIndex = activeIndex === null ? chartPoints.length - 1 : Math.min(activeIndex, chartPoints.length - 1);
   const selectedPoint = chartPoints[selectedIndex];
@@ -107,10 +118,11 @@ export function ProfitTimelineChart({ points }: { points: ProfitTimelinePoint[] 
       </div>
       <div className="reports-chart-meta">
         <strong>{isCumulative ? "Lifetime net profit" : "Latest weekly net profit"}: {formatPrice(latestPoint.netProfit)}</strong>
-        <span className="microcopy">Hover a point for actual amounts. Each line is scaled to show its movement clearly.</span>
+        <span className="microcopy">The white trend line is a rolling average across the latest {averageWindowSize} points. Hover a point for actual amounts.</span>
       </div>
       <div className="reports-chart-key">
         <span><i className="reports-key-profit" /> Net profit</span>
+        <span><i className="reports-key-average" /> Trend average</span>
         {showAdSpend ? <span><i className="reports-key-spend" /> Ad spend</span> : null}
         {showCosts ? <span><i className="reports-key-costs" /> Costs</span> : null}
       </div>
@@ -119,6 +131,7 @@ export function ProfitTimelineChart({ points }: { points: ProfitTimelinePoint[] 
           const previous = coordinates[index];
           return <path key={`${point.timestamp}-profit`} d={`M ${previous.x} ${profitY(previous.point.netProfit)} L ${x} ${profitY(point.netProfit)}`} className={`reports-chart-profit-segment ${point.netProfit >= previous.point.netProfit ? "is-up" : "is-down"}`} />;
         })}
+        <path d={averageProfitPath} className="reports-chart-average-line" />
         {showAdSpend ? <path d={pathFor((point) => point.adSpend, adSpendY)} className="reports-chart-spend-line" /> : null}
         {showCosts ? <path d={pathFor((point) => point.costs, costsY)} className="reports-chart-cost-line" /> : null}
         {coordinates.map(({ x, point }, index) => <circle key={`${point.timestamp}-${index}`} cx={x} cy={profitY(point.netProfit)} r="12" className="reports-chart-hit-area" tabIndex={0} role="button" aria-label={`${point.label}: net profit ${formatPrice(point.netProfit)}`} onMouseEnter={() => setActiveIndex(index)} onFocus={() => setActiveIndex(index)} />)}
@@ -127,6 +140,7 @@ export function ProfitTimelineChart({ points }: { points: ProfitTimelinePoint[] 
         <div><strong>{selectedPoint.label || "Campaign start"}</strong><span>{isCumulative ? formatDate(selectedPoint.timestamp) : selectedPoint.label}</span></div>
         <dl>
           <div><dt>{isCumulative ? "Net profit to date" : "Net profit that week"}</dt><dd>{formatPrice(selectedPoint.netProfit)} {isCumulative ? <em>{formatPrice(differenceAtPoint("netProfit"))} this event</em> : null}</dd></div>
+          <div><dt>Trend average</dt><dd>{formatPrice(averageProfit[selectedIndex])}</dd></div>
           <div><dt>{isCumulative ? "Revenue to date" : "Revenue that week"}</dt><dd>{formatPrice(selectedPoint.revenue)} {isCumulative ? <em>{formatPrice(differenceAtPoint("revenue"))} this event</em> : null}</dd></div>
           <div><dt>{isCumulative ? "Product & postage to date" : "Product & postage that week"}</dt><dd>{formatPrice(selectedPoint.costs)} {isCumulative ? <em>{formatPrice(differenceAtPoint("costs"))} this event</em> : null}</dd></div>
           <div><dt>{isCumulative ? "Ad spend to date" : "Ad spend that week"}</dt><dd>{formatPrice(selectedPoint.adSpend)} {isCumulative ? <em>{formatPrice(differenceAtPoint("adSpend"))} this event</em> : null}</dd></div>
