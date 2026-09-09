@@ -112,21 +112,21 @@
       "unitCost": "5.07",
       "costTiers": [
         {
-          "id": "b022eda2-3ec9-47bb-b884-07683ad35601",
+          "id": "64f9c994-6cbc-4cfd-aac5-ce0f3af10b37",
           "startAtUnit": 1,
           "unitCost": "5.07",
           "note": "Original batch"
         }
       ],
       "imageSrc": "/uploads/chupachupsmockup-1b2117ad-dcfb-4e83-9a3c-9d6df8329fe6.webp",
-      "upsellHeadline": "Okay, you like music, but do you like fun band logos on clothing?",
-      "upsellSubheadline": "Add this T-Shirt to your order and get £10 of the value!",
-      "upsellBody": "This 4-Colour front print will arrive with your free CD, so you'll have something to wear when you come to a ChuggaBoom show!",
+      "upsellHeadline": "Okay, so you like music, but do you like clothes?",
+      "upsellSubheadline": "Add this T-Shirt to get an additional £10 off!",
+      "upsellBody": "This luxurious 4-colour front print will arrive with your free CD, allowing you to maintain at least 50% of your modesty when you come to a ChuggaBoom show!",
       "upsellYesLabel": "Music and a Tee? Yeah, go on then!",
       "upsellNoLabel": "I'll pass for now",
       "variants": [
         {
-          "id": "6281b093-1690-42f5-bd4c-f88771941387",
+          "id": "d5d92af0-da43-426d-8aad-44c68c9def2b",
           "handle": "tee-s",
           "name": "Small",
           "variantId": "53606879953276:1",
@@ -134,7 +134,7 @@
           "compareAtPriceLabel": "24.99"
         },
         {
-          "id": "0fd2c308-4653-4c47-8e61-6470645c8981",
+          "id": "1c8bb6e8-c499-47de-9820-17dd08cbf097",
           "handle": "tee-m",
           "name": "Medium",
           "variantId": "53606847840636:1",
@@ -142,7 +142,7 @@
           "compareAtPriceLabel": "24.99"
         },
         {
-          "id": "d213b5b8-0740-407f-9894-fe18e5a8397a",
+          "id": "9db81e22-28c9-47e2-a2e5-a4db8d3c0514",
           "handle": "tee-L",
           "name": "Large",
           "variantId": "53606847873404:1",
@@ -150,7 +150,7 @@
           "compareAtPriceLabel": "24.99"
         },
         {
-          "id": "19224859-3450-4efd-aad3-6588c8058a53",
+          "id": "cfaecdd9-f544-441f-bdc2-df08c2407b7d",
           "handle": "tee-XL",
           "name": "X-Large",
           "variantId": "53606847906172:1",
@@ -158,7 +158,7 @@
           "compareAtPriceLabel": "24.99"
         },
         {
-          "id": "5a2e3b42-eeea-425b-9133-d1adfec872f9",
+          "id": "6ce958be-6725-4012-99b1-11a6fd98aa8d",
           "handle": "tee-2XL",
           "name": "2X-Large",
           "variantId": "53606847938940:1",
@@ -166,7 +166,7 @@
           "compareAtPriceLabel": "24.99"
         },
         {
-          "id": "eab90183-689e-4e7b-a774-4097d3b1be3a",
+          "id": "f36c7cc8-5cb4-4916-abec-cfb15ef98d54",
           "handle": "tee-3XL",
           "name": "3X-Large",
           "variantId": "53606850789756:1",
