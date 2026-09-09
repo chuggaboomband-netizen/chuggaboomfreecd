@@ -91,7 +91,7 @@
       "upsellYesLabel": "Yeah, why not!",
       "upsellNoLabel": "Not right now, ta",
       "variants": [],
-      "activeInFunnel": true
+      "activeInFunnel": false
     },
     {
       "id": "eea7cd7a-b0c6-4c84-a971-a582394ad493",
@@ -103,7 +103,7 @@
       "compareAtPriceLabel": "24.99",
       "type": "upsell",
       "isDefault": false,
-      "activeInFunnel": false,
+      "activeInFunnel": true,
       "sortOrder": 10,
       "autoDiscountCodes": [
         "ChuggaChupCheap"
