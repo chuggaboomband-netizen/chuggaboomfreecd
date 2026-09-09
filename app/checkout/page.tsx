@@ -125,7 +125,6 @@ export default async function CheckoutPage({
 
               <div className="checkout-postage-note">
                 <strong>Postage: {postagePrice}</strong>
-                <span>This will be added when you continue to Shopify checkout.</span>
               </div>
 
               {checkoutUrl ? (

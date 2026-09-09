@@ -757,12 +757,6 @@ textarea {
   font-weight: 800;
 }
 
-.checkout-postage-note span {
-  color: var(--muted);
-  font-size: 0.88rem;
-  line-height: 1.4;
-}
-
 .checkout-button {
   width: 100%;
 }
