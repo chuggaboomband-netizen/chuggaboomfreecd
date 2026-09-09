@@ -44,6 +44,7 @@ export default async function CheckoutPage({
     0,
   );
   const savingsTotal = Math.max(0, compareAtTotal - cartTotal);
+  const postagePrice = config.campaign.shippingPrice || "£4.99";
 
   return (
     <main className="landing-page">
@@ -120,6 +121,11 @@ export default async function CheckoutPage({
                 ) : (
                   <div className="microcopy">None</div>
                 )}
+              </div>
+
+              <div className="checkout-postage-note">
+                <strong>Postage: {postagePrice}</strong>
+                <span>This will be added when you continue to Shopify checkout.</span>
               </div>
 
               {checkoutUrl ? (
