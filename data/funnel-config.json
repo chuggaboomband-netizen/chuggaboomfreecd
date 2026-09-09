@@ -104,7 +104,7 @@
       "type": "upsell",
       "isDefault": false,
       "activeInFunnel": true,
-      "sortOrder": 10,
+      "sortOrder": 1,
       "autoDiscountCodes": [
         "ChuggaChupCheap",
         "ShirtShipping"
@@ -112,7 +112,7 @@
       "unitCost": "5.07",
       "costTiers": [
         {
-          "id": "044e6795-9125-4ecd-b207-59bd8d57b9d7",
+          "id": "986ebb05-b556-425c-b024-66f408a6809f",
           "startAtUnit": 1,
           "unitCost": "5.07",
           "note": "Original batch"
@@ -126,7 +126,7 @@
       "upsellNoLabel": "I'll pass for now",
       "variants": [
         {
-          "id": "57d09d8c-44ae-4643-8630-c2c7bf9dbd7d",
+          "id": "c7d9f81a-9cd1-4f8a-952c-e3bf78d8b1c7",
           "handle": "tee-s",
           "name": "Small",
           "variantId": "53606879953276:1",
@@ -134,7 +134,7 @@
           "compareAtPriceLabel": "24.99"
         },
         {
-          "id": "0110cf20-b100-4c82-97cc-91ef454cb058",
+          "id": "2b003e61-d7f8-4392-906b-f8c2865b9fbd",
           "handle": "tee-m",
           "name": "Medium",
           "variantId": "53606847840636:1",
@@ -142,7 +142,7 @@
           "compareAtPriceLabel": "24.99"
         },
         {
-          "id": "099d5725-38a9-456d-80a3-590b99a670d6",
+          "id": "2bd778b3-d264-4c37-95ca-33c0ef38e60e",
           "handle": "tee-L",
           "name": "Large",
           "variantId": "53606847873404:1",
@@ -150,7 +150,7 @@
           "compareAtPriceLabel": "24.99"
         },
         {
-          "id": "dc8e0231-f8e0-4b4a-a4ed-8098fcec6d94",
+          "id": "f953a9bc-3d2c-4785-b594-3429cc63d3d8",
           "handle": "tee-XL",
           "name": "X-Large",
           "variantId": "53606847906172:1",
@@ -158,7 +158,7 @@
           "compareAtPriceLabel": "24.99"
         },
         {
-          "id": "58fbbbc8-fb2e-44b2-81be-809606575aba",
+          "id": "fb649a02-0e49-4a80-9a02-d03c21fd8043",
           "handle": "tee-2XL",
           "name": "2X-Large",
           "variantId": "53606847938940:1",
@@ -166,7 +166,7 @@
           "compareAtPriceLabel": "24.99"
         },
         {
-          "id": "74e16ae3-5142-4492-861b-4f918f4674a1",
+          "id": "5706a472-b58a-41fe-90f4-e8ab8daf0aeb",
           "handle": "tee-3XL",
           "name": "3X-Large",
           "variantId": "53606850789756:1",
