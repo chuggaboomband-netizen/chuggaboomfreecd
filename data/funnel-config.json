@@ -106,7 +106,7 @@
       "activeInFunnel": true,
       "sortOrder": 10,
       "autoDiscountCodes": [
-        "ChuggaChupCheap",
+        "ChuppaChupCheap",
         "ShirtShipping"
       ],
       "unitCost": "5.07",
@@ -191,8 +191,8 @@
     },
     {
       "id": "da454ec2-a225-44b4-9044-fd471f5f58f1",
-      "name": "ChuggaChupCheap",
-      "code": "ChuggaChupCheap",
+      "name": "ChuppaChupCheap",
+      "code": "ChuppaChupCheap",
       "priority": 10
     },
     {
