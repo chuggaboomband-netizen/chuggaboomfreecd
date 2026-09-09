@@ -106,10 +106,18 @@
       "activeInFunnel": true,
       "sortOrder": 10,
       "autoDiscountCodes": [
-        "ChuggaChupCheap"
+        "ChuggaChupCheap",
+        "ShirtShipping"
       ],
       "unitCost": "5.07",
-      "costTiers": [],
+      "costTiers": [
+        {
+          "id": "60157a72-eb3c-4422-a6a6-d5837699712d",
+          "startAtUnit": 1,
+          "unitCost": "5.07",
+          "note": "Original batch"
+        }
+      ],
       "imageSrc": "/uploads/chupachupsmockup-1b2117ad-dcfb-4e83-9a3c-9d6df8329fe6.webp",
       "upsellHeadline": "Okay, you like music, but do you like fun band logos on clothing?",
       "upsellSubheadline": "Add this T-Shirt to your order and get £10 of the value!",
@@ -118,7 +126,7 @@
       "upsellNoLabel": "I'll pass for now",
       "variants": [
         {
-          "id": "ca897087-2258-4a9a-ab76-bceff1d664d9",
+          "id": "6f8e6756-54c8-48cb-b9d5-28ebcff30b2a",
           "handle": "tee-s",
           "name": "Small",
           "variantId": "53606879953276:1",
@@ -126,7 +134,7 @@
           "compareAtPriceLabel": "24.99"
         },
         {
-          "id": "3c768989-ba6f-4ffe-9960-6002bdea5c66",
+          "id": "8fb487d9-9100-4914-9722-b9c5245f40c2",
           "handle": "tee-m",
           "name": "Medium",
           "variantId": "53606847840636:1",
@@ -134,7 +142,7 @@
           "compareAtPriceLabel": "24.99"
         },
         {
-          "id": "63308a49-6fda-4780-8715-784edc1289e5",
+          "id": "d589ca21-0a77-4499-be20-aef976ab0a03",
           "handle": "tee-L",
           "name": "Large",
           "variantId": "53606847873404:1",
@@ -142,7 +150,7 @@
           "compareAtPriceLabel": "24.99"
         },
         {
-          "id": "19787f91-15b3-4240-bcc6-6b2709c3a309",
+          "id": "442dc023-3ff5-4a7f-b32f-71d207abfc0e",
           "handle": "tee-XL",
           "name": "X-Large",
           "variantId": "53606847906172:1",
@@ -150,7 +158,7 @@
           "compareAtPriceLabel": "24.99"
         },
         {
-          "id": "da09d76f-a3ea-4b0b-a8b1-9695d9f73c0f",
+          "id": "aed29162-0c62-4a65-8ab4-61fa885e6114",
           "handle": "tee-2XL",
           "name": "2X-Large",
           "variantId": "53606847938940:1",
@@ -158,7 +166,7 @@
           "compareAtPriceLabel": "24.99"
         },
         {
-          "id": "084c55b4-f6eb-49d9-b059-4ad9d5169056",
+          "id": "b7500617-b538-493f-8815-a220c39ba5e3",
           "handle": "tee-3XL",
           "name": "3X-Large",
           "variantId": "53606850789756:1",
