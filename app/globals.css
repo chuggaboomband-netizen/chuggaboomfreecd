@@ -2236,3 +2236,4 @@ textarea {
 .claim-store-hero h1 span{color:var(--brand-yellow)}
 .claim-store-lede{color:rgba(255,255,255,.82)}
 .claim-hero-image-wrap{background:rgba(0,0,0,.28);border:1px solid rgba(249,215,58,.18)}
+.claim-hero-image-wrap{padding:0;background:transparent;border:0;box-shadow:none}.claim-hero-image-wrap img{border-radius:var(--radius-lg)}
