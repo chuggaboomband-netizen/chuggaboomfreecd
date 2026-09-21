@@ -226,7 +226,7 @@
         "notes": "Campaign Launch"
       }
     ],
-    "totalAdSpend": "2,857.19",
+    "totalAdSpend": "2,867.46",
     "adSpendEntries": [
       {
         "id": "739b2180-47a8-47a7-b6ec-2df0f2943f12",
@@ -924,6 +924,11 @@
         "id": "38daabe7-c829-4f11-8eb9-3673a4579206",
         "recordedAt": "2026-09-21T10:13:49.619Z",
         "totalAmount": "2,857.19"
+      },
+      {
+        "id": "a94b300b-cab7-482c-84f2-82b7c753d79f",
+        "recordedAt": "2026-09-21T13:21:06.544Z",
+        "totalAmount": "2,867.46"
       }
     ],
     "cachedOrders": []
