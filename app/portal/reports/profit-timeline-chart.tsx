@@ -66,11 +66,16 @@ function filterRange(points: ChartPoint[], range: DateRange, includePrevious: bo
   return first < 0 ? points.slice(-1) : points.slice(Math.max(0, first - (includePrevious ? 1 : 0)));
 }
 
-function movingAverage(values: number[], windowSize: number) {
-  return values.map((_, index) => {
-    const start = Math.max(0, index - windowSize + 1);
-    const window = values.slice(start, index + 1);
-    return window.reduce((total, value) => total + value, 0) / window.length;
+function rollingTimeAverage(points: ChartPoint[], windowMs: number) {
+  return points.map((point, index) => {
+    const pointTime = new Date(point.timestamp).getTime();
+    const windowStart = pointTime - windowMs;
+    const values = points
+      .slice(0, index + 1)
+      .filter((candidate) => new Date(candidate.timestamp).getTime() >= windowStart)
+      .map((candidate) => candidate.netProfit);
+
+    return values.reduce((total, value) => total + value, 0) / Math.max(values.length, 1);
   });
 }
 
@@ -94,8 +99,11 @@ export function ProfitTimelineChart({ points }: { points: ProfitTimelinePoint[] 
     const position = Number.isFinite(timestamp) ? (timestamp - firstTimestamp) / timeRange : 0;
     return { x: padding + (width - padding * 2) * position, point };
   });
-  const averageWindowSize = Math.min(isCumulative ? 7 : 4, chartPoints.length);
-  const averageProfit = movingAverage(chartPoints.map((point) => point.netProfit), averageWindowSize);
+  const averageWindowLabel = isCumulative ? "trailing 7 days" : "trailing 4 weeks";
+  const averageProfit = rollingTimeAverage(
+    chartPoints,
+    (isCumulative ? 7 : 28) * 86_400_000,
+  );
   const profitY = createScale([...chartPoints.map((point) => point.netProfit), ...averageProfit], height, padding);
   const adSpendY = createScale(chartPoints.map((point) => point.adSpend), height, padding);
   const costsY = createScale(chartPoints.map((point) => point.costs), height, padding);
@@ -125,7 +133,7 @@ export function ProfitTimelineChart({ points }: { points: ProfitTimelinePoint[] 
       </div>
       <div className="reports-chart-meta">
         <strong>{isCumulative ? "Lifetime net profit" : "Latest weekly net profit"}: {formatPrice(latestPoint.netProfit)}</strong>
-        <span className="microcopy">The white trend line is a rolling average across the latest {averageWindowSize} points. Hover a point for actual amounts.</span>
+        <span className="microcopy">The white trend line is a rolling average across the {averageWindowLabel}. Hover a point for actual amounts.</span>
       </div>
       <div className="reports-chart-key">
         <span><i className="reports-key-profit" /> Net profit</span>
