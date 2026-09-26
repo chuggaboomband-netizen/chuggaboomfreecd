@@ -85,8 +85,15 @@ export function ProfitTimelineChart({ points }: { points: ProfitTimelinePoint[] 
   const width = 760;
   const height = 340;
   const padding = 30;
-  const denominator = Math.max(chartPoints.length - 1, 1);
-  const coordinates = chartPoints.map((point, index) => ({ x: padding + ((width - padding * 2) * index) / denominator, point }));
+  const timestamps = chartPoints.map((point) => new Date(point.timestamp).getTime());
+  const firstTimestamp = Math.min(...timestamps);
+  const lastTimestamp = Math.max(...timestamps);
+  const timeRange = Math.max(lastTimestamp - firstTimestamp, 1);
+  const coordinates = chartPoints.map((point) => {
+    const timestamp = new Date(point.timestamp).getTime();
+    const position = Number.isFinite(timestamp) ? (timestamp - firstTimestamp) / timeRange : 0;
+    return { x: padding + (width - padding * 2) * position, point };
+  });
   const averageWindowSize = Math.min(isCumulative ? 7 : 4, chartPoints.length);
   const averageProfit = movingAverage(chartPoints.map((point) => point.netProfit), averageWindowSize);
   const profitY = createScale([...chartPoints.map((point) => point.netProfit), ...averageProfit], height, padding);
