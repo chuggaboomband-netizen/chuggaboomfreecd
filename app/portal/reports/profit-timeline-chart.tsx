@@ -40,7 +40,22 @@ function createScale(values: number[], height: number, padding: number) {
 }
 
 function cumulativePoints(points: ProfitTimelinePoint[]): ChartPoint[] {
-  return points.map((point) => ({ timestamp: point.timestamp, label: point.label, netProfit: point.netProfit, revenue: point.cumulativeRevenue, costs: point.cumulativeCosts, adSpend: point.cumulativeAdSpend, kind: point.kind }));
+  const endOfDay = new Map<string, ChartPoint>();
+
+  for (const point of points) {
+    const chartPoint = {
+      timestamp: point.timestamp,
+      label: point.label,
+      netProfit: point.netProfit,
+      revenue: point.cumulativeRevenue,
+      costs: point.cumulativeCosts,
+      adSpend: point.cumulativeAdSpend,
+      kind: point.kind,
+    } satisfies ChartPoint;
+    endOfDay.set(new Date(point.timestamp).toISOString().slice(0, 10), chartPoint);
+  }
+
+  return [...endOfDay.values()].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
 }
 
 function weeklyPoints(points: ProfitTimelinePoint[]): ChartPoint[] {
