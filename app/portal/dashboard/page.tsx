@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -15,8 +16,10 @@ import {
 import {
   addAdSpendEntryAction,
   addDiscountAction,
+  addTestimonialAction,
   deleteAdSpendEntryAction,
   deleteDiscountAction,
+  deleteTestimonialAction,
   logoutAction,
   saveCampaignAction,
   saveReportingAction,
@@ -24,6 +27,7 @@ import {
 } from "../actions";
 import { PendingSubmitButton } from "../pending-submit-button";
 import { PortalLinkBuilder } from "./portal-link-builder";
+import { ImageUploadField } from "../upsells/image-upload-field";
 
 export default async function DashboardPage({
   searchParams,
@@ -201,6 +205,51 @@ export default async function DashboardPage({
               Save campaign copy
             </PendingSubmitButton>
           </form>
+        </section>
+
+        <section className="admin-card stack">
+          <div>
+            <h2>Facebook testimonials</h2>
+            <p className="microcopy">
+              Upload screenshots of comments from your ads to display beneath the FAQ on the free-CD landing page.
+            </p>
+          </div>
+
+          <form action={addTestimonialAction} className="stack">
+            <ImageUploadField />
+            <div className="field-grid">
+              <label className="field">
+                <span>Alt text</span>
+                <input name="altText" placeholder="Facebook comment about ChuggaBoom" />
+              </label>
+              <label className="field">
+                <span>Caption (optional)</span>
+                <input name="caption" placeholder="What people are saying" />
+              </label>
+            </div>
+            <PendingSubmitButton pendingLabel="Uploading testimonial...">
+              Add testimonial
+            </PendingSubmitButton>
+          </form>
+
+          {(config.testimonials || []).length > 0 ? (
+            <div className="portal-testimonial-grid">
+              {(config.testimonials || []).map((testimonial) => (
+                <article key={testimonial.id} className="portal-testimonial-card">
+                  <Image src={testimonial.imageSrc} alt={testimonial.altText || "Facebook comment about ChuggaBoom"} width={900} height={700} />
+                  {testimonial.caption ? <p className="microcopy">{testimonial.caption}</p> : null}
+                  <form action={deleteTestimonialAction}>
+                    <input type="hidden" name="id" value={testimonial.id} />
+                    <PendingSubmitButton className="button secondary" pendingLabel="Removing...">
+                      Remove
+                    </PendingSubmitButton>
+                  </form>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="microcopy">No testimonials uploaded yet.</p>
+          )}
         </section>
 
         <section className="admin-grid">

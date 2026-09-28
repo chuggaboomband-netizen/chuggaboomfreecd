@@ -21,7 +21,7 @@ import {
 } from "@/lib/auth";
 import { readConfig, savePublicUpload, writeConfig } from "@/lib/config-store";
 import { parseHandleList, parseWeeklyAdSpend } from "@/lib/funnel";
-import type { AdSpendEntry, Discount, Product, ProductCostTier, ProductVariant } from "@/lib/types";
+import type { AdSpendEntry, Discount, Product, ProductCostTier, ProductVariant, Testimonial } from "@/lib/types";
 
 function getString(formData: FormData, key: string): string {
   return String(formData.get(key) || "").trim();
@@ -101,11 +101,42 @@ function parseCostTiers(value: string): ProductCostTier[] {
 
 function revalidateFunnelPaths() {
   revalidatePath("/");
+  revalidatePath("/claim");
   revalidatePath("/upsell");
   revalidatePath("/checkout");
   revalidatePath("/portal/dashboard");
   revalidatePath("/portal/upsells");
   revalidatePath("/portal/upsells", "page");
+}
+
+export async function addTestimonialAction(formData: FormData) {
+  await finalizePortalMutation(async () => {
+    const config = await readConfig();
+    const imageSrc = await saveUploadedImage(formData.get("imageFile") as File);
+
+    if (!imageSrc) {
+      throw new Error("Choose a screenshot before saving the testimonial.");
+    }
+
+    const testimonial: Testimonial = {
+      id: crypto.randomUUID(),
+      imageSrc,
+      altText: getString(formData, "altText") || "Facebook comment about ChuggaBoom",
+      caption: getString(formData, "caption") || undefined,
+    };
+
+    config.testimonials = [...(config.testimonials || []), testimonial];
+    await writeConfig(config);
+  });
+}
+
+export async function deleteTestimonialAction(formData: FormData) {
+  await finalizePortalMutation(async () => {
+    const config = await readConfig();
+    const id = getString(formData, "id");
+    config.testimonials = (config.testimonials || []).filter((testimonial) => testimonial.id !== id);
+    await writeConfig(config);
+  });
 }
 
 function getErrorMessage(error: unknown) {

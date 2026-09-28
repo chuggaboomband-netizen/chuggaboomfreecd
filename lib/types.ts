@@ -99,11 +99,19 @@ export type Discount = {
   priority: number;
 };
 
+export type Testimonial = {
+  id: string;
+  imageSrc: string;
+  altText?: string;
+  caption?: string;
+};
+
 export type FunnelConfig = {
   campaign: CampaignSettings;
   products: Product[];
   discounts: Discount[];
   reporting: ReportingSettings;
+  testimonials?: Testimonial[];
 };
 
 export type ReportOrderItem = {
