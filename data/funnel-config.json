@@ -197,7 +197,8 @@
       "upsellBody": "We'll even give you a little discount if you decide to grab yours now!",
       "upsellYesLabel": "Yes please!",
       "upsellNoLabel": "Not now thank you",
-      "variants": []
+      "variants": [],
+      "unitCost": "6.54"
     }
   ],
   "discounts": [
