@@ -9,7 +9,13 @@
     "startButtonLabel": "Claim your free CD",
     "shopifyStoreHost": "chuggaboom.wtf"
   },
-  "testimonials": [],
+  "testimonials": [
+    {
+      "id": "67686af8-f28f-4b93-834e-bdc3e58b6f93",
+      "imageSrc": "/uploads/screenshot-2026-09-28-at-22.16.52-4b27bbfe-e50d-4983-b07a-c56fa28d7555.webp",
+      "altText": "Just got mine plus a vinyl and a T-shirt 🤭 go big or go home 😂😂"
+    }
+  ],
   "products": [
     {
       "id": "b29eaa5c-fc40-4794-b43d-e2c79bb8517d",
