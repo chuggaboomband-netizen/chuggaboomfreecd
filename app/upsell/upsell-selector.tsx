@@ -173,7 +173,7 @@ export function UpsellSelector({
     const params = new URLSearchParams();
     params.set("offers", handles.join(","));
     params.set("step", String(step));
-    router.push(`/upsell?${params.toString()}`);
+    router.push(`/offer?${params.toString()}` as never);
   };
 
   const continueToCheckout = () => {

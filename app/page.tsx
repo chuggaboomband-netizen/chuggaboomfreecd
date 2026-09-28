@@ -25,7 +25,7 @@ export default async function HomePage() {
           <h1 className="bk-title">Claim your FREE CD from {campaign.bandName}!</h1>
           <p className="bk-subtitle">Just help us out with the shipping, and it&apos;s yours for free.</p>
           <div className="bk-cta">
-            <Link href="/upsell" className="button">
+            <Link href={"/offer" as never} className="button">
               GET YOURS NOW
             </Link>
           </div>
@@ -61,7 +61,7 @@ export default async function HomePage() {
             </div>
             <div className="bk-shipping-chip">{campaign.shippingLabel} {campaign.shippingPrice}</div>
             <div className="bk-cta">
-              <Link href="/upsell" className="button">
+              <Link href={"/offer" as never} className="button">
                 GET YOURS NOW
               </Link>
             </div>
@@ -78,7 +78,7 @@ export default async function HomePage() {
 
         <section className="bk-copy-section">
           <div className="bk-cta">
-            <Link href="/upsell" className="button">
+            <Link href={"/offer" as never} className="button">
               NO WORRIES, I&apos;LL TAKE THE CD NOW
             </Link>
           </div>
@@ -93,7 +93,7 @@ export default async function HomePage() {
             The free CD is the easiest way to jump in. It gets the music into your hands, lets you decide if you want anything extra, and gives you a proper first impression of the band instead of just another forgettable scroll-past.
           </p>
           <div className="bk-cta">
-            <Link href="/upsell" className="button">
+            <Link href={"/offer" as never} className="button">
               YOU SEEM VERY COOL. CD, PLEASE
             </Link>
           </div>
@@ -119,7 +119,7 @@ export default async function HomePage() {
                 And if you get the CD, listen to it, and hate it, get in touch with us within 30 days and we&apos;ll refund your shipping, no questions asked.
               </p>
               <div className="bk-cta bk-bottom-cta">
-                <Link href="/upsell" className="button">
+                <Link href={"/offer" as never} className="button">
                   YOU GOT ME, I&apos;LL TAKE ONE
                 </Link>
               </div>
