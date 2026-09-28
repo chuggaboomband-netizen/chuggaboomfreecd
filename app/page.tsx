@@ -3,11 +3,13 @@ import Image from "next/image";
 
 import { readConfig } from "@/lib/config-store";
 import { sortProducts } from "@/lib/funnel";
+import { TestimonialsSection } from "@/app/testimonials-section";
 
 export default async function HomePage() {
   const config = await readConfig();
   const { campaign } = config;
   const coreProduct = sortProducts(config.products).find((product) => product.isDefault) ?? config.products[0];
+  const testimonials = config.testimonials || [];
 
   return (
     <main className="landing-page">
@@ -134,6 +136,8 @@ export default async function HomePage() {
             {campaign.bandName}
           </p>
         </section>
+
+        <TestimonialsSection testimonials={testimonials} ctaHref="/offer" theme="dark" />
       </div>
     </main>
   );

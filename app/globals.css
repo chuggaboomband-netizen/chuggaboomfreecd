@@ -128,12 +128,18 @@ body {
 .claim-store-about{grid-template-columns:1.25fr .75fr}
 .claim-about-image{padding:4px;transform:scale(1.08)}
 .claim-store-faq h2{max-width:430px}
-.claim-testimonials{padding:76px 8vw;background:var(--card);border-top:1px solid var(--line)}
-.claim-testimonials-heading h2{max-width:560px;margin:0;color:var(--brand-navy);font:900 clamp(42px,5vw,72px)/.9 var(--display);letter-spacing:-.05em}
-.claim-testimonials-grid{columns:3 240px;column-gap:24px;margin-top:38px}
-.claim-testimonials figure{display:inline-block;width:100%;margin:0 0 24px;padding:10px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--panel);box-shadow:var(--shadow);break-inside:avoid}
+.claim-testimonials{width:100vw;margin-left:calc(50% - 50vw);padding:76px max(8vw,32px);background:var(--card);border-top:1px solid var(--line);box-sizing:border-box}
+.claim-testimonials-heading h2{max-width:none;margin:0;color:var(--brand-navy);font:900 clamp(42px,6vw,96px)/.9 var(--display);letter-spacing:-.05em}
+.claim-testimonials-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:38px;min-width:0}
+.claim-testimonials figure{min-width:0;margin:0;padding:10px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--panel);box-shadow:var(--shadow)}
 .claim-testimonials figure img{display:block;width:100%;height:auto;border-radius:var(--radius-md)}
 .claim-testimonials figcaption{padding:14px 4px 2px;color:var(--muted);font-size:13px;line-height:1.45}
+.claim-testimonials-cta{display:flex;justify-content:center;margin-top:30px}
+.claim-testimonials.is-dark{background:transparent;border-top:0;color:white}
+.claim-testimonials.is-dark .claim-store-kicker{color:var(--brand-yellow)}
+.claim-testimonials.is-dark .claim-testimonials-heading h2{color:white}
+.claim-testimonials.is-dark figure{background:var(--panel);border-color:rgba(249,215,58,.22)}
+.claim-testimonials.is-dark .claim-store-button-dark{background:var(--brand-yellow);border-color:var(--brand-yellow);color:var(--brand-navy-deep)}
 .portal-testimonial-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
 .portal-testimonial-card{display:grid;gap:12px;align-content:start;padding:14px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--panel)}
 .portal-testimonial-card img{display:block;width:100%;height:220px;object-fit:contain;background:white;border-radius:var(--radius-sm)}
@@ -145,7 +151,7 @@ body {
 @media(min-width:701px){.claim-store-shell{width:min(1800px,calc(100% - 48px));max-width:1800px}}
 @media(min-width:701px){.claim-store-product{grid-template-columns:minmax(0,1.2fr) minmax(400px,.8fr);gap:6vw}.claim-product-image{min-width:0;min-height:clamp(480px,34vw,700px);display:flex;align-items:center;justify-content:center;transform:none}.claim-product-image img{width:100%;max-width:900px}}
 @media(min-width:701px){.claim-upsell-card{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(380px,.85fr);align-items:stretch}.claim-upsell-image{display:flex;align-items:center;justify-content:center;min-height:440px;padding:34px}.claim-upsell-image img{width:100%;height:auto;max-height:460px;object-fit:contain;border-radius:var(--radius-md)}}
-@media(max-width:1000px) and (min-width:701px){.claim-testimonials-grid{columns:2 240px}}
+@media(max-width:1000px) and (min-width:701px){.claim-testimonials-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.claim-store-hero,.claim-store-product,.claim-store-about{grid-template-columns:1fr}.claim-hero-image-wrap,.claim-product-image,.claim-about-image{transform:none}.claim-testimonials{padding:55px 7vw}.claim-testimonials-grid{columns:1}.portal-testimonial-grid{grid-template-columns:1fr}.claim-store-faq h2{max-width:none}}
 @media(max-width:700px){.claim-upsell-intro h1{font-size:clamp(40px,13vw,64px)}.claim-upsell-intro{padding:44px 7vw}}
 
