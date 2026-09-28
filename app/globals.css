@@ -1557,6 +1557,19 @@ textarea {
   color: var(--muted);
 }
 
+.reports-table-scroll .reports-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--card);
+  box-shadow: 0 1px 0 var(--line);
+}
+
+.portal-surface .reports-table-scroll .reports-table thead th {
+  background: #131726;
+  box-shadow: 0 1px 0 rgba(255, 213, 79, 0.2);
+}
+
 .reports-item-stack {
   display: grid;
   gap: 8px;
