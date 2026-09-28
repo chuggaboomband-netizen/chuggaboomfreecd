@@ -109,6 +109,12 @@ body {
 .claim-upsell-intro>p:last-child{max-width:520px;font-size:16px}
 .claim-upsell-product-name{min-height:0!important;margin:-6px 0 14px;color:var(--brand-navy)!important;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
 .claim-upsell-subheadline{min-height:0!important;margin:-4px 0 14px;color:var(--brand-navy)!important;font-weight:800;line-height:1.35!important}
+.claim-upsell-headline{min-height:0!important;margin:-6px 0 8px;color:var(--brand-navy)!important;font-size:18px;font-weight:800;line-height:1.35!important}
+.claim-upsell-description{min-height:76px!important;margin-top:0;color:var(--muted);line-height:1.55}
+.claim-upsell-price{display:block}
+.claim-upsell-price>div{display:flex;align-items:baseline;gap:12px;margin-top:3px}
+.claim-one-time-offer{display:block;color:var(--accent-strong);font-size:11px;font-weight:900;letter-spacing:.14em}
+.claim-upsell-price del{font-size:15px;font-weight:800;color:var(--brand-navy)}
 .claim-quantity-picker{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 20px}
 .claim-quantity-picker>span{color:var(--muted);font-size:12px;font-weight:800}
 .claim-quantity-picker>div{display:flex;align-items:center;border:1px solid var(--line);border-radius:999px;overflow:hidden}
