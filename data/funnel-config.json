@@ -185,15 +185,22 @@
       "compareAtPriceLabel": "14.99",
       "type": "upsell",
       "isDefault": false,
-      "activeInFunnel": true,
+      "activeInFunnel": false,
       "sortOrder": 1,
       "autoDiscountCodes": [
         "Death-Pledge-13"
       ],
-      "costTiers": [],
+      "costTiers": [
+        {
+          "id": "ea8dba14-8749-4ab2-8a8f-a22ce7384ffe",
+          "startAtUnit": 1,
+          "unitCost": "6.54",
+          "note": "Original batch"
+        }
+      ],
       "imageSrc": "/uploads/death_pledge_3_no_shadow-c33de1c2-5c27-450b-ac14-3b046964e556.webp",
-      "upsellHeadline": "Could we perhaps tempt you with a CD version of our album 'Death Pledge'?",
-      "upsellSubheadline": "None of the songs on this CD are included on the Free CD that is already in your basket - but they're some of our favourites!",
+      "upsellHeadline": "Is one CD not enough?",
+      "upsellSubheadline": "By purchasing our album Death Pledge, you will be getting 12 additional songs, none of which are on the free 'Essentials' CD, including a feature from the 2000's Legend Kellin Quinn.",
       "upsellBody": "We'll even give you a little discount if you decide to grab yours now!",
       "upsellYesLabel": "Yes please!",
       "upsellNoLabel": "Not now thank you",
