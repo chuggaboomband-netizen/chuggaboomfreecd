@@ -109,7 +109,7 @@ body {
 .claim-upsell-intro>p:last-child{max-width:520px;font-size:16px}
 .claim-upsell-product-name{min-height:0!important;margin:-6px 0 14px;color:var(--brand-navy)!important;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
 .claim-upsell-subheadline{min-height:0!important;margin:-4px 0 14px;color:var(--brand-navy)!important;font-weight:800;line-height:1.35!important}
-.claim-upsell-headline{min-height:0!important;margin:-6px 0 8px;color:var(--brand-navy)!important;font-size:18px;font-weight:800;line-height:1.35!important}
+.claim-upsell-headline{min-height:0!important;margin:-6px 0 8px;color:var(--muted)!important;font-size:16px;font-weight:600;line-height:1.4!important}
 .claim-upsell-description{min-height:76px!important;margin-top:0;color:var(--muted);line-height:1.55}
 .claim-upsell-price{display:block}
 .claim-upsell-price>div{display:flex;align-items:baseline;gap:12px;margin-top:3px}
