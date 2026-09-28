@@ -185,7 +185,7 @@
       "compareAtPriceLabel": "14.99",
       "type": "upsell",
       "isDefault": false,
-      "activeInFunnel": false,
+      "activeInFunnel": true,
       "sortOrder": 1,
       "autoDiscountCodes": [
         "Death-Pledge-13"
