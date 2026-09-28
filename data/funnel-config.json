@@ -192,15 +192,15 @@
       ],
       "costTiers": [
         {
-          "id": "ea8dba14-8749-4ab2-8a8f-a22ce7384ffe",
+          "id": "2ea9043c-9631-4d0a-b575-842a7669b38e",
           "startAtUnit": 1,
           "unitCost": "6.54",
           "note": "Original batch"
         }
       ],
       "imageSrc": "/uploads/death_pledge_3_no_shadow-c33de1c2-5c27-450b-ac14-3b046964e556.webp",
-      "upsellHeadline": "Is one CD not enough?",
-      "upsellSubheadline": "By purchasing our album Death Pledge, you will be getting 12 additional songs, none of which are on the free 'Essentials' CD, including a feature from the 2000's Legend Kellin Quinn.",
+      "upsellHeadline": "In case one CD not enough...",
+      "upsellSubheadline": "By purchasing our album Death Pledge, you will be getting 12 additional songs (none of which are on the sampler CD) with features from some awesome artists, such as early 2010's Emo Legend Kellin Quinn.",
       "upsellBody": "We'll even give you a little discount if you decide to grab yours now!",
       "upsellYesLabel": "Yes please!",
       "upsellNoLabel": "Not now thank you",
