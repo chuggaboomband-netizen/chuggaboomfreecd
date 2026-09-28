@@ -123,7 +123,8 @@ body {
 .claim-store-hero{grid-template-columns:.8fr 1.2fr}
 .claim-hero-image-wrap{padding:8px;transform:scale(1.08)}
 .claim-store-product{grid-template-columns:1.2fr .8fr}
-.claim-product-image{padding:8px;transform:scale(1.08)}
+.claim-product-image{width:100%;padding:8px;transform:scale(1.35);transform-origin:center;position:relative;z-index:1}
+.claim-product-image img{width:100%;max-width:none}
 .claim-store-about{grid-template-columns:1.25fr .75fr}
 .claim-about-image{padding:4px;transform:scale(1.08)}
 .claim-store-faq h2{max-width:430px}
@@ -137,6 +138,13 @@ body {
 .portal-testimonial-card{display:grid;gap:12px;align-content:start;padding:14px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--panel)}
 .portal-testimonial-card img{display:block;width:100%;height:220px;object-fit:contain;background:white;border-radius:var(--radius-sm)}
 .portal-testimonial-card form{margin:0}
+@media(min-width:701px){.claim-hero-image-wrap{transform:scale(1.2)}.claim-product-image{transform:scale(1.8)}.claim-about-image{transform:scale(1.55)}}
+@media(min-width:701px){.claim-store-hero{display:grid;grid-template-columns:1.1fr .9fr;align-items:start;gap:5vw;padding-top:70px}.claim-hero-image-wrap{order:initial;width:100%;margin:0;transform:none}.claim-store-hero>div:first-child{width:auto}.claim-store-lede{max-width:none;width:100%}}
+@media(min-width:701px) and (max-width:1199px){.claim-hero-image-wrap,.claim-product-image,.claim-about-image{transform:none}}
+@media(min-width:1200px){.claim-hero-image-wrap{transform:scale(1.08)}.claim-product-image{transform:scale(1.25)}.claim-about-image{transform:scale(1.15)}}
+@media(min-width:701px){.claim-store-shell{width:min(1800px,calc(100% - 48px));max-width:1800px}}
+@media(min-width:701px){.claim-store-product{grid-template-columns:minmax(0,1.2fr) minmax(400px,.8fr);gap:6vw}.claim-product-image{min-width:0;min-height:clamp(480px,34vw,700px);display:flex;align-items:center;justify-content:center;transform:none}.claim-product-image img{width:100%;max-width:900px}}
+@media(min-width:701px){.claim-upsell-card{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(380px,.85fr);align-items:stretch}.claim-upsell-image{display:flex;align-items:center;justify-content:center;min-height:440px;padding:34px}.claim-upsell-image img{width:100%;height:auto;max-height:460px;object-fit:contain;border-radius:var(--radius-md)}}
 @media(max-width:700px){.claim-store-hero,.claim-store-product,.claim-store-about{grid-template-columns:1fr}.claim-hero-image-wrap,.claim-product-image,.claim-about-image{transform:none}.claim-testimonials{padding:55px 7vw}.claim-testimonials-grid,.portal-testimonial-grid{grid-template-columns:1fr}.claim-store-faq h2{max-width:none}}
 @media(max-width:700px){.claim-upsell-intro h1{font-size:clamp(40px,13vw,64px)}.claim-upsell-intro{padding:44px 7vw}}
 
