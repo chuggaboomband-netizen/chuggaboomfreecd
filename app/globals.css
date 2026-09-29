@@ -1482,6 +1482,12 @@ textarea {
   padding-right: 6px;
 }
 
+.portal-ad-spend-scroll {
+  max-height: 320px;
+  padding: 4px 8px 4px 0;
+  overscroll-behavior: contain;
+}
+
 .reports-list-row {
   display: flex;
   justify-content: space-between;
