@@ -5,7 +5,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Claim Your Free ChuggaBoom CD!",
-  description: "Free CD landing page, upsells, and Shopify checkout mapping."
+  description: "11 of ChuggaBoom's best tracks, on one free CD. Just cover the postage!"
 };
 
 export default function RootLayout({
