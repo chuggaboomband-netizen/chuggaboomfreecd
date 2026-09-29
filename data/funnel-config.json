@@ -230,11 +230,12 @@
       "activeInFunnel": true,
       "sortOrder": 1,
       "autoDiscountCodes": [
-        "Death-Pledge-13"
+        "Death-Pledge-13",
+        "DP-Shipping"
       ],
       "costTiers": [
         {
-          "id": "2ea9043c-9631-4d0a-b575-842a7669b38e",
+          "id": "b3d4121e-4826-4796-87fd-477e7a986fb3",
           "startAtUnit": 1,
           "unitCost": "6.54",
           "note": "Original batch"
