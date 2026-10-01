@@ -92,16 +92,22 @@
       "activeInFunnel": true,
       "costTiers": [
         {
-          "id": "f041694f-7330-4a53-a795-e4334fccf346",
+          "id": "925af9bb-5b3a-49f2-b747-ff57628281b5",
           "startAtUnit": 1,
           "unitCost": "1.46",
           "note": "Original batch (inc. flyer)"
         },
         {
-          "id": "961563dc-70a2-4a6b-b148-1c39ea6a56cf",
+          "id": "b3d4c150-8fe2-4eef-aedd-8b48bfd59aa5",
           "startAtUnit": 201,
           "unitCost": "0.61",
           "note": "1000 unit re-stock (inc. flyer)"
+        },
+        {
+          "id": "b5a3f4e6-2ac7-41a2-ad6f-398e4440e6b0",
+          "startAtUnit": 723,
+          "unitCost": "1.25",
+          "note": "Large Letter Stamp (Still the same 1000 order)"
         }
       ]
     },
