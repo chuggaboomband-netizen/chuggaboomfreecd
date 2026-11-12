@@ -275,6 +275,28 @@
       "upsellNoLabel": "Not now thank you",
       "variants": [],
       "unitCost": "6.54"
+    },
+    {
+      "id": "56048238-5e80-4b4a-bb98-6d16856bad44",
+      "handle": "Xmas-One",
+      "name": "Christmas Number Ones",
+      "description": "\"Christmas Number Ones\" - CD Digipak\r\n\r\n22 track CD album housed in a Digipak with a 16-page full-colour booklet.\r\n\r\nTRACKLISTING:\r\n\r\nAll I Want for Christmas Is You\r\nLittle Donkey\r\nDie Hard Is a Christmas Film\r\nSnitches Get Stitches (Santa’s Spy)\r\nLittle Drummer Boy\r\nWhat’s This?\r\nJohnny’s Issues\r\nSanta Tell Me\r\nFat Guy In A Little Coat (Acoustic)\r\nThe Tale of Oswald Cobblepot\r\nMy Neck, My Back (Lick It)\r\nWe Three Kings\r\nChristmas Time (Don’t Be a Bell End)\r\nRudolph the Red-Nosed Reindeer\r\nCreeping on Ceilings\r\nIDGAF\r\nKevin’s Song\r\nBurn the Christmas Trees\r\nOne More Christmas Song\r\nThe Story of Chuggmas\r\nSilent Night\r\nFeed Them After Midnight",
+      "variantId": "58188492931452:1",
+      "priceLabel": "14.99",
+      "compareAtPriceLabel": "11.99",
+      "type": "upsell",
+      "isDefault": false,
+      "activeInFunnel": false,
+      "sortOrder": 10,
+      "autoDiscountCodes": [
+        "XMAS-3-Off"
+      ],
+      "unitCost": "1.92",
+      "costTiers": [],
+      "imageSrc": "/uploads/chuggmas-digipak-4f36e73c-728b-4b58-91ef-3ea173e04683.webp",
+      "upsellYesLabel": "Yes Please!",
+      "upsellNoLabel": "Not me for thank you x",
+      "variants": []
     }
   ],
   "discounts": [
