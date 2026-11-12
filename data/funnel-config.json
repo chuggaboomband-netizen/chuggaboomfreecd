@@ -297,6 +297,68 @@
       "upsellYesLabel": "Yes Please!",
       "upsellNoLabel": "Not me for thank you x",
       "variants": []
+    },
+    {
+      "id": "cefd1302-1f1c-486a-b0ba-075dcfb69b3f",
+      "handle": "Krampus",
+      "name": "Krampus Jumper",
+      "description": "\"Krampus\" Chuggmas Sweater.\r\n\r\nFront Print.\r\n\r\nDesign by JMEPants",
+      "variantId": "41175294083155:1",
+      "priceLabel": "29.99",
+      "compareAtPriceLabel": "39.99",
+      "type": "upsell",
+      "isDefault": false,
+      "activeInFunnel": false,
+      "sortOrder": 10,
+      "autoDiscountCodes": [
+        "Krampus4Less"
+      ],
+      "costTiers": [],
+      "imageSrc": "/uploads/krampusmockup-a3dc3b62-af23-48d8-9577-e2f45573906d.webp",
+      "upsellYesLabel": "Jumper me up baby!",
+      "upsellNoLabel": "No Jumper, ta",
+      "variants": [
+        {
+          "id": "3f262827-3cca-4d0d-a9da-1487018b2edb",
+          "handle": "jumperm",
+          "name": "jumper-m",
+          "variantId": "41175294017619:1",
+          "priceLabel": "29.99",
+          "compareAtPriceLabel": "39.99"
+        },
+        {
+          "id": "3342ff9d-9705-4527-8e24-fc1e130922e5",
+          "handle": "jumperL",
+          "name": "jumper-L",
+          "variantId": "41175294050387:1",
+          "priceLabel": "29.99",
+          "compareAtPriceLabel": "39.99"
+        },
+        {
+          "id": "c2aa7f08-6a10-4067-be16-cc915a85b454",
+          "handle": "jumperXL",
+          "name": "jumper-XL",
+          "variantId": "41175294083155:1",
+          "priceLabel": "29.99",
+          "compareAtPriceLabel": "39.99"
+        },
+        {
+          "id": "c682afbc-eb73-41ba-8c49-8e4726c1628c",
+          "handle": "jumperXXL",
+          "name": "jumper-XXL",
+          "variantId": "41175294115923:1",
+          "priceLabel": "29.99",
+          "compareAtPriceLabel": "39.99"
+        },
+        {
+          "id": "202a220d-389e-4f70-bfc7-88fff1d8a765",
+          "handle": "jumperXXXL",
+          "name": "jumper-XXXL",
+          "variantId": "41175294148691:1",
+          "priceLabel": "29.99",
+          "compareAtPriceLabel": "39.99"
+        }
+      ]
     }
   ],
   "discounts": [
