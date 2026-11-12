@@ -397,6 +397,12 @@
       "name": "ShirtShipping",
       "code": "ShirtShipping",
       "priority": 10
+    },
+    {
+      "id": "93b69e1e-556a-4b96-9d6a-44cf817fc156",
+      "name": "Krampus4Less",
+      "code": "Krampus4Less",
+      "priority": 10
     }
   ],
   "reporting": {
