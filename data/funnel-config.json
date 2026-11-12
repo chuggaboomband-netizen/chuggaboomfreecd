@@ -403,6 +403,12 @@
       "name": "Krampus4Less",
       "code": "Krampus4Less",
       "priority": 10
+    },
+    {
+      "id": "53af06be-9c89-4903-bbda-b667db661f4b",
+      "name": "XMAS-3-Off",
+      "code": "XMAS-3-Off",
+      "priority": 10
     }
   ],
   "reporting": {
