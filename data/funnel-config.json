@@ -149,7 +149,7 @@
       "sortOrder": 2,
       "autoDiscountCodes": [
         "ZACD",
-        "ZA-SHIPPING"
+        "CD-SHIPPING"
       ],
       "unitCost": "2.42",
       "postageCost": "0.74",
@@ -404,7 +404,7 @@
     {
       "id": "6eb9ca7e-fd72-49ad-8686-94ee6349bf7f",
       "name": "Zodiac CD Shipping Discount",
-      "code": "ZA-SHIPPING",
+      "code": "CD-SHIPPING",
       "priority": 10
     },
     {
