@@ -292,11 +292,22 @@
         "XMAS-3-Off"
       ],
       "unitCost": "1.92",
-      "costTiers": [],
+      "costTiers": [
+        {
+          "id": "0ace2cf1-34ae-4ee4-818f-9788747f3806",
+          "startAtUnit": 1,
+          "unitCost": "2.304",
+          "note": "Original batch"
+        }
+      ],
       "imageSrc": "/uploads/chuggmas-digipak-4f36e73c-728b-4b58-91ef-3ea173e04683.webp",
       "upsellYesLabel": "Yes Please!",
       "upsellNoLabel": "Not me for thank you x",
-      "variants": []
+      "variants": [],
+      "postageCost": "0.74",
+      "upsellHeadline": "Feeling festive? So are we!",
+      "upsellSubheadline": "In 2020 we, unfortunately, recorded and released 22 Christmas songs. It wasn't until 2026 that we decided to press them physically. Be among the first to get your hands on our limited run of 'Christmas Number Ones' from Chuggaboom!",
+      "upsellBody": "Includes a 16 page booklet with the lyrics to all of the original music on this CD, with the most tacky christmassy packaging you can possibly imagine!"
     },
     {
       "id": "cefd1302-1f1c-486a-b0ba-075dcfb69b3f",
