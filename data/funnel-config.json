@@ -175,7 +175,7 @@
       "sortOrder": 2,
       "autoDiscountCodes": [
         "ChuggaChupCheap",
-        "ShirtShipping"
+        "Shipping"
       ],
       "unitCost": "5.07",
       "costTiers": [
@@ -408,8 +408,8 @@
     },
     {
       "id": "c3aa1864-5bd2-4586-8233-d59252831078",
-      "name": "ShirtShipping",
-      "code": "ShirtShipping",
+      "name": "Shipping",
+      "code": "Shipping",
       "priority": 10
     },
     {
