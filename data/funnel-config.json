@@ -330,41 +330,41 @@
       "upsellNoLabel": "No Jumper, ta",
       "variants": [
         {
-          "id": "82801f58-1663-4c00-b9dd-15e395550e07",
+          "id": "3ef61062-0af5-4194-bd27-89fc5ba65431",
           "handle": "jumperm",
-          "name": "jumper-m",
+          "name": "M",
           "variantId": "41175294017619:1",
           "priceLabel": "29.99",
           "compareAtPriceLabel": "39.99"
         },
         {
-          "id": "7e825d79-5a58-4c48-bd15-12cd210ef812",
+          "id": "e652246e-156b-4e2c-9f07-f8612aa3bbb0",
           "handle": "jumperL",
-          "name": "jumper-L",
+          "name": "L",
           "variantId": "41175294050387:1",
           "priceLabel": "29.99",
           "compareAtPriceLabel": "39.99"
         },
         {
-          "id": "02996997-d8f2-4039-90fb-f3a018cee728",
+          "id": "fac126f6-a6e5-41e3-827a-c00ce580615e",
           "handle": "jumperXL",
-          "name": "jumper-XL",
+          "name": "XL",
           "variantId": "41175294083155:1",
           "priceLabel": "29.99",
           "compareAtPriceLabel": "39.99"
         },
         {
-          "id": "0e1f2c75-d849-48b1-b86a-f19e7a141fba",
+          "id": "32473885-f861-4bdb-8516-074d66da2f43",
           "handle": "jumperXXL",
-          "name": "jumper-XXL",
+          "name": "XXL",
           "variantId": "41175294115923:1",
           "priceLabel": "29.99",
           "compareAtPriceLabel": "39.99"
         },
         {
-          "id": "0e622a92-a16b-4fcf-9b28-fd2e00730409",
+          "id": "8da5bbd6-b9a6-4bbc-b079-42b9d829cdfd",
           "handle": "jumperXXXL",
-          "name": "jumper-XXXL",
+          "name": "XXXL",
           "variantId": "41175294148691:1",
           "priceLabel": "29.99",
           "compareAtPriceLabel": "39.99"
