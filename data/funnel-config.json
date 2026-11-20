@@ -322,7 +322,8 @@
       "activeInFunnel": true,
       "sortOrder": 10,
       "autoDiscountCodes": [
-        "Krampus4Less"
+        "Krampus4Less",
+        "Shipping"
       ],
       "costTiers": [],
       "imageSrc": "/uploads/krampusmockup-a3dc3b62-af23-48d8-9577-e2f45573906d.webp",
@@ -330,7 +331,7 @@
       "upsellNoLabel": "No Jumper, ta",
       "variants": [
         {
-          "id": "023c0bc4-efd1-410f-9648-e989a8a31330",
+          "id": "441010e4-b962-429f-9333-cb2307e94eed",
           "handle": "jumperm",
           "name": "M",
           "variantId": "41175294017619:1",
@@ -338,7 +339,7 @@
           "compareAtPriceLabel": "39.99"
         },
         {
-          "id": "de0d8435-e4c6-4221-8944-33e588cf8f00",
+          "id": "6cf0e479-52b1-40f3-86de-2d06205e520c",
           "handle": "jumperL",
           "name": "L",
           "variantId": "41175294050387:1",
@@ -346,7 +347,7 @@
           "compareAtPriceLabel": "39.99"
         },
         {
-          "id": "d2cf5ccc-2ca2-4c8e-a298-04bc3784b3d2",
+          "id": "653cfe35-b4b3-4aa1-93fc-473937b13360",
           "handle": "jumperXL",
           "name": "XL",
           "variantId": "41175294083155:1",
@@ -354,7 +355,7 @@
           "compareAtPriceLabel": "39.99"
         },
         {
-          "id": "313f77ac-f177-460b-91d4-4637c2b717b6",
+          "id": "28f31784-d5f8-4f8c-a5ae-2f2849dea092",
           "handle": "jumperXXL",
           "name": "XXL",
           "variantId": "41175294115923:1",
@@ -362,7 +363,7 @@
           "compareAtPriceLabel": "39.99"
         },
         {
-          "id": "900c911f-bdd4-4a80-8ee2-d1b768aa354c",
+          "id": "0bcd0dd7-6086-4cbe-9422-ec1e48027cda",
           "handle": "jumperXXXL",
           "name": "XXXL",
           "variantId": "41175294148691:1",
