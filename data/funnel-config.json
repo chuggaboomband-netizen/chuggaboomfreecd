@@ -289,12 +289,13 @@
       "activeInFunnel": true,
       "sortOrder": 10,
       "autoDiscountCodes": [
-        "XMAS-3-Off"
+        "XMAS-3-Off",
+        "CD-Shipping"
       ],
       "unitCost": "1.92",
       "costTiers": [
         {
-          "id": "46bf511d-848f-4faa-9838-eda1dcceb52e",
+          "id": "f7f3935a-6036-407c-87b7-58d9161377ad",
           "startAtUnit": 1,
           "unitCost": "2.304",
           "note": "Original batch"
