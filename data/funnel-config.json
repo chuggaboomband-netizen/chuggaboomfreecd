@@ -282,8 +282,8 @@
       "name": "Christmas Number Ones",
       "description": "\"Christmas Number Ones\" - CD Digipak\r\n\r\n22 track CD album housed in a Digipak with a 16-page full-colour booklet.\r\n\r\nTRACKLISTING:\r\n\r\nAll I Want for Christmas Is You\r\nLittle Donkey\r\nDie Hard Is a Christmas Film\r\nSnitches Get Stitches (Santa’s Spy)\r\nLittle Drummer Boy\r\nWhat’s This?\r\nJohnny’s Issues\r\nSanta Tell Me\r\nFat Guy In A Little Coat (Acoustic)\r\nThe Tale of Oswald Cobblepot\r\nMy Neck, My Back (Lick It)\r\nWe Three Kings\r\nChristmas Time (Don’t Be a Bell End)\r\nRudolph the Red-Nosed Reindeer\r\nCreeping on Ceilings\r\nIDGAF\r\nKevin’s Song\r\nBurn the Christmas Trees\r\nOne More Christmas Song\r\nThe Story of Chuggmas\r\nSilent Night\r\nFeed Them After Midnight",
       "variantId": "58188492931452:1",
-      "priceLabel": "14.99",
-      "compareAtPriceLabel": "11.99",
+      "priceLabel": "11.99",
+      "compareAtPriceLabel": "14.99",
       "type": "upsell",
       "isDefault": false,
       "activeInFunnel": true,
@@ -294,7 +294,7 @@
       "unitCost": "1.92",
       "costTiers": [
         {
-          "id": "0ace2cf1-34ae-4ee4-818f-9788747f3806",
+          "id": "46bf511d-848f-4faa-9838-eda1dcceb52e",
           "startAtUnit": 1,
           "unitCost": "2.304",
           "note": "Original batch"
