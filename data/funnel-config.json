@@ -330,7 +330,7 @@
       "upsellNoLabel": "No Jumper, ta",
       "variants": [
         {
-          "id": "3ef61062-0af5-4194-bd27-89fc5ba65431",
+          "id": "023c0bc4-efd1-410f-9648-e989a8a31330",
           "handle": "jumperm",
           "name": "M",
           "variantId": "41175294017619:1",
@@ -338,7 +338,7 @@
           "compareAtPriceLabel": "39.99"
         },
         {
-          "id": "e652246e-156b-4e2c-9f07-f8612aa3bbb0",
+          "id": "de0d8435-e4c6-4221-8944-33e588cf8f00",
           "handle": "jumperL",
           "name": "L",
           "variantId": "41175294050387:1",
@@ -346,7 +346,7 @@
           "compareAtPriceLabel": "39.99"
         },
         {
-          "id": "fac126f6-a6e5-41e3-827a-c00ce580615e",
+          "id": "d2cf5ccc-2ca2-4c8e-a298-04bc3784b3d2",
           "handle": "jumperXL",
           "name": "XL",
           "variantId": "41175294083155:1",
@@ -354,7 +354,7 @@
           "compareAtPriceLabel": "39.99"
         },
         {
-          "id": "32473885-f861-4bdb-8516-074d66da2f43",
+          "id": "313f77ac-f177-460b-91d4-4637c2b717b6",
           "handle": "jumperXXL",
           "name": "XXL",
           "variantId": "41175294115923:1",
@@ -362,7 +362,7 @@
           "compareAtPriceLabel": "39.99"
         },
         {
-          "id": "8da5bbd6-b9a6-4bbc-b079-42b9d829cdfd",
+          "id": "900c911f-bdd4-4a80-8ee2-d1b768aa354c",
           "handle": "jumperXXXL",
           "name": "XXXL",
           "variantId": "41175294148691:1",
@@ -372,7 +372,7 @@
       ],
       "upsellHeadline": "It's getting cold - perhaps a jumper can help!",
       "upsellSubheadline": "Trust us, it's comfy! Add it to your cart now - the shipping is already covered!",
-      "upsellBody": "Fabric: 80% Ringspun cotton, 20% Polyester. Black Smoke: 70% Ringspun cotton, 30% Polyester.\r\nWeight :280gsm."
+      "upsellBody": "We'll even let you have it with a mega £10 off!"
     }
   ],
   "discounts": [
