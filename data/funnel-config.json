@@ -295,7 +295,7 @@
       "unitCost": "1.92",
       "costTiers": [
         {
-          "id": "f7f3935a-6036-407c-87b7-58d9161377ad",
+          "id": "4e7c109b-37ad-49b9-8615-9f6cb2ad248e",
           "startAtUnit": 1,
           "unitCost": "2.304",
           "note": "Original batch"
@@ -303,7 +303,7 @@
       ],
       "imageSrc": "/uploads/chuggmas-digipak-4f36e73c-728b-4b58-91ef-3ea173e04683.webp",
       "upsellYesLabel": "Yes Please!",
-      "upsellNoLabel": "Not me for thank you x",
+      "upsellNoLabel": "Just the free CD for me please!",
       "variants": [],
       "postageCost": "0.74",
       "upsellHeadline": "Feeling festive? So are we!",
